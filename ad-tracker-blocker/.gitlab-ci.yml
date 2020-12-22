@@ -1,0 +1,50 @@
+image: '947875592751.dkr.ecr.us-east-1.amazonaws.com/tools/node-build:release'
+
+before_script:
+  - npm config set @sudoplatform:registry https://repo.tools.anonyome.com/repository/npm-group
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+
+stages:
+  - Verify
+  - Publish
+
+.publish_external:
+  stage: Publish
+  script:
+    - yarn global add @sudoplatform/sdk-publisher@0.0.13-3-gb9aa09e
+    - npm config delete @sudoplatform:registry
+    - sdk-publisher -t $(git describe --tags) --githubAccessToken ${GITHUB_ACCESS_TOKEN} --gitlabAccessToken ${API_ACCESS_TOKEN} --distTag ${DIST_TAG} --nodeAuthToken ${NPM_AUTH_TOKEN}
+  tags:
+    - docker
+
+Verify:
+  stage: Verify
+  script:
+    - yarn --frozen-lockfile
+    - yarn verify
+  tags:
+    - docker
+  only:
+    - main
+    - merge_requests
+    - /alpha/
+    - /beta/
+    - /^\d+\.\d+\.\d+$/
+
+Beta:
+  extends: .publish_external
+  variables:
+    DIST_TAG: beta
+  only:
+    - /beta/
+
+Release:
+  extends: .publish_external
+  variables:
+    DIST_TAG: latest
+  only:
+    - /^\d+\.\d+\.\d+$/
