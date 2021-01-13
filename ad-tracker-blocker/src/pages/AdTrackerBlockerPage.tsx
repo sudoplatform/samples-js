@@ -1,5 +1,5 @@
 import {
-  AdTrackerBlockerClient,
+  SudoAdTrackerBlockerClient,
   initWasm,
 } from '@sudoplatform/sudo-ad-tracker-blocker'
 import React, { useCallback, useState } from 'react'
@@ -28,7 +28,7 @@ export const AdTrackerBlockerPage: React.FC<Props> = ({ userClient }) => {
     await initWasmPromise
 
     // Create the ATB client instance
-    const client: AdTrackerBlockerClient = new AdTrackerBlockerClient({
+    const client: SudoAdTrackerBlockerClient = new SudoAdTrackerBlockerClient({
       sudoUserClient: userClient,
       onStatusChanged: () => {
         void toast.info(`Filter engine status changed to: '${client.status}'`)

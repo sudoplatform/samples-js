@@ -17,10 +17,10 @@
   "author": "Anonyome Labs, Inc.",
   "license": "Apache-2.0",
   "dependencies": {
-    "@sudoplatform/sudo-ad-tracker-blocker": "1.0.0-beta.1-8-gfacee6b",
+    "@sudoplatform/sudo-ad-tracker-blocker": "^1.0.1",
     "@sudoplatform/sudo-common": "^3.0.0",
     "@sudoplatform/sudo-user": "^2.0.1",
-    "@sudoplatform/web-ui": "1.0.0-beta.1-4-gb4853d3",
+    "@sudoplatform/web-ui": "^1.0.0",
     "@typescript-eslint/eslint-plugin": "^4.10.0",
     "@typescript-eslint/parser": "^4.10.0",
     "eslint-plugin-react": "^7.21.5",

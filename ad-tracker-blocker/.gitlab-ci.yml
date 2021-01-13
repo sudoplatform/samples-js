@@ -15,7 +15,7 @@ stages:
 .publish_external:
   stage: Publish
   script:
-    - yarn global add @sudoplatform/sdk-publisher@0.0.13-3-gb9aa09e
+    - yarn global add @sudoplatform/sdk-publisher
     - npm config delete @sudoplatform:registry
     - sdk-publisher -t $(git describe --tags) --githubAccessToken ${GITHUB_ACCESS_TOKEN} --gitlabAccessToken ${API_ACCESS_TOKEN} --distTag ${DIST_TAG} --nodeAuthToken ${NPM_AUTH_TOKEN}
   tags:

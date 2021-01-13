@@ -1,5 +1,5 @@
 import {
-  AdTrackerBlockerClient,
+  SudoAdTrackerBlockerClient,
   RulesetType,
 } from '@sudoplatform/sudo-ad-tracker-blocker'
 import { Card, Switch, VSpace, Spinner } from '@sudoplatform/web-ui'
@@ -29,7 +29,7 @@ const listTypeToLabel = {
 }
 
 interface Props {
-  atbClient: AdTrackerBlockerClient
+  atbClient: SudoAdTrackerBlockerClient
   lastClientChange: number
 }
 

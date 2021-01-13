@@ -1,4 +1,4 @@
-import { AdTrackerBlockerClient } from '@sudoplatform/sudo-ad-tracker-blocker'
+import { SudoAdTrackerBlockerClient } from '@sudoplatform/sudo-ad-tracker-blocker'
 import React from 'react'
 
 import { Card, Button, HSpace, toast } from '@sudoplatform/web-ui'
@@ -6,7 +6,7 @@ import { useAsyncFn } from 'react-use'
 import { ErrorFeedback } from './ErrorFeedback'
 
 interface Props {
-  atbClient: AdTrackerBlockerClient
+  atbClient: SudoAdTrackerBlockerClient
 }
 
 export const More: React.FC<Props> = ({ atbClient }) => {

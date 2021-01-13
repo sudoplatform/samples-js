@@ -1,4 +1,4 @@
-import { AdTrackerBlockerClient } from '@sudoplatform/sudo-ad-tracker-blocker'
+import { SudoAdTrackerBlockerClient } from '@sudoplatform/sudo-ad-tracker-blocker'
 import React from 'react'
 import { useAsync, useAsyncFn } from 'react-use'
 
@@ -18,7 +18,7 @@ import { FilterException } from '@sudoplatform/sudo-ad-tracker-blocker/lib/filte
 import { ErrorFeedback } from './ErrorFeedback'
 
 interface Props {
-  atbClient: AdTrackerBlockerClient
+  atbClient: SudoAdTrackerBlockerClient
   lastChange: number
   onChange?: () => void
 }
