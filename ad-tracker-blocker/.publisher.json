@@ -1,8 +1,0 @@
-{
-  "githubProjectName": "samples-js",
-  "githubUsername": "sudoplatform-engineering",
-  "internalFiles": [".publisher.json", ".gitlab-ci.yml"],
-  "gitlabUrl": "https://gitlab.tools.anonyome.com/api/v4/projects/821/",
-  "noPublish": true,
-  "subProjectName": "ad-tracker-blocker"
-}
