@@ -1,0 +1,55 @@
+{
+  "name": "@sudoplatform/site-reputation-sample",
+  "version": "0.0.0",
+  "description": "Sample app to show Sudo Site Reputation JS SDK capabilities",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "yarn clean && parcel --port 3000 --no-autoinstall ./src/index.html",
+    "build": "yarn clean && parcel build ./src/index.html --public-url .",
+    "clean": "rm -rf ./dist",
+    "verify": "yarn audit && yarn lint",
+    "lint": "yarn lint:eslint && yarn lint:prettier",
+    "lint:eslint": "eslint \"{bin,integration-tests,src}/**/*.{ts,tsx}\"",
+    "lint:prettier": "prettier -l \"{bin,integration-tests,src}/**/*.{js,json,jsx,ts,tsx}\""
+  },
+  "repository": "git@gitlab.tools.anonyome.com:platform/site-reputation/site-reputation-sample-web.git",
+  "author": "Anonyome Labs, Inc.",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@sudoplatform/sudo-common": "^3.0.0",
+    "@sudoplatform/sudo-site-reputation": "1.0.0",
+    "@sudoplatform/sudo-user": "^2.0.1",
+    "@sudoplatform/web-ui": "1.0.1",
+    "@typescript-eslint/eslint-plugin": "^4.10.0",
+    "@typescript-eslint/parser": "^4.10.0",
+    "eslint-plugin-react": "^7.21.5",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-error-boundary": "^3.1.0",
+    "react-router-dom": "^5.2.0",
+    "react-use": "^15.3.4",
+    "styled-components": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.55",
+    "@types/react-dom": "^16.9.9",
+    "@types/react-router-dom": "^5.1.6",
+    "@types/styled-components": "^5.1.4",
+    "eslint": "^7.12.1",
+    "eslint-config-prettier": "^6.15.0",
+    "parcel-bundler": "^1.12.4",
+    "parcel-plugin-static-files-copy": "^2.5.0",
+    "prettier": "^2.1.2",
+    "typescript": "^4.0.5"
+  },
+  "resolutions": {
+    "parcel-bundler/**/node-forge": "^0.10.0"
+  },
+  "staticFiles": {
+    "staticPath": [
+      "config"
+    ]
+  }
+}
