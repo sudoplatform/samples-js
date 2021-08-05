@@ -1,6 +1,5 @@
 import { SudoAdTrackerBlockerClient } from '@sudoplatform/sudo-ad-tracker-blocker'
 import React, { useMemo, useState } from 'react'
-import { useAsync } from 'react-use'
 import {
   Card,
   Form,
@@ -11,6 +10,7 @@ import {
   Spinner,
 } from '@sudoplatform/web-ui'
 import { ErrorFeedback } from './ErrorFeedback'
+import { useAsync } from 'react-use'
 
 interface Props {
   atbClient: SudoAdTrackerBlockerClient
@@ -28,8 +28,13 @@ export const Filtering: React.FC<Props> = ({ atbClient, lastClientChange }) => {
    * on sourceUrl + the currently loaded rulesets and filtering exceptions.
    */
   const matchedResult = useAsync(async () => {
-    return atbClient.checkUrl(url, sourceUrl)
-  }, [url, sourceUrl, lastClientChange])
+    try {
+      return atbClient.checkUrl(url, sourceUrl)
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }, [url, sourceUrl, lastClientChange, atbClient])
 
   return (
     <Card title="Check if URL is blocked">
@@ -54,7 +59,7 @@ export const Filtering: React.FC<Props> = ({ atbClient, lastClientChange }) => {
             error={matchedResult.error}
             message="An error occurred checking the URL."
           />
-        ) : status == 'preparing' || matchedResult.value == undefined ? (
+        ) : status === 'needs-update' || matchedResult.value === undefined ? (
           <Feedback type="info">
             <Spinner />
           </Feedback>

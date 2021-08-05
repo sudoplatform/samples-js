@@ -31,15 +31,22 @@ const listTypeToLabel = {
 interface Props {
   atbClient: SudoAdTrackerBlockerClient
   lastClientChange: number
+  onChange?: () => void
 }
 
-export const Rulesets: React.FC<Props> = ({ atbClient, lastClientChange }) => {
+export const Rulesets: React.FC<Props> = ({
+  atbClient,
+  lastClientChange,
+  onChange,
+}) => {
   /**
    * Async effect: Gets lists from SDK client.
    */
-  const rulesets = useAsync(async () => atbClient.listRulesets(), [
-    lastClientChange,
-  ])
+  const rulesets = useAsync(async () => {
+    if (atbClient.status === 'ready') {
+      return atbClient.listRulesets()
+    }
+  }, [lastClientChange])
 
   const activeRulesets = useAsync(async () => atbClient.getActiveRulesets(), [
     lastClientChange,
@@ -56,6 +63,7 @@ export const Rulesets: React.FC<Props> = ({ atbClient, lastClientChange }) => {
         : currentActiveRulesets.filter((rulesetType) => rulesetType !== type)
 
       await atbClient.setActiveRulesets(updatedActiveRulesets)
+      onChange?.()
     },
     [atbClient],
   )

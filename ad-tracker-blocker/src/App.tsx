@@ -1,3 +1,4 @@
+import 'antd/dist/antd.min.css'
 import React, { useMemo } from 'react'
 import baseSdkConfig from '../config/sudoplatformconfig.json'
 import { DefaultConfigurationManager } from '@sudoplatform/sudo-common'
@@ -52,20 +53,15 @@ export const App: React.FC = () => {
       )
 
       // Configure user client for auth
-      return new DefaultSudoUserClient(
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        createBunyanLogger(),
-      )
+      return new DefaultSudoUserClient({
+        logger: createBunyanLogger(),
+      })
     } catch (error) {
       console.error(error)
       throw new Error(
-        'Could not create SudoUserClient. ' +
-          'Please ensure your `config/sudoplatformconfig.json` is valid and up to date. ' +
-          'See README.md for more info.',
+        `Could not create SudoUserClient.
+          Please ensure your \`config/sudoplatformconfig.json\` is valid and up to date.
+          See README.md for more info.`,
       )
     }
   }, [])

@@ -36,6 +36,8 @@ export const AdTrackerBlockerPage: React.FC<Props> = ({ userClient }) => {
       },
     })
 
+    await client.update()
+
     return client
   })
 
@@ -59,7 +61,9 @@ export const AdTrackerBlockerPage: React.FC<Props> = ({ userClient }) => {
       message="An error occurred initializing AdTrackerBlockerClient."
     />
   ) : atbClient.value === undefined ? (
-    <Spinner />
+    <>
+      <Spinner /> Preparing client...
+    </>
   ) : (
     <VSpace spacing="large">
       <Filtering
@@ -69,6 +73,7 @@ export const AdTrackerBlockerPage: React.FC<Props> = ({ userClient }) => {
       <Rulesets
         atbClient={atbClient.value}
         lastClientChange={lastClientChange}
+        onChange={handleClientChange}
       />
       <Exceptions
         lastChange={lastClientChange}

@@ -15,6 +15,7 @@ export const More: React.FC<Props> = ({ atbClient }) => {
    */
   const [resetState, reset] = useAsyncFn(async () => {
     await atbClient.reset()
+    await atbClient.update()
     void toast.success('Exceptions and rulesets reset to default')
   })
 
@@ -22,7 +23,7 @@ export const More: React.FC<Props> = ({ atbClient }) => {
    * Async callback: Updates rulesets by fetching latest data from ATB service
    */
   const [rulesetsState, updateRulesets] = useAsyncFn(async () => {
-    await atbClient.updateRulesets()
+    await atbClient.update()
     void toast.success('Rulesets updated')
   }, [atbClient])
 
