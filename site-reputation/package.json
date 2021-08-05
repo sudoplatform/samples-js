@@ -18,7 +18,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@sudoplatform/sudo-common": "^3.0.0",
-    "@sudoplatform/sudo-site-reputation": "1.0.0",
+    "@sudoplatform/sudo-site-reputation": "2.0.0",
     "@sudoplatform/sudo-user": "^2.0.1",
     "@sudoplatform/web-ui": "1.0.1",
     "@typescript-eslint/eslint-plugin": "^4.10.0",
@@ -45,7 +45,8 @@
     "typescript": "^4.0.5"
   },
   "resolutions": {
-    "parcel-bundler/**/node-forge": "^0.10.0"
+    "parcel-bundler/**/glob-parent": "^5.1.2",
+    "parcel-bundler/**/htmlnano": "^1.0.0"
   },
   "staticFiles": {
     "staticPath": [
