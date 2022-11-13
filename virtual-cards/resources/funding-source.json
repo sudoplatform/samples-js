@@ -1,0 +1,11 @@
+{
+  "creditCardNumber": "4242424242424242",
+  "expiryDate": "12/23",
+  "securityCode": "123",
+  "addressLine1": "222333 Peachtree Place",
+  "addressLine2": "",
+  "city": "Atlanta",
+  "state": "GA",
+  "country": "US",
+  "postalCode": "30318"
+}

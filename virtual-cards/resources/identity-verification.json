@@ -1,0 +1,10 @@
+{
+  "firstName": "John",
+  "lastName": "Smith",
+  "address": "222333 Peachtree Place",
+  "city": "Atlanta",
+  "state": "GA",
+  "postalCode": "30318",
+  "country": "US",
+  "dateOfBirth": "28-02-1975"
+}

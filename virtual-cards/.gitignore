@@ -1,0 +1,14 @@
+.cache
+.parcel-cache
+config
+docs
+lib
+node_modules
+src/gen
+yarn-error.log
+dist
+.DS_Store
+yalc.lock
+.yalc
+coverage
+.npmrc

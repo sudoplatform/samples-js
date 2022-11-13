@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.checkout.com/js/framesv2.min.js"></script>
+    <title>Sudo Virtual Cards Sample App</title>
+<!--   For some reason the interaction between Checkout and our styling means that the embedded frames from Frames
+are 180 px tall where they should be approximately 32-->
+    <style>
+      .card-frame {
+        height: 32px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script crossorigin type="module" src="./index.tsx"></script>
+  </body>
+</html>

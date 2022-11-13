@@ -1,0 +1,12 @@
+{
+  "cardHolder": "John Smith",
+  "alias": "Shopping",
+  "billingAddress": {
+    "addressLine1": "222333 Peachtree Place",
+    "addressLine2": null,
+    "city": "Atlanta",
+    "state": "GA",
+    "country": "US",
+    "postalCode": "30318"
+  }
+}
