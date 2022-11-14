@@ -11,7 +11,7 @@
     "lint": "yarn lint:eslint && yarn lint:prettier",
     "lint:eslint": "eslint \"{bin,integration-tests,src}/**/*.{ts,tsx}\"",
     "lint:prettier": "prettier -l \"{bin,integration-tests,src}/**/*.{js,json,jsx,ts,tsx}\"",
-    "ui-test": "jest --detectOpenHandles --coverage e2e/tests/test",
+    "ui-test": "yarn add -D @anonyome/selenium-common && jest --detectOpenHandles --coverage e2e/tests/test ; status=$? ; yarn remove @anonyome/selenium-common ; exit $status",
     "test": "yarn ui-test"
   },
   "repository": "https://github.com/sudoplatform/samples-js.git",
@@ -56,7 +56,6 @@
     "styled-components": "^5.3.6"
   },
   "devDependencies": {
-    "@anonyome/selenium-common": "^1.0.1",
     "@babel/core": "^7.20.2",
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.18.6",
     "@babel/plugin-proposal-optional-chaining": "^7.18.9",

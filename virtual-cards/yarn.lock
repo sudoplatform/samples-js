@@ -10,11 +10,6 @@
     "@jridgewell/gen-mapping" "^0.1.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@anonyome/selenium-common@^1.0.1":
-  version "1.0.1"
-  resolved "https://repo.tools.anonyome.com/repository/npm-hosted/@anonyome/selenium-common/-/selenium-common-1.0.1.tgz#7813ac028153b85cdf6ab5707bc69a95512676ba"
-  integrity sha512-ZQ0y53UlGiKHsw4k+FikmbGZjLKTPoDCzoICH8M+bVLwfszb6NF4s/VDHrN6fWlgIYnShYke3CgLTTcXc4DN8g==
-
 "@ant-design/colors@^6.0.0":
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/@ant-design/colors/-/colors-6.0.0.tgz#9b9366257cffcc47db42b9d0203bb592c13c0298"
