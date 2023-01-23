@@ -44,6 +44,7 @@ export const App: React.FC = () => {
         logger: new DefaultLogger(),
       })
       DefaultApiClientManager.getInstance().setAuthClient(client)
+
       return client
     } catch (error) {
       console.error(error)

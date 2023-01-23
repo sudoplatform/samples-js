@@ -2,6 +2,7 @@ import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import {
   CompleteFundingSourceCompletionDataInput,
   FundingSource,
+  FundingSourceType,
   ProvisionalFundingSource,
 } from '@sudoplatform/sudo-virtual-cards'
 import { Button, Form, HSpace, Input, VSpace } from '@sudoplatform/web-ui'
@@ -10,13 +11,14 @@ import React, { useEffect } from 'react'
 import { useAsyncFn } from 'react-use'
 import { ErrorFeedback } from '../ErrorFeedback'
 import {
-  FundingSourceInputs,
+  CardFundingSourceInputs,
   ProviderSetupData,
 } from './FundingSourceManagement'
 
 export interface Props {
   onSetupFundingSource: (
     providerName: string | undefined,
+    providerType: FundingSourceType,
   ) => Promise<(ProvisionalFundingSource & ProviderSetupData) | undefined>
   onCancelFundingSourceSetup: (
     provisionalFundingSourceId: string,
@@ -37,11 +39,18 @@ export const AddStripeCardFundingSourceForm: React.FC<Props> = ({
   const stripe = useStripe()
   const elements = useElements()
 
+  function resetForm() {
+    provisionalFundingSource = undefined
+  }
+
   // Initial load of provisional funding source on mount.
   useEffect(() => {
     async function setupFundingSource() {
       if (!provisionalFundingSource) {
-        provisionalFundingSource = await onSetupFundingSource('stripe')
+        provisionalFundingSource = await onSetupFundingSource(
+          'stripe',
+          FundingSourceType.CreditCard,
+        )
       }
       console.log('using effect (setup funding source)')
     }
@@ -49,7 +58,7 @@ export const AddStripeCardFundingSourceForm: React.FC<Props> = ({
   }, [onSetupFundingSource])
 
   const [submitFundingSourceResult, submitFundingSource] = useAsyncFn(
-    async (input: FundingSourceInputs) => {
+    async (input: CardFundingSourceInputs) => {
       console.log({ stripe, elements }, 'submitting funding source')
       if (!stripe || !elements) {
         return
@@ -93,10 +102,14 @@ export const AddStripeCardFundingSourceForm: React.FC<Props> = ({
       if (!provisionalFundingSource) {
         throw new Error('Failed to create provisional funding source')
       }
-      await onSubmitFundingSource(provisionalFundingSource.id, {
-        provider: 'stripe',
-        paymentMethod: paymentMethod.paymentMethod.id,
-      })
+      try {
+        await onSubmitFundingSource(provisionalFundingSource.id, {
+          provider: 'stripe',
+          paymentMethod: paymentMethod.paymentMethod.id,
+        })
+      } finally {
+        resetForm()
+      }
     },
     [stripe],
   )
@@ -135,8 +148,11 @@ export const AddStripeCardFundingSourceForm: React.FC<Props> = ({
           </VSpace>
         </HSpace>
         <Button
+          disabled={!provisionalFundingSource}
           kind="primary"
-          loading={submitFundingSourceResult.loading}
+          loading={
+            !provisionalFundingSource || submitFundingSourceResult.loading
+          }
           type="submit"
         >
           Submit

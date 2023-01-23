@@ -91,29 +91,49 @@ export const IdentityVerification: React.FC<Props> = (props) => {
             form={form}
           >
             <HSpace stretch="all">
-              <FormItem name="firstName" label="First Name">
+              <FormItem
+                name="firstName"
+                label="First Name"
+                initialValue={'John'}
+              >
                 <Input />
               </FormItem>
-              <FormItem name="lastName" label="Last Name">
+              <FormItem
+                name="lastName"
+                label="Last Name"
+                initialValue={'Smith'}
+              >
                 <Input />
               </FormItem>
             </HSpace>
-            <FormItem name="address" label="Address">
+            <FormItem
+              name="address"
+              label="Address"
+              initialValue={'222333 Peachtree Place'}
+            >
               <Input />
             </FormItem>
-            <FormItem name="city" label="City">
+            <FormItem name="city" label="City" initialValue={'Atlanta'}>
               <Input />
             </FormItem>
-            <FormItem name="state" label="State">
+            <FormItem name="state" label="State" initialValue={'GA'}>
               <Input />
             </FormItem>
-            <FormItem name="postalCode" label="Postal Code">
+            <FormItem
+              name="postalCode"
+              label="Postal Code"
+              initialValue={'30318'}
+            >
               <Input />
             </FormItem>
-            <FormItem name="country" label="Country">
+            <FormItem name="country" label="Country" initialValue={'USA'}>
               <Input />
             </FormItem>
-            <FormItem name="dateOfBirth" label="Date of Birth">
+            <FormItem
+              name="dateOfBirth"
+              label="Date of Birth"
+              initialValue={'1975-02-28'}
+            >
               <Input type="date" />
             </FormItem>
             <FormItem label={<>&nbsp;</>}>

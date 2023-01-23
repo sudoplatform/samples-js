@@ -16,7 +16,7 @@ import FormItem from 'antd/lib/form/FormItem'
 import React, { useEffect, useState } from 'react'
 
 import {
-  FundingSourceInputs,
+  CardFundingSourceInputs,
   ProviderSetupData,
 } from './FundingSourceManagement'
 import { useAsyncFn } from 'react-use'
@@ -26,6 +26,7 @@ export interface Props {
   redirectUrl?: string
   onSetupFundingSource: (
     providerName: string | undefined,
+    providerType: FundingSourceType,
   ) => Promise<(ProvisionalFundingSource & ProviderSetupData) | undefined>
   onCancelFundingSourceSetup: (
     provisionalFundingSourceId: string,
@@ -59,8 +60,12 @@ export const AddCheckoutCardFundingSourceForm: React.FC<Props> = ({
   useEffect(() => {
     async function setupFundingSource() {
       if (!provisionalFundingSource) {
-        provisionalFundingSource = await onSetupFundingSource('checkout')
+        provisionalFundingSource = await onSetupFundingSource(
+          'checkout',
+          FundingSourceType.CreditCard,
+        )
       }
+      console.log('Provisional funding source', { provisionalFundingSource })
     }
     void setupFundingSource()
   }, [onSetupFundingSource])
@@ -76,7 +81,7 @@ export const AddCheckoutCardFundingSourceForm: React.FC<Props> = ({
   }, [billingAddress])
 
   const [submitFundingSourceResult, submitFundingSource] = useAsyncFn(
-    async (input: FundingSourceInputs) => {
+    async (input: CardFundingSourceInputs) => {
       console.log({ input }, 'submitting funding source')
       setAuthenticationInProgress(true)
       setBillingAddress({

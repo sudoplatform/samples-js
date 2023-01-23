@@ -6,6 +6,8 @@ import {
   FundingSourceRequiresUserInteractionError,
   FundingSourceState,
   FundingSourceType,
+  isCheckoutBankAccountFundingSourceClientConfiguration,
+  isCheckoutBankAccountProvisionalFundingSourceProvisioningData,
   isCheckoutCardFundingSourceClientConfiguration,
   isCheckoutCardProvisionalFundingSourceInteractionData,
   isCheckoutCardProvisionalFundingSourceProvisioningData,
@@ -28,8 +30,9 @@ import Collapse from 'antd/lib/collapse/Collapse'
 import CollapsePanel from 'antd/lib/collapse/CollapsePanel'
 import { FundingSourceServiceCompletionData } from '@sudoplatform/sudo-virtual-cards/types/private/domain/entities/fundingSource/fundingSourceService'
 import { AddCheckoutCardFundingSourceForm } from './AddCheckoutCardFundingSourceForm'
+import { AddCheckoutBankAccountFundingSourceForm } from './AddCheckoutBankAccountFundingSourceForm'
 
-export interface FundingSourceInputs {
+export interface CardFundingSourceInputs {
   addressLine1: string
   addressLine2?: string
   city: string
@@ -48,6 +51,10 @@ let checkoutPublicKey: string | null
 let redirectUrl: string | undefined = undefined
 
 let checkoutCardProvisionalFundingSource:
+  | (ProvisionalFundingSource & ProviderSetupData)
+  | null
+
+let checkoutBankAccountProvisionalFundingSource:
   | (ProvisionalFundingSource & ProviderSetupData)
   | null
 
@@ -76,8 +83,10 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
     },
   )
 
-  const [checkoutKey, setCheckoutKey] = useState(0)
+  const [checkoutCardKey, setCheckoutCardKey] = useState(0)
   const [stripeKey, setStripeKey] = useState(1)
+  const [checkoutBankAccountKey, setCheckoutBankAccountKey] = useState(2)
+
   // Initial load of funding sources on mount.
   useEffect(() => {
     void listFundingSources()
@@ -88,6 +97,7 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
       stripePromise = null
       checkoutPublicKey = null
       checkoutCardProvisionalFundingSource = null
+      checkoutBankAccountProvisionalFundingSource = null
       stripeProvisionalFundingSource = null
     }
   }, [props.deregisterResult])
@@ -108,28 +118,48 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
       if (isCheckoutCardFundingSourceClientConfiguration(config)) {
         checkoutPublicKey = config.apiKey
       }
+      if (isCheckoutBankAccountFundingSourceClientConfiguration(config)) {
+        checkoutPublicKey = config.apiKey
+      }
     })
     return stripePromise
   })
 
   const [, provisionalFundingSource] = useAsyncFn(
-    async (providerName: string | undefined) => {
+    async (
+      providerName: string | undefined,
+      providerType: FundingSourceType,
+    ) => {
+      console.log(
+        `Setting up ${providerName ?? '<unknown>'} ${
+          providerType ?? '<unknown>'
+        } funding source`,
+      )
       if (
         checkoutCardProvisionalFundingSource &&
-        checkoutCardProvisionalFundingSource.provider == providerName
+        checkoutCardProvisionalFundingSource.provider == providerName &&
+        checkoutCardProvisionalFundingSource.type == providerType
       ) {
         return checkoutCardProvisionalFundingSource
       }
       if (
+        checkoutBankAccountProvisionalFundingSource &&
+        checkoutBankAccountProvisionalFundingSource.provider == providerName &&
+        checkoutBankAccountProvisionalFundingSource.type == providerType
+      ) {
+        return checkoutBankAccountProvisionalFundingSource
+      }
+      if (
         stripeProvisionalFundingSource &&
-        stripeProvisionalFundingSource.provider == providerName
+        stripeProvisionalFundingSource.provider == providerName &&
+        stripeProvisionalFundingSource.type == providerType
       ) {
         return stripeProvisionalFundingSource
       }
 
       const provisionalFS = await virtualCardsClient.setupFundingSource({
         currency: 'USD',
-        type: FundingSourceType.CreditCard,
+        type: providerType,
         supportedProviders:
           Array.isArray(providerName) || providerName === undefined
             ? providerName
@@ -158,6 +188,17 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
           ...provisionalFS.provisioningData,
         }
         return checkoutCardProvisionalFundingSource
+      }
+      if (
+        isCheckoutBankAccountProvisionalFundingSourceProvisioningData(
+          provisionalFS.provisioningData,
+        )
+      ) {
+        checkoutBankAccountProvisionalFundingSource = {
+          ...provisionalFS,
+          ...provisionalFS.provisioningData,
+        }
+        return checkoutBankAccountProvisionalFundingSource
       }
     },
   )
@@ -203,14 +244,23 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
             checkoutCardProvisionalFundingSource?.id
           ) {
             // force remount of checkout form
-            setCheckoutKey((prev) => prev + 2)
+            setCheckoutCardKey((prev) => prev + 2)
             checkoutCardProvisionalFundingSource = null
+          }
+          if (
+            provisionalFundingSourceId ==
+            checkoutBankAccountProvisionalFundingSource?.id
+          ) {
+            // force remount of checkout form
+            setCheckoutBankAccountKey((prev) => prev + 2)
+            checkoutBankAccountProvisionalFundingSource = null
           }
           return fundingSource
         } else {
           void message.error('Failed to add Funding Source')
         }
       } catch (err) {
+        console.error('completeFundingSource failed', err)
         const error = err as Error
         const userInteractionError =
           err as FundingSourceRequiresUserInteractionError
@@ -250,9 +300,17 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
       if (
         provisionalFundingSourceId == checkoutCardProvisionalFundingSource?.id
       ) {
-        // force remount of checkout form
-        setCheckoutKey((prev) => prev + 2)
+        // force remount of checkout card form
+        setCheckoutCardKey((prev) => prev + 2)
         checkoutCardProvisionalFundingSource = null
+      }
+      if (
+        provisionalFundingSourceId ==
+        checkoutBankAccountProvisionalFundingSource?.id
+      ) {
+        // force remount of checkout bank account form
+        setCheckoutBankAccountKey((prev) => prev + 2)
+        checkoutBankAccountProvisionalFundingSource = null
       }
 
       void message.error('Failed to add Funding Source')
@@ -284,7 +342,11 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
             </>
           ) : fundingSourceProvidersConfigPromiseResult.value ? (
             <Collapse accordion={true} defaultActiveKey={'checkout'}>
-              <CollapsePanel key="stripe" header="Add Stripe Funding Source">
+              <CollapsePanel
+                key="stripe"
+                id="stripe"
+                header="Add Stripe Funding Source"
+              >
                 <Elements
                   stripe={fundingSourceProvidersConfigPromiseResult.value}
                 >
@@ -301,17 +363,34 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
                 </Elements>
               </CollapsePanel>
               <CollapsePanel
-                key="checkout"
+                key="checkoutCard"
+                id="checkoutCard"
                 header="Add Checkout Card Funding Source"
               >
                 <AddCheckoutCardFundingSourceForm
-                  key={checkoutKey}
+                  key={checkoutCardKey}
                   onSetupFundingSource={provisionalFundingSource}
                   onCancelFundingSourceSetup={(fundingSourceId) =>
                     cancelFundingSourceSetup(fundingSourceId)
                   }
                   clientSecret={checkoutPublicKey ?? 'undefined'}
                   redirectUrl={redirectUrl}
+                  onSubmitFundingSource={(fundingSourceId, completionData) =>
+                    completeFundingSource(fundingSourceId, completionData)
+                  }
+                />
+              </CollapsePanel>
+              <CollapsePanel
+                key="checkoutBankAccount"
+                id="checkoutBankAccount"
+                header="Add Checkout Bank Account Funding Source"
+              >
+                <AddCheckoutBankAccountFundingSourceForm
+                  key={checkoutBankAccountKey}
+                  onSetupFundingSource={provisionalFundingSource}
+                  onCancelFundingSourceSetup={(fundingSourceId) =>
+                    cancelFundingSourceSetup(fundingSourceId)
+                  }
                   onSubmitFundingSource={(fundingSourceId, completionData) =>
                     completeFundingSource(fundingSourceId, completionData)
                   }
