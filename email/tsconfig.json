@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "esModuleInterop": true,
+    "jsx": "react",
+    "lib": ["DOM", "ES2020"],
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "target": "ES2015",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
+    "baseUrl": ".",
+    "paths": {
+      "@components/*": ["src/components/*"],
+      "@containers/*": ["src/containers/*"],
+      "@pages/*": ["src/pages/*"],
+      "@services/*": ["src/services/*"],
+      "@config/*": ["config/*"],
+      "@util/*": ["src/util/*"],
+      "@images/*": ["public/images/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@contexts": ["src/contexts"]
+    },
+    "types": ["jest"]
+  },
+  "include": ["src/**/*", "test/**/*", "test/e2e/types.ts"],
+  "exclude": ["node_modules"]
+}

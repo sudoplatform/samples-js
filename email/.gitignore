@@ -1,0 +1,24 @@
+# General
+node_modules
+.npmrc
+package-lock.json
+package.json.old
+.cache
+.parcel-cache
+config
+yarn-error.log
+.DS_Store
+coverage
+
+# VS Code
+.vscode
+
+# YALC
+yalc.lock
+.yalc
+
+# Build dirs
+dist
+lib
+docs
+src/gen
