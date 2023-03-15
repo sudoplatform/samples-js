@@ -86,11 +86,17 @@ export const App: React.FC = () => {
           {/* Handlers that receive success/failure notification of 3ds */}
           <Route
             path="/checkout-3ds-success"
-            element={<Pages.SuccessCallbackPage />}
+            element={<Pages.ThreeDSSuccessCallbackPage />}
           ></Route>
           <Route
             path="/checkout-3ds-failure"
-            element={<Pages.FailureCallbackPage />}
+            element={<Pages.ThreeDSFailureCallbackPage />}
+          ></Route>
+
+          {/* Handlers that receive success notification of OAuth */}
+          <Route
+            path="/oauth-return"
+            element={<Pages.OAuthSuccessCallbackPage />}
           ></Route>
 
           {/* Default page */}

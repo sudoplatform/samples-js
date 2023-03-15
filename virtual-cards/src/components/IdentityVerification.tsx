@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { VerificationMethod } from '@sudoplatform/sudo-secure-id-verification'
 import {
   Button,
@@ -40,6 +40,39 @@ interface IdentityVerificationFormInputs {
 export const IdentityVerification: React.FC<Props> = (props) => {
   const { userClient, authenticationTokens } = useContext(AuthContext)
   const { identityVerificationClient } = useContext(AppContext)
+  const [isChecking, setIsChecking] = useState(false)
+  const [isChecked, setIsChecked] = useState(false)
+  const [isVerified, setIsVerified] = useState(false)
+
+  useEffect(() => {
+    const check = async () => {
+      if (authenticationTokens) {
+        console.log('refreshing auth token')
+        await userClient.refreshTokens(authenticationTokens.refreshToken)
+      }
+      const result =
+        await identityVerificationClient.checkIdentityVerification()
+      setIsChecked(true)
+      setIsVerified(result.verified)
+      props.onIsVerifiedChanged?.(result.verified)
+      if (result.verified) {
+        props.onChange?.()
+      }
+      setIsChecking(false)
+      setIsChecked(true)
+    }
+    if (!isChecked) {
+      setIsChecking(true)
+      void check()
+    }
+  }, [
+    authenticationTokens,
+    identityVerificationClient,
+    props,
+    userClient,
+    isChecked,
+  ])
+
   const [form] = useForm<IdentityVerificationFormInputs>()
 
   const [submitIdentityVerificationResult, submitIdentityVerification] =
@@ -53,7 +86,7 @@ export const IdentityVerification: React.FC<Props> = (props) => {
         console.log('refreshing auth token')
         await userClient.refreshTokens(authenticationTokens.refreshToken)
       }
-
+      setIsVerified(verified.verified)
       props.onIsVerifiedChanged?.(verified.verified)
       if (verified.verified) {
         props.onChange?.()
@@ -81,7 +114,7 @@ export const IdentityVerification: React.FC<Props> = (props) => {
         </VSpace>
         <VSpace>
           <h3 id="status">
-            Status: {props.isVerified ? 'Verified ✅' : 'Not Verified ❌'}
+            Status: {isVerified ? 'Verified ✅' : 'Not Verified ❌'}
           </h3>
         </VSpace>
         <VSpace>
@@ -140,7 +173,7 @@ export const IdentityVerification: React.FC<Props> = (props) => {
               <Button
                 kind="primary"
                 type="submit"
-                loading={submitIdentityVerificationResult.loading}
+                loading={isChecking || submitIdentityVerificationResult.loading}
               >
                 Submit
               </Button>

@@ -1,5 +1,6 @@
 export { VirtualCardsPage } from './VirtualCardsPage'
 export { SignInPage } from './SignInPage'
 export { AuthCallbackPage } from './AuthCallbackPage'
-export { SuccessCallbackPage } from './SuccessCallbackPage'
-export { FailureCallbackPage } from './FailureCallbackPage'
+export { OAuthSuccessCallbackPage } from './OAuthSuccessCallbackPage'
+export { ThreeDSSuccessCallbackPage } from './ThreeDSSuccessCallbackPage'
+export { ThreeDSFailureCallbackPage } from './ThreeDSFailureCallbackPage'

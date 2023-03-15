@@ -1,6 +1,6 @@
 import React from 'react'
 
-export const SuccessCallbackPage: React.FC = () => {
+export const ThreeDSSuccessCallbackPage: React.FC = () => {
   // Initialise event
   const event = new Event('3dsAuthenticationSuccess')
 

@@ -50,6 +50,7 @@ export const AddCheckoutBankAccountFundingSourceForm: React.FC<Props> = ({
   const { virtualCardsClient } = useContext(AppContext)
 
   const [completionInProgress, setCompletionInProgress] = useState(false)
+  const [isOAuthRedirect, setIsOAuthRedirect] = useState(false)
 
   const [createKeysResult, setCreateKeysResult] =
     useState<CreateKeysIfAbsentResult | null>(null)
@@ -96,11 +97,12 @@ export const AddCheckoutBankAccountFundingSourceForm: React.FC<Props> = ({
       if (provisionalFundingSource) {
         const provisioningData = provisionalFundingSource?.provisioningData
         if (
+          !provisioningData ||
           !isCheckoutBankAccountProvisionalFundingSourceProvisioningData(
             provisioningData,
           )
         ) {
-          console.error({ provisioningData })
+          console.error({ provisionalFundingSource, provisioningData })
           throw Error('Provisional funding source is wrong type')
         }
 
@@ -123,6 +125,7 @@ export const AddCheckoutBankAccountFundingSourceForm: React.FC<Props> = ({
       setLinkError({ err, metadata })
     },
     token: provisioningData?.linkToken ?? '',
+    receivedRedirectUri: isOAuthRedirect ? window.location.href : undefined,
   }
 
   const plaid = usePlaidLink(config)
@@ -135,6 +138,7 @@ export const AddCheckoutBankAccountFundingSourceForm: React.FC<Props> = ({
     setCreateKeysResult(null)
     setCompletionInProgress(false)
     setAgreementAccepted(false)
+    setIsOAuthRedirect(false)
     plaid.exit()
   }, [plaid])
 
@@ -230,6 +234,11 @@ export const AddCheckoutBankAccountFundingSourceForm: React.FC<Props> = ({
     }
     authorizationTextHtml = `<p>${authorizationTextPlain ?? ''}</p>`
   }
+
+  window.document.addEventListener('OAuthSuccess', (event: Event) => {
+    console.log('OAuth succeeded', { event })
+    setIsOAuthRedirect(true)
+  })
 
   return (
     <VSpace>
