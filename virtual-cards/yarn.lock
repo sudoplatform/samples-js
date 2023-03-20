@@ -3038,7 +3038,7 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.36.0.tgz#9837f768c03a1e4a30bd304a64fb8844f0e72efe"
   integrity sha512-lxJ9R5ygVm8ZWgYdUweoq5ownDlJ4upvoWmO4eLxBYHdMo+vZ/Rx0EN6MbKWDJOSUGrqJy2Gt+Dyv/VKml0fjg==
 
-"@graphql-typed-document-node/core@^3.1.1", "@graphql-typed-document-node/core@^3.1.2":
+"@graphql-typed-document-node/core@^3.1.2":
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/@graphql-typed-document-node/core/-/core-3.1.2.tgz#6fc464307cbe3c8ca5064549b806360d84457b04"
   integrity sha512-9anpBMM9mEgZN4wr2v8wHJI2/u5TnnggewRN6OlvXTTnuVyoY19X6rOv9XTqKRw6dcGKwZsBi8n0kDE2I5i4VA==
@@ -4338,12 +4338,12 @@
     uuid "^9.0.0"
     ws "^8.12.1"
 
-"@sudoplatform/sudo-secure-id-verification@^7.0.0":
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-secure-id-verification/-/sudo-secure-id-verification-7.0.0.tgz#8e44dd5f03f128614422a3ff7e1987929a69981c"
-  integrity sha512-/K7vtFaz5wm/1B0O/qFDm8QYnDr8bRvMuyAHxErnge/46CM8uHQLKuhC6FD+53Nv/0ZdK0Kx+r56bALSE8y8rg==
+"@sudoplatform/sudo-secure-id-verification@^8.0.0":
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-secure-id-verification/-/sudo-secure-id-verification-8.0.0.tgz#72fb743657874bdb559de5b4174c283f638d357e"
+  integrity sha512-Trg4G0MQ1IeFWX8KT1zb37FbBdFhDYq4FJFaBFNI4Jluz37SxXzls7r9S4A+DOwSdB/VvEhH3THIDSgF0dxGgw==
   dependencies:
-    "@graphql-typed-document-node/core" "^3.1.1"
+    "@graphql-typed-document-node/core" "^3.1.2"
     apollo-cache-inmemory "^1.6.6"
     apollo-client "^2.6.10"
     apollo-link-context "^1.0.20"
@@ -4352,8 +4352,8 @@
     fp-ts "^2.13.1"
     graphql "^15.8.0"
     io-ts "^2.2.20"
-    tslib "^2.4.1"
-    ws "^8.12.0"
+    tslib "^2.5.0"
+    ws "^8.13.0"
 
 "@sudoplatform/sudo-user@^13.0.0":
   version "13.0.0"
@@ -4376,26 +4376,26 @@
     tslib "^2.5.0"
     uuid "^9.0.0"
 
-"@sudoplatform/sudo-virtual-cards-simulator@^4.0.1":
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-virtual-cards-simulator/-/sudo-virtual-cards-simulator-4.0.1.tgz#94b18e86f83980fe30b5f91fbdb5bd4a24dfee04"
-  integrity sha512-xLolP/RG+OJ9hIQ5X3sEPJNWLmgy8NcCqemxXpqZfYrPGdgQcOEm45UQA3n9e73XMkGFgldSXDKQGjhuDAOq2w==
+"@sudoplatform/sudo-virtual-cards-simulator@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-virtual-cards-simulator/-/sudo-virtual-cards-simulator-5.0.0.tgz#61fd9aa03e78090d3e12f6dd11ddbd4453f1402f"
+  integrity sha512-DuOjKtNnj8SDAJiXLxLWY9jUmniffj5XNQJsv9BR0+mOqHPCGjDc8arXgzUcgTuceLMAsZNRC9IkQjFBV0QIjA==
   dependencies:
     apollo-cache-inmemory "^1.6.6"
-    aws-appsync "^4.1.7"
-    fp-ts "^2.12.2"
+    aws-appsync "^4.1.9"
+    fp-ts "^2.13.1"
     graphql "^15.8.0"
-    io-ts "^2.2.16"
+    io-ts "^2.2.20"
     lodash "^4.17.21"
     monocle-ts "^2.3.13"
     newtype-ts "^0.3.5"
-    redux "^4.2.0"
-    tslib "^2.4.0"
+    redux "^4.2.1"
+    tslib "^2.5.0"
 
-"@sudoplatform/sudo-virtual-cards@^9.1.0":
-  version "9.1.0"
-  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-virtual-cards/-/sudo-virtual-cards-9.1.0.tgz#fdfc4c636f85f72e795f4b88da4feb53ac8a4473"
-  integrity sha512-jyeAghyfyEvUSVe4K3+klA0dWJUBLVBsryxVP+b0L60sUqswW53ktSYna2vjT1Xkw8BX6sEW8ker+eC3o4Gozw==
+"@sudoplatform/sudo-virtual-cards@^10.1.0":
+  version "10.1.0"
+  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-virtual-cards/-/sudo-virtual-cards-10.1.0.tgz#688519c7dec496faf6e6208f72cf629534cfaaba"
+  integrity sha512-Awo7U/TUWiEXrT9BjUVeOw9KH5hoKG4NlcQFWyvZtG114TXEwyi+5U8gdp9S9ZWG99a0NceQ7XaGS+dxFoCGdw==
   dependencies:
     apollo-cache-inmemory "^1.6.6"
     async-mutex "^0.4.0"
@@ -4406,7 +4406,7 @@
     lodash "^4.17.21"
     monocle-ts "^2.3.13"
     newtype-ts "^0.3.5"
-    redux "^4.2.0"
+    redux "^4.2.1"
     tslib "^2.5.0"
 
 "@sudoplatform/sudo-web-crypto-provider@^8.0.0":
@@ -5280,7 +5280,7 @@ aws-appsync-subscription-link@^2.4.2:
     url "^0.11.0"
     zen-observable-ts "^1.2.5"
 
-aws-appsync@^4.1.7, aws-appsync@^4.1.9:
+aws-appsync@^4.1.9:
   version "4.1.9"
   resolved "https://registry.yarnpkg.com/aws-appsync/-/aws-appsync-4.1.9.tgz#ec084d9b6a3a40334822e49864fed14fbf9558ef"
   integrity sha512-YlOxC81Ij25UmSUVocbFF+TA5tItYAkL+04Y+gPBvZGCmrKI4+g/Z9b6c6IrX4IaG0eh4msizeZuwlUUjsEvlQ==
@@ -5833,10 +5833,10 @@ chrome-trace-event@^1.0.2:
   resolved "https://registry.yarnpkg.com/chrome-trace-event/-/chrome-trace-event-1.0.3.tgz#1015eced4741e15d06664a957dbbf50d041e26ac"
   integrity sha512-p3KULyQg4S7NIHixdwbGX+nFHkoBiA4YQmyWtjb8XngSKV124nJmRysgAeujbUVb15vh+RvFUfCPqU7rXk+hZg==
 
-chromedriver@^109.0.0:
-  version "109.0.0"
-  resolved "https://registry.yarnpkg.com/chromedriver/-/chromedriver-109.0.0.tgz#9407af72f2a01bb19e6db1b85cfc87eb3acd4f6b"
-  integrity sha512-jdmBq11IUwfThLFiygGTZ89qbROSQI4bICQjvOVQy2Bqr1LwC+MFkhwyZp3YG99eehQbZuTlQmmfCZBfpewTNA==
+chromedriver@^111.0.0:
+  version "111.0.0"
+  resolved "https://registry.yarnpkg.com/chromedriver/-/chromedriver-111.0.0.tgz#ef704dc44524ce5c1eced283d523b7aefd59ee19"
+  integrity sha512-XavNYNBBfKIrT8Oi/ywJ0DoOOU+jHF5bQWTkqStFsAXvfCV9VzYN3J+TGAvZdrpXeoixqPRGUxQ2yZhD2iowdQ==
   dependencies:
     "@testim/chrome-version" "^1.1.3"
     axios "^1.2.1"
@@ -7217,7 +7217,7 @@ formdata-polyfill@^4.0.10:
   dependencies:
     fetch-blob "^3.1.2"
 
-fp-ts@^2.12.2, fp-ts@^2.13.1:
+fp-ts@^2.13.1:
   version "2.13.1"
   resolved "https://registry.yarnpkg.com/fp-ts/-/fp-ts-2.13.1.tgz#1bf2b24136cca154846af16752dc29e8fa506f2a"
   integrity sha512-0eu5ULPS2c/jsa1lGFneEFFEdTbembJv8e4QKXeVJ3lm/5hyve06dlKZrpxmMwJt6rYen7sxmHHK2CLaXvWuWQ==
@@ -7463,6 +7463,11 @@ graphql@^15.8.0:
   version "15.8.0"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.8.0.tgz#33410e96b012fa3bdb1091cc99a94769db212b38"
   integrity sha512-5gghUc24tP9HRznNpV2+FIoq3xKkj5dTQqf4v0CpdPbFVwFkWoxOM+o+2OC9ZSvjEMTjfmG9QT+gcvggTwW1zw==
+
+graphql@^16.6.0:
+  version "16.6.0"
+  resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.6.0.tgz#c2dcffa4649db149f6282af726c8c83f1c7c5fdb"
+  integrity sha512-KPIBPDlW7NxrbT/eh4qPXz5FiFdL5UbaA0XUNz2Rp3Z3hqBSkbj0GVjwFDztsWVauZUWsbKHgMg++sk8UX0bkw==
 
 has-bigints@^1.0.1, has-bigints@^1.0.2:
   version "1.0.2"
@@ -7788,7 +7793,7 @@ io-ts-types@^0.5.19:
   resolved "https://registry.yarnpkg.com/io-ts-types/-/io-ts-types-0.5.19.tgz#9c04fa73f15992436605218a5686b610efa7a5d3"
   integrity sha512-kQOYYDZG5vKre+INIDZbLeDJe+oM+4zLpUkjXyTMyUfoCpjJNyi29ZLkuEAwcPufaYo3yu/BsemZtbdD+NtRfQ==
 
-io-ts@^2.2.16, io-ts@^2.2.20:
+io-ts@^2.2.20:
   version "2.2.20"
   resolved "https://registry.yarnpkg.com/io-ts/-/io-ts-2.2.20.tgz#be42b75f6668a2c44f706f72ee6e4c906777c7f5"
   integrity sha512-Rq2BsYmtwS5vVttie4rqrOCIfHCS9TgpRLFpKQCM1wZBBRY9nWVGmEvm2FnDbSE2un1UE39DvFpTR5UL47YDcA==
@@ -10977,7 +10982,7 @@ redux@^3.7.2:
     loose-envify "^1.1.0"
     symbol-observable "^1.0.3"
 
-redux@^4.2.0, redux@^4.2.1:
+redux@^4.2.1:
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/redux/-/redux-4.2.1.tgz#c08f4306826c49b5e9dc901dee0452ea8fce6197"
   integrity sha512-LAUYz4lc+Do8/g7aeRa8JkyDErK6ekstQaqWQrNRW//MY1TvCEpMtpTWvlQ+FPbWCx+Xixu/6SHt5N0HR+SB4w==
@@ -12471,7 +12476,7 @@ write-file-atomic@^3.0.0:
     signal-exit "^3.0.2"
     typedarray-to-buffer "^3.1.5"
 
-ws@>=8.11.0, ws@^8.12.0, ws@^8.12.1:
+ws@>=8.11.0, ws@^8.12.1, ws@^8.13.0:
   version "8.13.0"
   resolved "https://registry.yarnpkg.com/ws/-/ws-8.13.0.tgz#9a9fb92f93cf41512a0735c8f4dd09b8a1211cd0"
   integrity sha512-x9vcZYTrFPC7aSIbj7sRCYo7L/Xb8Iy+pW0ng0wt2vCJv7M9HOMy0UoN3rr+IFC7hb7vXoqS+P9ktyLLLhO+LA==

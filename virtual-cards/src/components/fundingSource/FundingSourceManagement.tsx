@@ -1,19 +1,25 @@
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe, Stripe } from '@stripe/stripe-js'
 import {
+  BankAccountFundingSource,
+  CheckoutBankAccountProvisionalFundingSourceProvisioningData,
+  CheckoutBankAccountRefreshFundingSourceInteractionData,
   CheckoutCardProvisionalFundingSourceInteractionData,
+  CompleteFundingSourceCompletionDataInput,
   FundingSource,
   FundingSourceRequiresUserInteractionError,
   FundingSourceState,
   FundingSourceType,
   isCheckoutBankAccountFundingSourceClientConfiguration,
   isCheckoutBankAccountProvisionalFundingSourceProvisioningData,
+  isCheckoutBankAccountRefreshFundingSourceInteractionData,
   isCheckoutCardFundingSourceClientConfiguration,
   isCheckoutCardProvisionalFundingSourceInteractionData,
   isCheckoutCardProvisionalFundingSourceProvisioningData,
   isStripeCardFundingSourceClientConfiguration,
   isStripeCardProvisionalFundingSourceProvisioningData,
   ProvisionalFundingSource,
+  RefreshFundingSourceRefreshDataInput,
 } from '@sudoplatform/sudo-virtual-cards'
 import { CachePolicy } from '@sudoplatform/sudo-common'
 import { Card, Spinner, VSpace } from '@sudoplatform/web-ui'
@@ -28,9 +34,9 @@ import { AddStripeCardFundingSourceForm } from './AddStripeCardFundingSourceForm
 import { FundingSourceList } from './FundingSourceList'
 import Collapse from 'antd/lib/collapse/Collapse'
 import CollapsePanel from 'antd/lib/collapse/CollapsePanel'
-import { FundingSourceServiceCompletionData } from '@sudoplatform/sudo-virtual-cards/types/private/domain/entities/fundingSource/fundingSourceService'
 import { AddCheckoutCardFundingSourceForm } from './AddCheckoutCardFundingSourceForm'
 import { AddCheckoutBankAccountFundingSourceForm } from './AddCheckoutBankAccountFundingSourceForm'
+import { RefreshCheckoutBankAccountFundingSourceForm } from './RefreshCheckoutBankAccountFundingSourceForm'
 
 export interface CardFundingSourceInputs {
   addressLine1: string
@@ -49,6 +55,11 @@ interface Props {
 let stripePromise: Promise<Stripe | null> | null
 let checkoutPublicKey: string | null
 let redirectUrl: string | undefined = undefined
+let refreshInteractionData: (
+  | CheckoutBankAccountRefreshFundingSourceInteractionData
+  | undefined
+)[] = []
+let fundingSourcesNeedingRefresh: FundingSource[] = []
 
 let checkoutCardProvisionalFundingSource:
   | (ProvisionalFundingSource & ProviderSetupData)
@@ -61,6 +72,20 @@ let checkoutBankAccountProvisionalFundingSource:
 let stripeProvisionalFundingSource:
   | (ProvisionalFundingSource & ProviderSetupData)
   | null
+
+function isBankAccountFundingSource(
+  fundingSource: FundingSource,
+): fundingSource is BankAccountFundingSource {
+  return fundingSource.type === FundingSourceType.BankAccount
+}
+function formatBankAccountFundingSourceHeader(fundingSource: FundingSource) {
+  if (!isBankAccountFundingSource(fundingSource)) {
+    return `Refresh funding source unexpected type: ${fundingSource.type}`
+  }
+  return `Refresh Checkout Bank Account Funding Source: Bank Account: ${
+    fundingSource.institutionName
+  }; ****${fundingSource.last4 ?? ''} (${fundingSource.bankAccountType})`
+}
 
 export interface ProviderSetupData {
   provider: string
@@ -77,9 +102,16 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
   const { virtualCardsClient } = useContext(AppContext)
   const [listFundingSourcesResult, listFundingSources] = useAsyncFn(
     async () => {
-      return await virtualCardsClient.listFundingSources({
+      const allFundingSources = await virtualCardsClient.listFundingSources({
         cachePolicy: CachePolicy.RemoteOnly,
       })
+      fundingSourcesNeedingRefresh = allFundingSources.items.filter(
+        (fundingSource) => fundingSource.state === FundingSourceState.Refresh,
+      )
+      refreshInteractionData = Array<
+        CheckoutBankAccountRefreshFundingSourceInteractionData | undefined
+      >(fundingSourcesNeedingRefresh.length).fill(undefined)
+      return allFundingSources
     },
   )
 
@@ -203,7 +235,7 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
     },
   )
 
-  const [, handleUserInteractionRequired] = useAsyncFn(
+  const [, handleCheckoutCardCompletionUserInteractionRequired] = useAsyncFn(
     async (
       userInteractionData: CheckoutCardProvisionalFundingSourceInteractionData,
       provisionalFundingSourceId: string,
@@ -216,10 +248,27 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
     },
   )
 
+  const [, handleCheckoutBankAccountRefreshUserInteractionRequired] =
+    useAsyncFn(
+      async (
+        userInteractionData: CheckoutBankAccountProvisionalFundingSourceProvisioningData,
+        fundingSourceId: string,
+      ) => {
+        console.log(
+          `user interaction required to refresh funding source ${fundingSourceId}`,
+        )
+
+        // Handled by the refreshCheckoutBankAccountFundingSourceForm
+        refreshInteractionData[
+          getIndexForRefreshableFundingSource(fundingSourceId)
+        ] = userInteractionData
+      },
+    )
+
   const [, completeFundingSource] = useAsyncFn(
     async (
       provisionalFundingSourceId: string,
-      completionData: FundingSourceServiceCompletionData,
+      completionData: CompleteFundingSourceCompletionDataInput,
     ): Promise<FundingSource | undefined> => {
       console.log('completing funding source')
       redirectUrl = undefined
@@ -270,7 +319,7 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
               userInteractionError?.interactionData,
             )
           ) {
-            await handleUserInteractionRequired(
+            await handleCheckoutCardCompletionUserInteractionRequired(
               userInteractionError?.interactionData,
               provisionalFundingSourceId,
             )
@@ -282,6 +331,56 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
         }
         void message.error(
           `Failed to add Funding Source - unexpected exception ${error?.message}`,
+        )
+      }
+    },
+  )
+
+  const [, refreshFundingSource] = useAsyncFn(
+    async (
+      fundingSourceId: string,
+      refreshData: RefreshFundingSourceRefreshDataInput,
+    ): Promise<FundingSource | undefined> => {
+      console.log('refreshing funding source')
+      try {
+        refreshInteractionData[
+          getIndexForRefreshableFundingSource(fundingSourceId)
+        ] = undefined
+        const fundingSource = await virtualCardsClient.refreshFundingSource({
+          id: fundingSourceId,
+          refreshData,
+        })
+        console.log({ fundingSource }, 'funding source')
+        void listFundingSources()
+        if (fundingSource.state === FundingSourceState.Active) {
+          void message.success('Funding Source Refreshed')
+          return fundingSource
+        } else {
+          void message.error('Failed to refresh Funding Source')
+        }
+      } catch (err) {
+        console.error('refreshFundingSource failed', err)
+        const error = err as Error
+        const userInteractionError =
+          err as FundingSourceRequiresUserInteractionError
+        if (userInteractionError && userInteractionError.interactionData) {
+          if (
+            isCheckoutBankAccountRefreshFundingSourceInteractionData(
+              userInteractionError?.interactionData,
+            )
+          ) {
+            await handleCheckoutBankAccountRefreshUserInteractionRequired(
+              userInteractionError?.interactionData,
+              fundingSourceId,
+            )
+            void message.warning(
+              `Warning: user interaction required to refresh Funding Source`,
+            )
+            return
+          }
+        }
+        void message.error(
+          `Failed to refresh Funding Source - unexpected exception ${error?.message}`,
         )
       }
     },
@@ -316,6 +415,16 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
       void message.error('Failed to add Funding Source')
     },
   )
+
+  function getIndexForRefreshableFundingSource(fundingSourceId: string) {
+    const index = fundingSourcesNeedingRefresh.findIndex(
+      (fs) => fs.id === fundingSourceId,
+    )
+    if (index < 0) {
+      throw new Error('Unable to refresh funding source')
+    }
+    return 0
+  }
 
   return (
     <Card title="Funding Source Management">
@@ -396,6 +505,31 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
                   }
                 />
               </CollapsePanel>
+              <>
+                {fundingSourcesNeedingRefresh.map((fs) => {
+                  if (isBankAccountFundingSource(fs)) {
+                    return (
+                      <>
+                        <CollapsePanel
+                          key={`refreshBankAccount-${fs.id}`}
+                          id={`refreshBankAccount-${fs.id}`}
+                          header={formatBankAccountFundingSourceHeader(fs)}
+                        >
+                          <RefreshCheckoutBankAccountFundingSourceForm
+                            onRefreshFundingSource={refreshFundingSource}
+                            refreshInteractionData={
+                              refreshInteractionData[
+                                getIndexForRefreshableFundingSource(fs.id)
+                              ]
+                            }
+                            fundingSource={fs}
+                          />
+                        </CollapsePanel>
+                      </>
+                    )
+                  }
+                })}
+              </>
             </Collapse>
           ) : (
             <ErrorFeedback

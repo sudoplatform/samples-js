@@ -35,6 +35,7 @@ const card_logos: Partial<
 interface Props {
   listFundingSourcesResult: AsyncState<ListOutput<FundingSource>>
   onFundingSourceCancelled?: (fundingSource: FundingSource) => void
+  onFundingSourceRefreshed?: (fundingSource: FundingSource) => void
 }
 
 export const FundingSourceList: React.FC<Props> = (props) => {
@@ -45,6 +46,7 @@ export const FundingSourceList: React.FC<Props> = (props) => {
       props.onFundingSourceCancelled?.(fundingSource)
     },
   )
+
   return (
     <List
       dataSource={props.listFundingSourcesResult.value?.items}
@@ -122,6 +124,36 @@ export const FundingSourceList: React.FC<Props> = (props) => {
                     ) : undefined
                   }
                   title={`Bank Account: ${item.institutionName}`}
+                  description={`****${item.last4 ?? ''} (${
+                    item.bankAccountType
+                  })`}
+                />
+                <Button
+                  danger={true}
+                  disabled={cancelFundingSourceResult.loading}
+                  loading={cancelFundingSourceResult.loading}
+                  onClick={() => cancelFundingSource(item)}
+                >
+                  Cancel
+                </Button>
+              </>
+            ) : item.state === FundingSourceState.Refresh ? (
+              <>
+                <List.Item.Meta
+                  avatar={
+                    item.institutionLogo ? (
+                      <Avatar
+                        shape={'square'}
+                        src={
+                          <Image
+                            width={'100%'}
+                            src={`data:${item.institutionLogo.type};base64,${item.institutionLogo.data}`}
+                          />
+                        }
+                      />
+                    ) : undefined
+                  }
+                  title={`Bank Account: ${item.institutionName} - Needs Refreshing`}
                   description={`****${item.last4 ?? ''} (${
                     item.bankAccountType
                   })`}

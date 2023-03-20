@@ -12,4 +12,5 @@ yalc.lock
 .yalc
 coverage
 .npmrc
+.nvmrc
 package.json.old
