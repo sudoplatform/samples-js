@@ -4673,10 +4673,10 @@
     graphql "^15.8.0"
     tslib "^2.5.0"
 
-"@sudoplatform/sudo-email@^12.0.0":
-  version "12.0.0"
-  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-email/-/sudo-email-12.0.0.tgz#92f64003969f15c992f290e2443fd8925d27ef56"
-  integrity sha512-uJ1eu/xFXgq7DIG6DbRLy3LFwAmFuxajnR4WE1AxbKncsLycl/FoFbdr/FxdqVCdDwDUTlh0TY/VbEVapXjIKA==
+"@sudoplatform/sudo-email@^13.0.0":
+  version "13.0.0"
+  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-email/-/sudo-email-13.0.0.tgz#e9869ff4793eb237f4ec9a1137dd67f98c199a2c"
+  integrity sha512-vrA1ghDG3YjKlMHsh1LNKZ479XqSld1OGxDxZOwRTpVl3UQEZ/p0lpdmNx9gYiWyHGClpeUOrGnj1SNqAVyv0g==
   dependencies:
     "@sudoplatform/sudo-web-crypto-provider" "^8.0.0"
     apollo-cache-inmemory "^1.6.6"

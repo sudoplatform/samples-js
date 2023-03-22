@@ -22,7 +22,7 @@
     "@aws-sdk/abort-controller": "^3.0.0",
     "@sudoplatform/sudo-api-client": "^14.0.0",
     "@sudoplatform/sudo-common": "^8.3.1",
-    "@sudoplatform/sudo-email": "^12.0.0",
+    "@sudoplatform/sudo-email": "^13.0.0",
     "@sudoplatform/sudo-entitlements": "^16.0.0",
     "@sudoplatform/sudo-profiles": "^17.0.0",
     "@sudoplatform/sudo-user": "^13.0.0",

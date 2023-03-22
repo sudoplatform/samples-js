@@ -140,7 +140,10 @@ export const useSendEmailMessageForm = () => {
     activeEmailAddress: EmailAddress,
   ): Promise<string[]> => {
     const emailAddressId = activeEmailAddress.id
-    return await sudoEmailClient.listDraftEmailMessageIds(emailAddressId)
+    const draftMetadata = await sudoEmailClient.listDraftEmailMessageMetadata(
+      emailAddressId,
+    )
+    return draftMetadata.map((m) => m.id)
   }
 
   const listDraftEmailMessageMetadataHandler = async (

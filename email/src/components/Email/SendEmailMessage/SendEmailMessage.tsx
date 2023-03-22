@@ -154,7 +154,7 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
       if (
         selectedDraft &&
         currentDraftsList &&
-        currentDraftsList.includes(selectedDraft)
+        !currentDraftsList.includes(selectedDraft)
       ) {
         void message.success('Draft has been deleted')
       }
