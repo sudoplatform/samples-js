@@ -9,15 +9,12 @@ import { useAsync, useAsyncFn } from 'react-use'
 import { AppContext } from '../../containers/AppContext'
 import { ErrorFeedback } from '../ErrorFeedback'
 import { LearnMore } from '../LearnMore'
-import { AddTransactionForm } from './AddTransactionForm'
 import { TransactionList } from './TransactionList'
 
 export const TransactionManagement: React.FC = () => {
   const { virtualCardsClient } = useContext(AppContext)
 
-  const [chosenCardId, setChosenCardId] = useState<string | undefined>(
-    undefined,
-  )
+  const [, setChosenCardId] = useState<string | undefined>(undefined)
 
   const virtualCardsResult = useAsync(async () => {
     const result = await virtualCardsClient.listVirtualCards({
@@ -69,13 +66,6 @@ export const TransactionManagement: React.FC = () => {
         <>Please add a virtual card</>
       )}
       <TransactionList listTransactionsResult={listTransactionsResult} />
-      <AddTransactionForm
-        onTransactionAdded={() => {
-          if (chosenCardId) {
-            void listTransactions(chosenCardId)
-          }
-        }}
-      />
     </Card>
   )
 }
