@@ -30,7 +30,7 @@
     "@sudoplatform/sudo-profiles": "^17.0.0",
     "@sudoplatform/sudo-secure-id-verification": "^8.0.0",
     "@sudoplatform/sudo-user": "^13.0.0",
-    "@sudoplatform/sudo-virtual-cards": "^10.1.0",
+    "@sudoplatform/sudo-virtual-cards": "^10.1.2",
     "@sudoplatform/sudo-virtual-cards-simulator": "^5.0.0",
     "@sudoplatform/sudo-web-crypto-provider": "^8.0.0",
     "@sudoplatform/web-ui": "^2.1.4",

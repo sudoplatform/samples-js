@@ -1,4 +1,4 @@
-import { CurrencyAmount, Transaction } from '@sudoplatform/sudo-virtual-cards'
+import { Transaction } from '@sudoplatform/sudo-virtual-cards'
 import {
   ListOperationResult,
   ListOperationResultStatus,
@@ -6,6 +6,8 @@ import {
 import { List } from 'antd'
 import React from 'react'
 import { AsyncState } from 'react-use/lib/useAsyncFn'
+import { TransactionDetailList } from './TransactionDetailList'
+import { formatCurrencyAmount } from '../../util/formatCurrencyAmount'
 
 interface Props {
   listTransactionsResult: AsyncState<ListOperationResult<Transaction>>
@@ -22,6 +24,7 @@ export const TransactionList: React.FC<Props> = (props) => {
       <List
         dataSource={props.listTransactionsResult.value.items}
         loadMore={props.listTransactionsResult.loading}
+        itemLayout="vertical"
         renderItem={(item) => (
           <List.Item key={item.id}>
             <List.Item.Meta
@@ -37,6 +40,7 @@ export const TransactionList: React.FC<Props> = (props) => {
               } |
               ${item.transactedAt.toUTCString()}`}
             />
+            <TransactionDetailList transaction={item} />
           </List.Item>
         )}
       ></List>
@@ -46,12 +50,4 @@ export const TransactionList: React.FC<Props> = (props) => {
       <List loadMore={props.listTransactionsResult.loading} dataSource={[]} />
     )
   }
-}
-
-function formatCurrencyAmount(value: CurrencyAmount): string {
-  const amount = value.amount / 100
-  return amount.toLocaleString('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  })
 }
