@@ -75,6 +75,7 @@ export const RefreshCheckoutBankAccountFundingSourceForm: React.FC<Props> = ({
       const refreshData: RefreshFundingSourceRefreshDataInput = {
         provider: 'checkout',
         type: FundingSourceType.BankAccount,
+        applicationName: 'webApplication',
       }
       console.log('Beginning to refresh funding source')
       await onRefreshFundingSource(fundingSource.id, refreshData)

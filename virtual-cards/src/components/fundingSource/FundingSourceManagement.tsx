@@ -192,6 +192,7 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
       const provisionalFS = await virtualCardsClient.setupFundingSource({
         currency: 'USD',
         type: providerType,
+        applicationName: 'webApplication',
         supportedProviders:
           Array.isArray(providerName) || providerName === undefined
             ? providerName
