@@ -12,7 +12,6 @@ import { DefaultSudoUserClient } from '@sudoplatform/sudo-user'
 import { DefaultLogger } from '@sudoplatform/sudo-common'
 import { DefaultApiClientManager } from '@sudoplatform/sudo-api-client'
 import { GlobalStyle } from './global-style'
-import 'antd/dist/antd.min.css'
 
 // Import sdk config and cast to object.
 const sdkConfig = require('@config/sudoplatformconfig.json') as Record<

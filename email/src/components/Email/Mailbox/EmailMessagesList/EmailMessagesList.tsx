@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import { EmailMessage } from '@sudoplatform/sudo-email'
+import { ConnectionState, EmailMessage } from '@sudoplatform/sudo-email'
 import {
   EmailContext,
   EmailFoldersContext,
@@ -16,15 +16,15 @@ import { ErrorBoundary } from '@components/ErrorBoundary'
 import { MenuLink } from '@components/MenuLink'
 import { EmailMessageRow } from './EmailMessageRow'
 import {
+  useDeleteEmailMessages,
   useEmailMessages,
   useUpdateEmailMessages,
-  useDeleteEmailMessages,
 } from './EmailMessagesList.hooks'
 import {
-  MenuContainer,
-  FixedRightColumn,
-  MessagesListContainer,
   ColumnDivider,
+  FixedRightColumn,
+  MenuContainer,
+  MessagesListContainer,
   StyledTable,
 } from './EmailMessagesList.styled'
 import { MoveMessageFolderDropdown } from '@components/Email/Mailbox/MoveMessageFolderDropdown'
@@ -57,6 +57,11 @@ export const EmailMessagesList = ({ minimized }: Props): React.ReactElement => {
     EmailMessage[]
   >([])
 
+  const [
+    receivedSubscriptionNotification,
+    setReceivedSubscriptionNotification,
+  ] = useState<boolean>(false)
+
   const {
     emailMessagesLoading,
     emailMessagesError,
@@ -87,6 +92,13 @@ export const EmailMessagesList = ({ minimized }: Props): React.ReactElement => {
       listEmailMessagesHandler(selectedEmailFolderId)
     }
   }, [selectedEmailFolderId, listEmailFoldersHandler, listEmailMessagesHandler])
+
+  useEffect(() => {
+    if (receivedSubscriptionNotification) {
+      refreshHandler()
+      setReceivedSubscriptionNotification(false)
+    }
+  }, [receivedSubscriptionNotification, selectedEmailFolderId, refreshHandler])
 
   /**
    * Update the seen status of the given `emailMessages` list,
@@ -189,6 +201,35 @@ export const EmailMessagesList = ({ minimized }: Props): React.ReactElement => {
       clearInterval(intervalId)
     }
   }, [refreshHandler])
+
+  useEffect(() => {
+    const subscriber = {
+      connectionStatusChanged(state: ConnectionState): void {
+        console.log(
+          `connection status changed to ${state} (${
+            state === ConnectionState.Connected ? 'connected' : 'disconnected'
+          })`,
+        )
+      },
+      emailMessageCreated: () => {
+        setReceivedSubscriptionNotification(true)
+      },
+      emailMessageDeleted: () => {
+        setReceivedSubscriptionNotification(true)
+      },
+    }
+    void (async () => {
+      // Setup a subscription to the email changed notification. We will not use
+      // the returned message, instead asking the component to refresh its current folder.
+      await sudoEmailClient.subscribeToEmailMessages(
+        'EmailMessagesList',
+        subscriber,
+      )
+    })()
+    return () => {
+      sudoEmailClient.unsubscribeFromEmailMessages('EmailMessagesList')
+    }
+  }, [sudoEmailClient])
 
   useSelectedEmailFolderUpdate((folderId) => {
     if (folderId) {
