@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect, useMemo } from 'react'
 import { ErrorBoundary, useErrorBoundary } from '@components/ErrorBoundary'
 import { Input, Form } from '@sudoplatform/web-ui'
 import { Button } from '@components/Button'
@@ -14,6 +14,7 @@ import {
   DraftEmailMessageMetadata,
 } from '@sudoplatform/sudo-email'
 import { DraftsDropdown } from './DraftsDropdown/DraftsDropdown'
+import { EncryptedIndicator } from './EncryptedIndicator'
 
 interface Props {
   onExit: () => void
@@ -183,6 +184,18 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
     }
   }
 
+  const inputEmailAddresses = useMemo(
+    () =>
+      Array.from(
+        new Set([
+          ...recipientEmailAddresses,
+          ...ccEmailAddresses,
+          ...bccEmailAddresses,
+        ]),
+      ),
+    [recipientEmailAddresses, ccEmailAddresses, bccEmailAddresses],
+  )
+
   return (
     <div id="send-email-message-card">
       <DraftsDropdown
@@ -194,6 +207,7 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
         deleteDraft={deleteDraft}
       />
       <ErrorBoundary error={sendEmailMessageError}>
+        <EncryptedIndicator emailAddresses={inputEmailAddresses} />
         <Form form={form} requiredMark={true} onChange={changesInForm}>
           <FormItem name="senderEmailAddress" label="Sender Email Address">
             <Input disabled={true} />

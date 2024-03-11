@@ -22,7 +22,7 @@
     "@aws-sdk/abort-controller": "^3.347.0",
     "@sudoplatform/sudo-api-client": "^14.0.1",
     "@sudoplatform/sudo-common": "^8.5.4",
-    "@sudoplatform/sudo-email": "^13.1.1",
+    "@sudoplatform/sudo-email": "^15.1.0",
     "@sudoplatform/sudo-entitlements": "^16.0.2",
     "@sudoplatform/sudo-profiles": "^17.0.4",
     "@sudoplatform/sudo-user": "^13.0.2",
@@ -69,6 +69,8 @@
     "@types/styled-components": "^5.1.26",
     "@typescript-eslint/eslint-plugin": "^5.59.11",
     "@typescript-eslint/parser": "^5.59.11",
+    "assert": "^2.0.0",
+    "browserify-zlib": "^0.2.0",
     "buffer": "^5.7.1",
     "chromedriver": "^114.0.2",
     "crypto-browserify": "^3.12.0",
@@ -145,6 +147,7 @@
   },
   "browserslist": "> 0.25%, not dead",
   "auditSuppressions": {
-    "1092278": 1688364028
+    "1092278": 1688364028,
+    "1094902": 1718076446
   }
 }

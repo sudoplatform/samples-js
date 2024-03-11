@@ -22,6 +22,10 @@ export const ListItem = styled.div<{ selected?: boolean }>`
     cursor: pointer;
   }
 
+  &#blocklist {
+    border-top: 1px solid #cad3dc;
+  }
+
   ${({ selected }) =>
     selected &&
     `

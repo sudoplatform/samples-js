@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react'
 import { EmailMessage } from '@sudoplatform/sudo-email'
 import { EmailContext, MailboxContext, EmailFoldersContext } from '@contexts'
 import { ErrorBoundary } from '@components/ErrorBoundary'
-import { EmailFoldersList } from './EmailFoldersList'
+import { EmailFoldersList } from './EmailSidebarList'
 import { EmailMessagesList } from './EmailMessagesList'
 import {
   MailboxContainer,
@@ -19,6 +19,8 @@ import { Button } from '@components/Button'
 import { SendEmailMessage } from '../SendEmailMessage'
 import { EmailMessageView } from './EmailMessageView'
 import { Modal } from 'antd'
+import { useEmailBlocklist } from '../../../hooks/useEmailBlocklist'
+import { EmailBlocklistContext } from '../../../contexts/EmailBlocklistContext'
 
 export const Mailbox = (): React.ReactElement => {
   const { activeEmailAddress } = useContext(EmailContext)
@@ -35,6 +37,15 @@ export const Mailbox = (): React.ReactElement => {
     setSelectedEmailFolderId,
     listEmailFoldersHandler,
   } = useEmailFolders()
+
+  const {
+    blocklistLoading,
+    blockEmailAddressesError,
+    blockedAddresses,
+    blocklistSelected,
+    setBlocklistSelected,
+    listBlockedAddressesHandler,
+  } = useEmailBlocklist()
 
   return (
     <>
@@ -73,28 +84,40 @@ export const Mailbox = (): React.ReactElement => {
                 />
               </Modal>
             )}
-            <ErrorBoundary error={emailFoldersError}>
-              <EmailFoldersContext.Provider
+            <ErrorBoundary
+              error={emailFoldersError || blockEmailAddressesError}
+            >
+              <EmailBlocklistContext.Provider
                 value={{
-                  emailFolders,
-                  emailFoldersLoading,
-                  listEmailFoldersHandler,
-                  selectedEmailFolderId,
-                  setSelectedEmailFolderId,
+                  blockedAddresses,
+                  blocklistLoading,
+                  blocklistSelected,
+                  listBlockedAddressesHandler,
+                  setBlocklistSelected,
                 }}
               >
-                <EmailFoldersContainer>
-                  <EmailFoldersList />
-                </EmailFoldersContainer>
-                <EmailMessagesContainer>
-                  <EmailMessagesList minimized={!!focusedEmailMessage} />
-                </EmailMessagesContainer>
-                {focusedEmailMessage && (
-                  <EmailMessageViewContainer>
-                    <EmailMessageView emailMessage={focusedEmailMessage} />
-                  </EmailMessageViewContainer>
-                )}
-              </EmailFoldersContext.Provider>
+                <EmailFoldersContext.Provider
+                  value={{
+                    emailFolders,
+                    emailFoldersLoading,
+                    listEmailFoldersHandler,
+                    selectedEmailFolderId,
+                    setSelectedEmailFolderId,
+                  }}
+                >
+                  <EmailFoldersContainer>
+                    <EmailFoldersList />
+                  </EmailFoldersContainer>
+                  <EmailMessagesContainer>
+                    <EmailMessagesList minimized={!!focusedEmailMessage} />
+                  </EmailMessagesContainer>
+                  {focusedEmailMessage && (
+                    <EmailMessageViewContainer>
+                      <EmailMessageView emailMessage={focusedEmailMessage} />
+                    </EmailMessageViewContainer>
+                  )}
+                </EmailFoldersContext.Provider>
+              </EmailBlocklistContext.Provider>
             </ErrorBoundary>
           </MailboxContext.Provider>
         </MailboxContainer>

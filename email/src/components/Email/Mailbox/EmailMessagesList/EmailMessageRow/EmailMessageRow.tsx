@@ -1,5 +1,9 @@
 import React from 'react'
-import { EmailFolder, EmailMessage } from '@sudoplatform/sudo-email'
+import {
+  EmailFolder,
+  EmailMessage,
+  EncryptionStatus,
+} from '@sudoplatform/sudo-email'
 import {
   StyledRow,
   ContentColumn,
@@ -55,6 +59,7 @@ export const EmailMessageRow = ({
   return (
     <StyledRow onClick={onClick} selected={selected}>
       <ContentColumn style={{ marginLeft: '-20px' }}>
+        {emailMessage.encryptionStatus === EncryptionStatus.ENCRYPTED && '🔒 '}
         {!emailMessage.seen && <MailIcon />}
         <span>{displayName ?? emailAddress}</span>
         <SubjectText seen={emailMessage.seen}>

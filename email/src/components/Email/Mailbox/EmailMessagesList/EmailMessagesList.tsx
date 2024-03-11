@@ -16,7 +16,6 @@ import { ErrorBoundary } from '@components/ErrorBoundary'
 import { MenuLink } from '@components/MenuLink'
 import { EmailMessageRow } from './EmailMessageRow'
 import {
-  useDeleteEmailMessages,
   useEmailMessages,
   useUpdateEmailMessages,
 } from './EmailMessagesList.hooks'
@@ -30,6 +29,7 @@ import {
 import { MoveMessageFolderDropdown } from '@components/Email/Mailbox/MoveMessageFolderDropdown'
 import {
   ArrowLeftOutlined,
+  CloseCircleOutlined,
   DeleteOutlined,
   EyeInvisibleOutlined,
   EyeOutlined,
@@ -37,6 +37,13 @@ import {
 } from '@ant-design/icons'
 import { message } from 'antd'
 import { useSelectedEmailFolderUpdate } from '@hooks/useSelectedEmailFolderUpdate'
+import { useDeleteEmailMessages } from '../../../../hooks/useDeleteEmailMessages'
+import { EmailBlocklistContext } from '../../../../contexts/EmailBlocklistContext'
+import { useEmailBlocklist } from '../../../../hooks/useEmailBlocklist'
+import {
+  ContentColumn,
+  StyledRow,
+} from './EmailMessageRow/EmailMessageRow.styled'
 
 const messages_refresh_interval = 60
 
@@ -52,9 +59,19 @@ export const EmailMessagesList = ({ minimized }: Props): React.ReactElement => {
   const { emailFolders, selectedEmailFolderId, listEmailFoldersHandler } =
     useContext(EmailFoldersContext)
 
+  const {
+    blockedAddresses,
+    blocklistSelected,
+    listBlockedAddressesHandler,
+    blocklistLoading,
+  } = useContext(EmailBlocklistContext)
+
   const { sudoEmailClient } = useContext(ProjectContext)
   const [selectedEmailMessages, setSelectedEmailMessages] = useState<
     EmailMessage[]
+  >([])
+  const [selectedBlockedAddresses, setSelectedBlockedAddresses] = useState<
+    { address: string }[]
   >([])
 
   const [
@@ -79,9 +96,16 @@ export const EmailMessagesList = ({ minimized }: Props): React.ReactElement => {
     deleteEmailMessagesLoading,
     deleteEmailMessagesError,
     deleteEmailMessagesHandler,
-  } = useDeleteEmailMessages(sudoEmailClient)
+  } = useDeleteEmailMessages()
+
+  const {
+    blockEmailAddressesHandler,
+    blockEmailAddressesError,
+    unblockEmailAddressesHandler,
+  } = useEmailBlocklist()
 
   const clearSelectedEmailMessages = () => setSelectedEmailMessages([])
+  const clearSelectedBlockedAddresses = () => setSelectedBlockedAddresses([])
 
   /**
    * Update email folder and email message data.
@@ -91,7 +115,16 @@ export const EmailMessagesList = ({ minimized }: Props): React.ReactElement => {
       listEmailFoldersHandler()
       listEmailMessagesHandler(selectedEmailFolderId)
     }
-  }, [selectedEmailFolderId, listEmailFoldersHandler, listEmailMessagesHandler])
+    if (selectedBlockedAddresses) {
+      listBlockedAddressesHandler()
+    }
+  }, [
+    selectedEmailFolderId,
+    listEmailFoldersHandler,
+    listEmailMessagesHandler,
+    selectedBlockedAddresses,
+    listBlockedAddressesHandler,
+  ])
 
   useEffect(() => {
     if (receivedSubscriptionNotification) {
@@ -127,9 +160,10 @@ export const EmailMessagesList = ({ minimized }: Props): React.ReactElement => {
 
   const updateEmailMessagesFolderId = async (
     folderId: string,
+    emailMessages: EmailMessage[],
   ): Promise<void> => {
     await updateEmailMessagesHandler({
-      emailMessages: selectedEmailMessages,
+      emailMessages,
       folderId,
     })
 
@@ -145,6 +179,7 @@ export const EmailMessagesList = ({ minimized }: Props): React.ReactElement => {
   const deleteEmailMessages = async (
     emailMessages: EmailMessage[],
   ): Promise<void> => {
+    console.log({ emailMessages })
     // Clear focused message if it will be deleted.
     if (emailMessages.find(({ id }) => focusedEmailMessage?.id === id)) {
       setTimeout(() => setFocusedEmailMessage(null), 0)
@@ -162,7 +197,8 @@ export const EmailMessagesList = ({ minimized }: Props): React.ReactElement => {
 
     // Delete if in Trash folder, otherwise move to Trash
     if (trashFolderId && folderName !== 'TRASH') {
-      await updateEmailMessagesFolderId(trashFolderId)
+      console.log('moving to trash')
+      await updateEmailMessagesFolderId(trashFolderId, emailMessages)
       void message.success('Emails moved to Trash')
       return
     }
@@ -171,6 +207,36 @@ export const EmailMessagesList = ({ minimized }: Props): React.ReactElement => {
     void message.success('Email messages deleted')
     clearSelectedEmailMessages()
     void refreshHandler()
+  }
+
+  /**
+   * Block the sender of the selected message(s)
+   */
+  const blockEmailSenders = async (messages: EmailMessage[]): Promise<void> => {
+    console.log({ emailMessages: messages })
+    const addressesToBlock = messages.map(
+      (message) => message.from[0].emailAddress,
+    )
+
+    await blockEmailAddressesHandler(addressesToBlock)
+    const messagesToDelete = emailMessages.filter((message) =>
+      addressesToBlock.includes(message.from[0].emailAddress),
+    )
+
+    // Once email addresses are blocked, let's delete the messages too
+    await deleteEmailMessages(messagesToDelete)
+    void message.success('Email address(es) blocked')
+    void refreshHandler()
+  }
+
+  /**
+   * Unblock the selected email address(es)
+   */
+  const unblockEmailSenders = async (addresses: string[]): Promise<void> => {
+    await unblockEmailAddressesHandler(addresses)
+    void message.success('Email address(es) unblocked')
+    void refreshHandler()
+    clearSelectedBlockedAddresses()
   }
 
   /**
@@ -270,7 +336,9 @@ export const EmailMessagesList = ({ minimized }: Props): React.ReactElement => {
             <MoveMessageFolderDropdown
               selectedEmailFolderId={selectedEmailFolderId}
               emailFolders={emailFolders}
-              onChange={updateEmailMessagesFolderId}
+              onChange={(folderId) =>
+                updateEmailMessagesFolderId(folderId, selectedEmailMessages)
+              }
               disabled={menuDisabled}
             />
             <ColumnDivider />
@@ -281,6 +349,28 @@ export const EmailMessagesList = ({ minimized }: Props): React.ReactElement => {
               onClick={() => deleteEmailMessages(selectedEmailMessages)}
               disabled={menuDisabled}
             />
+            <ColumnDivider />
+            {selectedBlockedAddresses.length > 0 ? (
+              <MenuLink
+                linkType="action"
+                text="Unblock"
+                icon={<CloseCircleOutlined />}
+                onClick={() =>
+                  unblockEmailSenders(
+                    selectedBlockedAddresses.map((value) => value.address),
+                  )
+                }
+              />
+            ) : (
+              <MenuLink
+                linkType="danger"
+                text="Block"
+                icon={<CloseCircleOutlined />}
+                onClick={() => blockEmailSenders(selectedEmailMessages)}
+                disabled={menuDisabled}
+              />
+            )}
+
             <FixedRightColumn>
               <MenuLink
                 linkType="action"
@@ -297,52 +387,93 @@ export const EmailMessagesList = ({ minimized }: Props): React.ReactElement => {
         error={
           emailMessagesError ||
           updateEmailMessagesError ||
-          deleteEmailMessagesError
+          deleteEmailMessagesError ||
+          blockEmailAddressesError
         }
       >
-        <StyledTable
-          className="styled-table"
-          dataSource={emailMessages}
-          pagination={{ pageSize: 20 }}
-          loading={
-            emailMessagesLoading ||
-            deleteEmailMessagesLoading ||
-            updateEmailMessagesLoading
-          }
-          rowKey="id"
-          rowSelection={{
-            type: 'checkbox',
-            columnWidth: '40px',
-            selectedRowKeys: selectedEmailMessages.map(({ id }) => id),
-            onChange: (rowKeys, rows) => {
-              setSelectedEmailMessages(
-                (rows as EmailMessage[]).filter(
-                  ({ id }) => rowKeys.indexOf(id) !== -1,
-                ),
-              )
-            },
-          }}
-          columns={[
-            {
-              key: 'column',
-              render: (_, record) => {
-                const emailMessage = record as EmailMessage
-                return (
-                  <EmailMessageRow
-                    emailMessage={emailMessage}
-                    key={`${emailMessage.id}`}
-                    onClick={() => focusEmailMessage(emailMessage)}
-                    onDelete={() => {
-                      void deleteEmailMessages([emailMessage])
-                    }}
-                    selected={emailMessage.id === focusedEmailMessage?.id}
-                    emailFolders={activeEmailAddress?.folders ?? []}
-                  />
+        {blocklistSelected ? (
+          <StyledTable
+            className="styled-table"
+            dataSource={blockedAddresses.map((address) => ({ address }))}
+            pagination={{ pageSize: 20 }}
+            loading={blocklistLoading}
+            rowKey="address"
+            rowSelection={{
+              type: 'checkbox',
+              columnWidth: '40px',
+              selectedRowKeys: selectedBlockedAddresses.map(
+                ({ address }) => address,
+              ),
+              onChange: (rowKeys, rows) => {
+                setSelectedBlockedAddresses(
+                  (rows as { address: string }[]).filter(
+                    ({ address }) => rowKeys.indexOf(address) !== -1,
+                  ),
                 )
               },
-            },
-          ]}
-        />
+            }}
+            columns={[
+              {
+                key: 'column',
+                render: (_, record) => {
+                  const value = record as { address: string }
+                  return (
+                    <StyledRow>
+                      <ContentColumn style={{ marginLeft: '-20px' }}>
+                        <span>{value.address}</span>
+                      </ContentColumn>
+                    </StyledRow>
+                  )
+                },
+              },
+            ]}
+          />
+        ) : (
+          <StyledTable
+            className="styled-table"
+            dataSource={emailMessages}
+            pagination={{ pageSize: 20 }}
+            loading={
+              emailMessagesLoading ||
+              deleteEmailMessagesLoading ||
+              updateEmailMessagesLoading ||
+              blocklistLoading
+            }
+            rowKey="id"
+            rowSelection={{
+              type: 'checkbox',
+              columnWidth: '40px',
+              selectedRowKeys: selectedEmailMessages.map(({ id }) => id),
+              onChange: (rowKeys, rows) => {
+                setSelectedEmailMessages(
+                  (rows as EmailMessage[]).filter(
+                    ({ id }) => rowKeys.indexOf(id) !== -1,
+                  ),
+                )
+              },
+            }}
+            columns={[
+              {
+                key: 'column',
+                render: (_, record) => {
+                  const emailMessage = record as EmailMessage
+                  return (
+                    <EmailMessageRow
+                      emailMessage={emailMessage}
+                      key={`${emailMessage.id}`}
+                      onClick={() => focusEmailMessage(emailMessage)}
+                      onDelete={() => {
+                        void deleteEmailMessages([emailMessage])
+                      }}
+                      selected={emailMessage.id === focusedEmailMessage?.id}
+                      emailFolders={activeEmailAddress?.folders ?? []}
+                    />
+                  )
+                },
+              },
+            ]}
+          />
+        )}
       </ErrorBoundary>
     </MessagesListContainer>
   )
