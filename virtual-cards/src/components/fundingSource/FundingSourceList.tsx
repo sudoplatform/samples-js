@@ -2,6 +2,7 @@ import { ListOutput } from '@sudoplatform/sudo-common'
 import {
   CreditCardNetwork,
   FundingSource,
+  FundingSourceFlags,
   FundingSourceState,
   FundingSourceType,
 } from '@sudoplatform/sudo-virtual-cards'
@@ -36,6 +37,7 @@ interface Props {
   listFundingSourcesResult: AsyncState<ListOutput<FundingSource>>
   onFundingSourceCancelled?: (fundingSource: FundingSource) => void
   onFundingSourceRefreshed?: (fundingSource: FundingSource) => void
+  onFundingSourceReviewed?: (fundingSource: FundingSource) => void
 }
 
 export const FundingSourceList: React.FC<Props> = (props) => {
@@ -46,6 +48,12 @@ export const FundingSourceList: React.FC<Props> = (props) => {
       props.onFundingSourceCancelled?.(fundingSource)
     },
   )
+  const [reviewFundingSourceResult, reviewFundingSource] = useAsyncFn(
+    async (fundingSource: FundingSource) => {
+      await virtualCardsClient.reviewUnfundedFundingSource(fundingSource.id)
+      props.onFundingSourceReviewed?.(fundingSource)
+    },
+  )
 
   return (
     <List
@@ -53,6 +61,11 @@ export const FundingSourceList: React.FC<Props> = (props) => {
       loading={props.listFundingSourcesResult.loading}
       renderItem={(item) => {
         console.log({ item })
+        const unfundednessString = item.flags.includes(
+          FundingSourceFlags.Unfunded,
+        )
+          ? ' ***UNFUNDED***'
+          : ''
         return (
           <List.Item key={item.id}>
             {item.type === FundingSourceType.CreditCard ? (
@@ -126,15 +139,29 @@ export const FundingSourceList: React.FC<Props> = (props) => {
                   title={`Bank Account: ${item.institutionName}`}
                   description={`****${item.last4 ?? ''} (${
                     item.bankAccountType
-                  })`}
+                  }${unfundednessString})`}
                 />
                 <Button
                   danger={true}
-                  disabled={cancelFundingSourceResult.loading}
+                  disabled={
+                    cancelFundingSourceResult.loading ||
+                    unfundednessString.length > 0
+                  }
                   loading={cancelFundingSourceResult.loading}
                   onClick={() => cancelFundingSource(item)}
                 >
                   Cancel
+                </Button>
+                <Button
+                  danger={true}
+                  disabled={
+                    reviewFundingSourceResult.loading ||
+                    unfundednessString.length == 0
+                  }
+                  loading={reviewFundingSourceResult.loading}
+                  onClick={() => reviewFundingSource(item)}
+                >
+                  Review
                 </Button>
               </>
             ) : item.state === FundingSourceState.Refresh ? (

@@ -106,7 +106,8 @@
     "**/apollo-cache-inmemory": "^1.6.6",
     "**/node-fetch": "^3.3.1",
     "minimatch": "^5.1.6",
-    "http-cache-semantics": "^4.1.1"
+    "http-cache-semantics": "^4.1.1",
+    "react-devtools-core": "^4.28.4"
   },
   "staticFiles": {
     "staticPath": [
@@ -115,9 +116,6 @@
   },
   "browserslist": "> 0.25%, not dead",
   "auditSuppressions": {
-    "1085321": 1675166835,
-    "1085403": 1675166806,
-    "1087848": 1675166797,
-    "1088370": 1675166709
+    "1094902": 1712107505
   }
 }

@@ -443,6 +443,7 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
           <FundingSourceList
             listFundingSourcesResult={listFundingSourcesResult}
             onFundingSourceCancelled={() => listFundingSources()}
+            onFundingSourceReviewed={() => listFundingSources()}
           />
           <h4>Add Funding Source</h4>
           {fundingSourceProvidersConfigPromiseResult.loading ? (
