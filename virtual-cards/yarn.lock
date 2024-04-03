@@ -4077,10 +4077,10 @@
     redux "^4.2.1"
     tslib "^2.5.0"
 
-"@sudoplatform/sudo-virtual-cards@^11.0.0":
-  version "11.11.0"
-  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-virtual-cards/-/sudo-virtual-cards-11.11.0.tgz#99a0459144cb1ce4618515fe27b31c365a75f74d"
-  integrity sha512-8wUkI5yGPoExxRihdy333SgSv7YARo7oxnuZCJ0yctW9jib3i/tWIVyOlhxAmJe0JowVbgnX5ZZHjut/2KtD2w==
+"@sudoplatform/sudo-virtual-cards@^12.0.0":
+  version "12.0.0"
+  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-virtual-cards/-/sudo-virtual-cards-12.0.0.tgz#76d029292d3b129a5bc84207569015c1fcb5896b"
+  integrity sha512-34wRDR6ZObpukYqRW/FULdb8RCqhA4xekXj++ZYlG0f8io0iujpW2UVbrLGVkbs9xCfGskL5/pYL1A2OHkowYQ==
   dependencies:
     apollo-cache-inmemory "^1.6.6"
     async-mutex "^0.4.1"

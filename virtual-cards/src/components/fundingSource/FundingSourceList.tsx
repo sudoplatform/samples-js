@@ -3,6 +3,7 @@ import {
   CreditCardNetwork,
   FundingSource,
   FundingSourceFlags,
+  fundingSourceNeedsRefresh,
   FundingSourceState,
   FundingSourceType,
 } from '@sudoplatform/sudo-virtual-cards'
@@ -164,7 +165,7 @@ export const FundingSourceList: React.FC<Props> = (props) => {
                   Review
                 </Button>
               </>
-            ) : item.state === FundingSourceState.Refresh ? (
+            ) : fundingSourceNeedsRefresh(item) ? (
               <>
                 <List.Item.Meta
                   avatar={

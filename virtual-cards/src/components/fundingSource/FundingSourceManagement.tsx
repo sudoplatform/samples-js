@@ -7,6 +7,7 @@ import {
   CheckoutCardProvisionalFundingSourceInteractionData,
   CompleteFundingSourceCompletionDataInput,
   FundingSource,
+  fundingSourceNeedsRefresh,
   FundingSourceRequiresUserInteractionError,
   FundingSourceState,
   FundingSourceType,
@@ -106,7 +107,7 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
         cachePolicy: CachePolicy.RemoteOnly,
       })
       fundingSourcesNeedingRefresh = allFundingSources.items.filter(
-        (fundingSource) => fundingSource.state === FundingSourceState.Refresh,
+        (fundingSource) => fundingSourceNeedsRefresh(fundingSource),
       )
       refreshInteractionData = Array<
         CheckoutBankAccountRefreshFundingSourceInteractionData | undefined

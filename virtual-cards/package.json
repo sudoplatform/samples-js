@@ -30,7 +30,7 @@
     "@sudoplatform/sudo-profiles": "^17.0.0",
     "@sudoplatform/sudo-secure-id-verification": "^8.0.0",
     "@sudoplatform/sudo-user": "^13.0.0",
-    "@sudoplatform/sudo-virtual-cards": "^11.0.0",
+    "@sudoplatform/sudo-virtual-cards": "^12.0.0",
     "@sudoplatform/sudo-virtual-cards-simulator": "^5.0.0",
     "@sudoplatform/sudo-web-crypto-provider": "^8.0.0",
     "@sudoplatform/web-ui": "^2.1.4",
@@ -116,6 +116,6 @@
   },
   "browserslist": "> 0.25%, not dead",
   "auditSuppressions": {
-    "1094902": 1712107505
+    "1094902": 1713328104
   }
 }
