@@ -2,7 +2,6 @@ import { useCallback, useContext, useEffect, useState } from 'react'
 import { EmailContext, ProjectContext } from '../contexts'
 import { useErrorBoundary } from '../components/ErrorBoundary'
 import {
-  BatchOperationPartialResult,
   BatchOperationResultStatus,
   UnsealedBlockedAddress,
 } from '@sudoplatform/sudo-email'
@@ -81,8 +80,7 @@ export const useEmailBlocklist = () => {
       } else {
         setBlockedAddresses([
           ...blockedAddresses,
-          ...(blockEmailAddressesResult as BatchOperationPartialResult<string>)
-            .successValues,
+          ...(blockEmailAddressesResult.successValues ?? []),
         ])
       }
     } catch (error) {
@@ -117,9 +115,8 @@ export const useEmailBlocklist = () => {
           blockedAddresses.filter((address) => !addresses.includes(address)),
         )
       } else {
-        const successfullyUnblocked = (
-          unblockEmailAddressesResult as BatchOperationPartialResult<string>
-        ).successValues
+        const successfullyUnblocked =
+          unblockEmailAddressesResult.successValues ?? []
         setBlockedAddresses(
           blockedAddresses.filter(
             (address) => !successfullyUnblocked.includes(address),

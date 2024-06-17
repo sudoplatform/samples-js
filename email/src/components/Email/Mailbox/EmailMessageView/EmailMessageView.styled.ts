@@ -28,3 +28,14 @@ export const CenteredText = styled.div`
   width: 100%;
   text-align: center;
 `
+
+export const AttachmentsBox = styled.div`
+  border-top: 1px solid ${theme.greys.antdLight};
+  padding-top: 8px;
+`
+
+export const AttachmentDetail = styled.div`
+  width: 100%;
+  margin-top: 8px;
+  margin-bottom: 8px;
+`

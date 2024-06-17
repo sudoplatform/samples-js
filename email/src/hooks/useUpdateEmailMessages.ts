@@ -1,7 +1,6 @@
 import { useContext, useState } from 'react'
 import {
   BatchOperationResultStatus,
-  BatchOperationPartialResult,
   EmailMessage,
 } from '@sudoplatform/sudo-email'
 import { useErrorBoundary } from '@components/ErrorBoundary'
@@ -42,8 +41,7 @@ export const useUpdateEmailMessages = () => {
 
       if (updateMessagesResult.status !== BatchOperationResultStatus.Failure) {
         setResultIds(
-          (updateMessagesResult as BatchOperationPartialResult<string>)
-            .successValues,
+          updateMessagesResult.successValues?.map((val) => val.id) ?? [],
         )
       } else {
         throw new Error('`updateEmailMessages` returned status: Failure')

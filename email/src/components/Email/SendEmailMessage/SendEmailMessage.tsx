@@ -1,9 +1,13 @@
-import React, { useState, useContext, useEffect, useMemo } from 'react'
+import React, { useState, useContext, useEffect, useMemo, useRef } from 'react'
 import { ErrorBoundary, useErrorBoundary } from '@components/ErrorBoundary'
 import { Input, Form } from '@sudoplatform/web-ui'
 import { Button } from '@components/Button'
 import { useSendEmailMessageForm } from './SendEmailMessage.hooks'
-import { SubmitButtonContainer, FormItem } from './SendEmailMessage.styled'
+import {
+  SubmitButtonContainer,
+  FormItem,
+  AttachmentListItem,
+} from './SendEmailMessage.styled'
 import { EmailAddressesFormItem } from './EmailAddressesFormItem'
 import TextArea from 'antd/lib/input/TextArea'
 import { message, Space } from 'antd'
@@ -15,6 +19,7 @@ import {
 } from '@sudoplatform/sudo-email'
 import { DraftsDropdown } from './DraftsDropdown/DraftsDropdown'
 import { EncryptedIndicator } from './EncryptedIndicator'
+import { DeleteOutlined } from '@ant-design/icons'
 
 interface Props {
   onExit: () => void
@@ -30,6 +35,7 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
     buttonDisabled: draftDisabled,
     error: sendEmailMessageError,
     form,
+    attachmentsList,
     onFormSubmit,
     changesInForm,
     createDraftEmailMessageHandler,
@@ -37,6 +43,8 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
     listDraftEmailMessageIdsHandler,
     listDraftEmailMessageMetadataHandler,
     deleteDraftEmailMessagesHandler,
+    onFileUpload,
+    onDeleteAttachment,
   } = useSendEmailMessageForm()
 
   const [recipientEmailAddresses, setRecipientEmailAddresses] = useState<
@@ -48,6 +56,8 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
   const [savedDraftSelected, setSavedDraftSelected] = useState(true)
   const [draftMessagesMetadataList, setDraftMessagesMetadataList] =
     useState<DraftEmailMessageMetadata[]>()
+  const [fileUploading, setFileUploading] = useState<boolean>(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const { error, setError, clearError } = useErrorBoundary()
   const { activeEmailAddress } = useContext(EmailContext)
 
@@ -78,6 +88,7 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
         recipientEmailAddresses,
         ccEmailAddresses,
         bccEmailAddresses,
+        attachments: attachmentsList,
       }
 
       await createDraftEmailMessageHandler(draftEmailFormItems)
@@ -184,6 +195,16 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
     }
   }
 
+  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.debug(e.target.files?.item(0))
+    setFileUploading(true)
+    const file = e.target.files?.item(0)
+    if (file) {
+      await onFileUpload(file)
+    }
+    setFileUploading(false)
+  }
+
   const inputEmailAddresses = useMemo(
     () =>
       Array.from(
@@ -258,6 +279,18 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
           >
             <TextArea />
           </FormItem>
+          {attachmentsList.map((a, idx) => (
+            <AttachmentListItem key={a.filename}>
+              <Button
+                type="button"
+                key={a.filename}
+                onClick={() => onDeleteAttachment(idx)}
+              >
+                <DeleteOutlined />
+              </Button>
+              {a.filename}
+            </AttachmentListItem>
+          ))}
           <SubmitButtonContainer>
             <Space size="middle">
               <Button
@@ -269,6 +302,21 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
                 kind="primary"
               >
                 Submit
+              </Button>
+              <input
+                type="file"
+                onChange={onFileChange}
+                style={{ display: 'none' }}
+                ref={fileInputRef}
+              />
+              <Button
+                className="add-attachment-button"
+                type="button"
+                loading={sendEmailMessageLoading || fileUploading}
+                disabled={sendEmailMessageLoading}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                Add attachment
               </Button>
               <Button
                 className="draft-email-save-button"

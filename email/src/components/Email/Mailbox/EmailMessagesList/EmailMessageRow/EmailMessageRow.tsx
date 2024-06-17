@@ -13,6 +13,7 @@ import {
   StyledDangerLink,
 } from './EmailMessageRow.styled'
 import { Tag } from 'antd'
+import { PaperClipOutlined } from '@ant-design/icons'
 
 const getFormattedDate = (dateObj: Date): string => {
   const comparisonDate = new Date(dateObj)
@@ -59,6 +60,7 @@ export const EmailMessageRow = ({
   return (
     <StyledRow onClick={onClick} selected={selected}>
       <ContentColumn style={{ marginLeft: '-20px' }}>
+        {emailMessage.hasAttachments && <PaperClipOutlined />}
         {emailMessage.encryptionStatus === EncryptionStatus.ENCRYPTED && '🔒 '}
         {!emailMessage.seen && <MailIcon />}
         <span>{displayName ?? emailAddress}</span>

@@ -11,3 +11,8 @@ export const FormItem = styled(_FormItem)`
     margin-bottom: 10px;
   }
 `
+export const AttachmentListItem = styled(_FormItem)`
+  button {
+    margin-right: 10px;
+  }
+`

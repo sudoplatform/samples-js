@@ -2,9 +2,14 @@ import React from 'react'
 import { EmailMessage } from '@sudoplatform/sudo-email'
 import { LoadingOutlined } from '@ant-design/icons'
 import { ErrorBoundary } from '@components/ErrorBoundary'
-import { Container, MessageTextBox, BoldLabel } from './EmailMessageView.styled'
+import {
+  Container,
+  MessageTextBox,
+  BoldLabel,
+  AttachmentsBox,
+  AttachmentDetail,
+} from './EmailMessageView.styled'
 import { useEmailMessageBody } from '@hooks/useEmailMessageBody'
-import ReactHtmlParser from 'react-html-parser'
 
 /**
  * Render a row of JSX elements, prefixed by a `bold` label.
@@ -60,13 +65,22 @@ export const EmailMessageView = ({
           {emailMessageBodyLoading ? (
             <LoadingOutlined />
           ) : (
-            emailMessageBody &&
-            (emailMessageBody.html
-              ? ReactHtmlParser(emailMessageBody.html)
-              : emailMessageBody.text ?? '')
+            emailMessageBody && (emailMessageBody.text ?? '')
           )}
         </ErrorBoundary>
       </MessageTextBox>
+      <AttachmentsBox>
+        {emailMessageBody?.attachments?.map((a, idx) => (
+          <AttachmentDetail key={`${a.filename}-${idx}`}>
+            <a
+              href={`data:application/octet-stream;base64,${a.data}`}
+              download={a.filename}
+            >
+              {a.filename}
+            </a>
+          </AttachmentDetail>
+        ))}
+      </AttachmentsBox>
     </Container>
   )
 }

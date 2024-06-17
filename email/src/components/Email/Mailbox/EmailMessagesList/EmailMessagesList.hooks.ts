@@ -4,7 +4,6 @@ import {
   ListOperationResultStatus,
 } from '@sudoplatform/sudo-common'
 import {
-  BatchOperationPartialResult,
   BatchOperationResultStatus,
   EmailMessage,
   SudoEmailClient,
@@ -142,8 +141,7 @@ export const useUpdateEmailMessages = (sudoEmailClient: SudoEmailClient) => {
 
       if (updateMessagesResult.status !== BatchOperationResultStatus.Failure) {
         setResultIds(
-          (updateMessagesResult as BatchOperationPartialResult<string>)
-            .successValues,
+          updateMessagesResult.successValues?.map((val) => val.id) ?? [],
         )
       } else {
         throw new Error('`updateEmailMessages` returned status: Failure')

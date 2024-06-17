@@ -1,7 +1,11 @@
 import { useContext, useEffect, useState } from 'react'
 import { EmailContext, ProjectContext } from '@contexts'
 import { useErrorBoundary } from '@components/ErrorBoundary'
-import { EmailAddress } from '@sudoplatform/sudo-email'
+import {
+  EmailAddress,
+  EmailAttachment,
+  EmailMessageOperationFailureResult,
+} from '@sudoplatform/sudo-email'
 import { useForm } from '@sudoplatform/web-ui'
 import moment from 'moment'
 import { useActiveSudoUpdate } from '@hooks/useActiveSudoUpdate'
@@ -10,6 +14,8 @@ import {
   BatchOperationResult,
   DraftEmailMessage,
 } from '@sudoplatform/sudo-email'
+import { Base64 } from '@sudoplatform/sudo-common'
+
 interface FormInputs {
   senderEmailAddress: string
   recipientEmailAddresses?: string
@@ -29,6 +35,7 @@ interface EmailMessageParams extends FormSubmitParams {
   senderEmailAddress: EmailAddress
   subject: string
   messageBody: string
+  attachments: EmailAttachment[]
 }
 
 /**
@@ -73,6 +80,7 @@ export const useSendEmailMessageForm = () => {
   const [loading, setLoading] = useState(false)
   const [draftLoading, setDraftLoading] = useState(false)
   const [buttonDisabled, setButtonDisabled] = useState(true)
+  const [attachmentsList, setAttachmentsList] = useState<EmailAttachment[]>([])
   const { error, setError, clearError } = useErrorBoundary()
 
   /* Set the value of the 'sender' field with active email address.
@@ -94,11 +102,30 @@ export const useSendEmailMessageForm = () => {
     clearError()
 
     try {
-      const formattedMessage = formatEmailMessage(emailMessageParams)
-      return await sudoEmailClient.sendEmailMessage({
-        rfc822Data: Buffer.from(formattedMessage),
+      const result = await sudoEmailClient.sendEmailMessage({
         senderEmailAddressId: emailMessageParams.senderEmailAddress.id,
+        attachments: emailMessageParams.attachments,
+        body: emailMessageParams.messageBody,
+        inlineAttachments: [],
+        emailMessageHeader: {
+          from: {
+            emailAddress: emailMessageParams.senderEmailAddress.emailAddress,
+            displayName: emailMessageParams.senderEmailAddress.alias,
+          },
+          to: emailMessageParams.recipientEmailAddresses.map((a) => ({
+            emailAddress: a,
+          })),
+          cc: emailMessageParams.ccEmailAddresses.map((a) => ({
+            emailAddress: a,
+          })),
+          bcc: emailMessageParams.bccEmailAddresses.map((a) => ({
+            emailAddress: a,
+          })),
+          replyTo: [],
+          subject: emailMessageParams.subject,
+        },
       })
+      return result.id
     } catch (error) {
       setError(error as Error, 'Failed to send email message')
       throw error
@@ -140,9 +167,7 @@ export const useSendEmailMessageForm = () => {
     activeEmailAddress: EmailAddress,
   ): Promise<string[]> => {
     const emailAddressId = activeEmailAddress.id
-    const draftMetadata = await sudoEmailClient.listDraftEmailMessageMetadata(
-      emailAddressId,
-    )
+    const draftMetadata = await sudoEmailClient.listDraftEmailMessageMetadata()
     return draftMetadata.map((m) => m.id)
   }
 
@@ -150,13 +175,15 @@ export const useSendEmailMessageForm = () => {
     activeEmailAddress: EmailAddress,
   ): Promise<DraftEmailMessageMetadata[]> => {
     const emailAddressId = activeEmailAddress.id
-    return await sudoEmailClient.listDraftEmailMessageMetadata(emailAddressId)
+    return await sudoEmailClient.listDraftEmailMessageMetadata()
   }
 
   const deleteDraftEmailMessagesHandler = async (
     ids: string[],
     activeEmailAddress: EmailAddress,
-  ): Promise<BatchOperationResult<string>> => {
+  ): Promise<
+    BatchOperationResult<string, EmailMessageOperationFailureResult>
+  > => {
     try {
       setDraftLoading(true)
       const emailAddressId = activeEmailAddress.id
@@ -200,6 +227,7 @@ export const useSendEmailMessageForm = () => {
         senderEmailAddress: activeEmailAddress,
         subject: fields.subject,
         messageBody: fields.messageBody,
+        attachments: attachmentsList,
         ...formSubmitParams,
       })
     } finally {
@@ -229,6 +257,7 @@ export const useSendEmailMessageForm = () => {
     draftLoading,
     buttonDisabled,
     error,
+    attachmentsList,
     onFormSubmit,
     changesInForm,
     createDraftEmailMessageHandler,
@@ -251,6 +280,20 @@ export const useSendEmailMessageForm = () => {
       return activeEmailAddress
         ? deleteDraftEmailMessagesHandler(ids, activeEmailAddress)
         : undefined
+    },
+    onFileUpload: async (file: File) => {
+      const dataArrayBuffer = await file.arrayBuffer()
+      const newAttachment: EmailAttachment = {
+        data: Base64.encode(dataArrayBuffer),
+        filename: file.name,
+        inlineAttachment: false,
+        mimeType: file.type,
+        contentTransferEncoding: 'base64',
+      }
+      setAttachmentsList([...attachmentsList, newAttachment])
+    },
+    onDeleteAttachment: (index: number) => {
+      setAttachmentsList(attachmentsList.filter((_, idx) => idx != index))
     },
   }
 }

@@ -1,12 +1,11 @@
 import { useCallback, useContext, useEffect, useState } from 'react'
-import { EmailMessage } from '@sudoplatform/sudo-email'
+import { EmailAttachment, EmailMessage } from '@sudoplatform/sudo-email'
 import { EmailContext, ProjectContext } from '@contexts'
 import { useErrorBoundary } from '@components/ErrorBoundary'
-import { parseMessage } from '@util/MessageParser'
 
 interface MessageBodyResult {
-  html?: string
   text?: string
+  attachments?: EmailAttachment[]
 }
 
 /**
@@ -36,19 +35,15 @@ export const useEmailMessageBody = (emailMessage: EmailMessage) => {
 
       try {
         // Retrieve encoded message data with IDs of the current email address and message.
-        const result = await sudoEmailClient.getEmailMessageRfc822Data({
+        const result = await sudoEmailClient.getEmailMessageWithBody({
           id: emailMessage.id,
           emailAddressId: activeEmailAddress.id,
         })
 
         if (result) {
-          // Convert returned RFC822 message buffer into readable string.
-          const decodedText = new TextDecoder().decode(result?.rfc822Data)
-          const parsedMessage = await parseMessage(decodedText)
-
           setResult({
-            html: parsedMessage.html,
-            text: parsedMessage.text,
+            text: result.body,
+            attachments: result.attachments,
           })
         } else {
           throw new Error(

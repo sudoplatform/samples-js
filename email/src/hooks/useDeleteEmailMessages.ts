@@ -1,7 +1,6 @@
 import { useContext, useState } from 'react'
 import {
   BatchOperationResultStatus,
-  BatchOperationPartialResult,
   EmailMessage,
 } from '@sudoplatform/sudo-email'
 import { useErrorBoundary } from '@components/ErrorBoundary'
@@ -32,14 +31,11 @@ export const useDeleteEmailMessages = () => {
         emailMessages.map(({ id }) => id),
       )
 
-      if (deleteMessagesResult.status === BatchOperationResultStatus.Failure) {
+      if (deleteMessagesResult.status !== BatchOperationResultStatus.Failure) {
+        setResultIds(deleteMessagesResult.successValues ?? [])
+      } else {
         throw new Error('`deleteEmailMessages` returned status: Failure')
       }
-
-      setResultIds(
-        (deleteMessagesResult as BatchOperationPartialResult<string>)
-          .successValues,
-      )
     } catch (error) {
       setError(error as Error, 'Failed to delete email messages')
     } finally {
