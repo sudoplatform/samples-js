@@ -47,9 +47,7 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
     onDeleteAttachment,
   } = useSendEmailMessageForm()
 
-  const [recipientEmailAddresses, setRecipientEmailAddresses] = useState<
-    string[]
-  >([])
+  const [toEmailAddresses, setToEmailAddresses] = useState<string[]>([])
   const [ccEmailAddresses, setCcEmailAddresses] = useState<string[]>([])
   const [bccEmailAddresses, setBccEmailAddresses] = useState<string[]>([])
   const [selectedDraft, setSelectedDraft] = useState<string>()
@@ -85,7 +83,7 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
         senderEmailAddress: activeEmailAddress,
         subject: (form.getFieldValue('subject') as string) ?? '',
         messageBody: (form.getFieldValue('messageBody') as string) ?? '',
-        recipientEmailAddresses,
+        toEmailAddresses,
         ccEmailAddresses,
         bccEmailAddresses,
         attachments: attachmentsList,
@@ -101,7 +99,7 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
   const clearForm = (): void => {
     // Reset form fields to default (except sender email address).
     form.resetFields([
-      'recipientEmailAddresses',
+      'toEmailAddresses',
       'ccEmailAddresses',
       'bccEmailAddresses',
       'subject',
@@ -109,7 +107,7 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
     ])
 
     // Reset any stored recipient email addresses.
-    setRecipientEmailAddresses([])
+    setToEmailAddresses([])
     setCcEmailAddresses([])
     setBccEmailAddresses([])
 
@@ -127,9 +125,7 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
     form.setFieldValue('messageBody', decodedDraft.text)
 
     if (decodedDraft.to)
-      setRecipientEmailAddresses(
-        decodedDraft.to.map((recipientAddress) => recipientAddress.address),
-      )
+      setToEmailAddresses(decodedDraft.to.map((toAddress) => toAddress.address))
     if (decodedDraft.cc)
       setCcEmailAddresses(decodedDraft.cc.map((ccEmail) => ccEmail.address))
     if (decodedDraft.bcc)
@@ -181,7 +177,7 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
   const submitForm = async () => {
     try {
       await onFormSubmit({
-        recipientEmailAddresses,
+        toEmailAddresses,
         ccEmailAddresses,
         bccEmailAddresses,
       })
@@ -209,12 +205,12 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
     () =>
       Array.from(
         new Set([
-          ...recipientEmailAddresses,
+          ...toEmailAddresses,
           ...ccEmailAddresses,
           ...bccEmailAddresses,
         ]),
       ),
-    [recipientEmailAddresses, ccEmailAddresses, bccEmailAddresses],
+    [toEmailAddresses, ccEmailAddresses, bccEmailAddresses],
   )
 
   return (
@@ -234,23 +230,23 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
             <Input disabled={true} />
           </FormItem>
           <EmailAddressesFormItem
-            fieldName="recipientEmailAddresses"
-            fieldLabel="Recipient Email Addresses"
+            fieldName="toEmailAddresses"
+            fieldLabel="To:"
             form={form}
             required={true}
-            emailAddresses={recipientEmailAddresses}
-            setEmailAddresses={setRecipientEmailAddresses}
+            emailAddresses={toEmailAddresses}
+            setEmailAddresses={setToEmailAddresses}
           />
           <EmailAddressesFormItem
             fieldName="ccEmailAddresses"
-            fieldLabel="CC Email Addresses"
+            fieldLabel="Cc:"
             form={form}
             emailAddresses={ccEmailAddresses}
             setEmailAddresses={setCcEmailAddresses}
           />
           <EmailAddressesFormItem
             fieldName="bccEmailAddresses"
-            fieldLabel="BCC Email Addresses"
+            fieldLabel="Bcc:"
             form={form}
             emailAddresses={bccEmailAddresses}
             setEmailAddresses={setBccEmailAddresses}
@@ -301,7 +297,7 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
                 onClick={submitForm}
                 kind="primary"
               >
-                Submit
+                Send
               </Button>
               <input
                 type="file"

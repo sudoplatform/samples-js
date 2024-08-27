@@ -15,7 +15,7 @@ export const useUpdateEmailAddress = () => {
 
   const updateEmailAddressHandler = async (
     emailAddress: EmailAddress,
-    alias: string,
+    displayName: string,
   ): Promise<void> => {
     clearError()
     setLoading(true)
@@ -23,7 +23,7 @@ export const useUpdateEmailAddress = () => {
     try {
       await sudoEmailClient.updateEmailAddressMetadata({
         id: emailAddress.id,
-        values: { alias },
+        values: { alias: displayName },
       })
     } catch (error) {
       setError(error as Error, 'Failed to update email address metadata')

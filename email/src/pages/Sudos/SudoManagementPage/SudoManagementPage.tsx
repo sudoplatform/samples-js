@@ -19,7 +19,7 @@ export const SudoManagementPage = (): React.ReactElement => {
           nameText="Sudo Management"
           helpText="Email addresses must belong to a Sudo. 
           A Sudo is a digital identity created and owned by a real person."
-          helpUrl="https://docs.sudoplatform.com/guides/sudos/managing-sudos"
+          helpUrl="https://docs.sudoplatform.com/guides/sudos"
         />
       </ContentRow>
       <ContentRow>

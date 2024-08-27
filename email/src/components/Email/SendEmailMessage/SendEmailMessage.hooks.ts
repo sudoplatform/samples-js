@@ -18,7 +18,7 @@ import { Base64 } from '@sudoplatform/sudo-common'
 
 interface FormInputs {
   senderEmailAddress: string
-  recipientEmailAddresses?: string
+  toEmailAddresses?: string
   ccEmailAddresses?: string
   bccEmailAddresses?: string
   subject: string
@@ -26,7 +26,7 @@ interface FormInputs {
 }
 
 interface FormSubmitParams {
-  recipientEmailAddresses: string[]
+  toEmailAddresses: string[]
   ccEmailAddresses: string[]
   bccEmailAddresses: string[]
 }
@@ -45,7 +45,7 @@ interface EmailMessageParams extends FormSubmitParams {
  */
 const formatEmailMessage = ({
   senderEmailAddress,
-  recipientEmailAddresses,
+  toEmailAddresses,
   ccEmailAddresses,
   bccEmailAddresses,
   subject,
@@ -55,7 +55,7 @@ const formatEmailMessage = ({
 
   return (
     `Date: ${date}\n` +
-    `To: ${recipientEmailAddresses.join(', ')}\n` +
+    `To: ${toEmailAddresses.join(', ')}\n` +
     `From: ${senderEmailAddress.emailAddress}\n` +
     (ccEmailAddresses.length !== 0
       ? `cc: ${ccEmailAddresses.join(', ')}\n`
@@ -112,7 +112,7 @@ export const useSendEmailMessageForm = () => {
             emailAddress: emailMessageParams.senderEmailAddress.emailAddress,
             displayName: emailMessageParams.senderEmailAddress.alias,
           },
-          to: emailMessageParams.recipientEmailAddresses.map((a) => ({
+          to: emailMessageParams.toEmailAddresses.map((a) => ({
             emailAddress: a,
           })),
           cc: emailMessageParams.ccEmailAddresses.map((a) => ({
@@ -237,14 +237,12 @@ export const useSendEmailMessageForm = () => {
 
   const changesInForm = () => {
     try {
-      const recipientEmailAddresses = form.getFieldValue(
-        'recipientEmailAddresses',
-      ) as string
+      const toEmailAddresses = form.getFieldValue('toEmailAddresses') as string
       const subject = form.getFieldValue('subject') as string
       const messageBody = form.getFieldValue('messageBody') as string
 
       setButtonDisabled(
-        messageBody === '' && subject === '' && recipientEmailAddresses === '',
+        messageBody === '' && subject === '' && toEmailAddresses === '',
       )
     } catch (err) {
       setButtonDisabled(true)

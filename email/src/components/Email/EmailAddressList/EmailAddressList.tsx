@@ -8,7 +8,7 @@ import { useEmailAddressDeprovision } from '@hooks/useEmailAddressDeprovision'
 import { useUpdateEmailAddress } from '@hooks/useUpdateEmailAddress'
 import {
   StyledLinkButton,
-  AliasInput,
+  DisplayNameInput,
   ButtonsWrapper,
 } from './EmailAddressList.styled'
 import { Tag, message } from 'antd'
@@ -40,7 +40,9 @@ export const EmailAddressList = (): React.ReactElement => {
   } = useUpdateEmailAddress()
 
   const [updateId, setUpdateId] = useState<string | undefined>()
-  const [updateAliasValue, setUpdateAliasValue] = useState<string | undefined>()
+  const [updateDisplayNameValue, setUpdateDisplayNameValue] = useState<
+    string | undefined
+  >()
 
   /**
    * Handler function to invoke the email deprovision API for a given
@@ -64,8 +66,8 @@ export const EmailAddressList = (): React.ReactElement => {
   const updateEmailAddress = async (
     emailAddress: EmailAddress,
   ): Promise<void> => {
-    if (updateAliasValue) {
-      await updateEmailAddressHandler(emailAddress, updateAliasValue)
+    if (updateDisplayNameValue) {
+      await updateEmailAddressHandler(emailAddress, updateDisplayNameValue)
       setUpdateId(undefined)
       listEmailAddressesHandler()
     }
@@ -86,15 +88,15 @@ export const EmailAddressList = (): React.ReactElement => {
           loading={emailAddressesLoading || deprovisionEmailAddressLoading}
           columns={[
             {
-              title: 'Alias',
-              dataIndex: 'alias',
+              title: 'Display Name',
+              dataIndex: 'displayName',
               render: (colData, rowData) => {
-                const { alias, id } = rowData as EmailAddress
+                const { alias: displayName, id } = rowData as EmailAddress
                 return updateId === id ? (
-                  <AliasInput
-                    defaultValue={alias ?? ''}
-                    onChange={(e) => setUpdateAliasValue(e.target.value)}
-                    placeholder="Enter new alias..."
+                  <DisplayNameInput
+                    defaultValue={displayName ?? ''}
+                    onChange={(e) => setUpdateDisplayNameValue(e.target.value)}
+                    placeholder="Enter new display name..."
                   />
                 ) : (
                   <>{colData ?? '-'}</>

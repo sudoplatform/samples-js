@@ -54,7 +54,7 @@ export const ProvisionEmailAddress = (): React.ReactElement => {
   }
 
   return (
-    <Card title="Provision Email Address">
+    <Card title="Create Email Address">
       <ErrorBoundary error={supportedEmailDomainsError || provisionEmailError}>
         <Form form={form} requiredMark={true}>
           <StretchForm>
@@ -90,7 +90,7 @@ export const ProvisionEmailAddress = (): React.ReactElement => {
             >
               <Input disabled={true} />
             </FormItem>
-            <FormItem name="alias" label="Alias" required={false}>
+            <FormItem name="displayName" label="Display Name" required={false}>
               <Input type="text" />
             </FormItem>
           </StretchForm>

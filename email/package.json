@@ -21,11 +21,11 @@
     "@ant-design/icons": "^5.1.4",
     "@aws-sdk/abort-controller": "^3.347.0",
     "@sudoplatform/sudo-api-client": "^14.0.1",
-    "@sudoplatform/sudo-common": "^8.5.4",
-    "@sudoplatform/sudo-email": "^21.1.3",
-    "@sudoplatform/sudo-entitlements": "^16.0.2",
-    "@sudoplatform/sudo-profiles": "^17.0.4",
-    "@sudoplatform/sudo-user": "^13.0.2",
+    "@sudoplatform/sudo-common": "^8.10.0",
+    "@sudoplatform/sudo-email": "^21.5.2",
+    "@sudoplatform/sudo-entitlements": "^16.0.6",
+    "@sudoplatform/sudo-profiles": "^17.0.5",
+    "@sudoplatform/sudo-user": "^13.1.0",
     "@sudoplatform/web-ui": "^2.1.4",
     "@swc/helpers": "^0.5.1",
     "@types/react-html-parser": "^2.0.2",
@@ -45,7 +45,7 @@
     "react-error-boundary": "^4.0.10",
     "react-html-parser": "^2.0.2",
     "react-is": ">=18.2.0",
-    "react-use": "17.4.0",
+    "react-use": "17.5.1",
     "shell-quote": "^1.8.1",
     "stream-http": "^3.2.0",
     "styled-components": "5.3.9",
@@ -118,7 +118,12 @@
     "moment": "^2.29.4",
     "terser": "^5.16.6",
     "@parcel/plugin": "2.8.3",
-    "linkify-it": "4.0.1"
+    "linkify-it": "4.0.1",
+    "micromatch": "^4.0.8",
+    "elliptic": "^6.5.7",
+    "fast-xml-parser": "^4.4.1",
+    "@swc/helpers": "^0.5.12",
+    "ws": "^8.18.0"
   },
   "staticFiles": {
     "staticPath": "public/images"
@@ -153,6 +158,6 @@
   "browserslist": "> 0.25%, not dead",
   "auditSuppressions": {
     "1092278": 1688364028,
-    "1094902": 1720757347
+    "1094902": 1735256539
   }
 }

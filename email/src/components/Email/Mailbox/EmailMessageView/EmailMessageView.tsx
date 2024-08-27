@@ -52,8 +52,11 @@ export const EmailMessageView = ({
         ))}
       </MetadataRow>
       <MetadataRow label="To: ">
-        {emailMessage.to.map(({ emailAddress }) => (
-          <span key={`to-${emailAddress}`}>{emailAddress}</span>
+        {emailMessage.to.map(({ displayName, emailAddress }, index) => (
+          <span key={`to-${emailAddress}`}>
+            {displayName ? `${displayName} <${emailAddress}>` : emailAddress}
+            {index < emailMessage.to.length - 1 && ', '}
+          </span>
         ))}
       </MetadataRow>
       <MetadataRow label="Recieved at: ">

@@ -42,7 +42,7 @@ export const useSupportedEmailDomains = () => {
 export interface EmailAddressInputs {
   localPart: string
   domain: string
-  alias?: string
+  displayName?: string
 }
 
 /**
@@ -64,7 +64,7 @@ export const useProvisionEmailAddressForm = () => {
 
   // Provision new email address from form input.
   const provisionEmailAddressHandler = async (
-    { localPart, domain, alias }: EmailAddressInputs,
+    { localPart, domain, displayName }: EmailAddressInputs,
     { id: sudoId }: Sudo,
   ) => {
     const ownershipProofToken = await sudoProfilesClient.getOwnershipProof(
@@ -75,7 +75,7 @@ export const useProvisionEmailAddressForm = () => {
     return await sudoEmailClient.provisionEmailAddress({
       emailAddress: `${localPart}@${domain}`,
       ownershipProofToken,
-      alias,
+      alias: displayName,
     })
   }
 
@@ -114,7 +114,7 @@ export const useProvisionEmailAddressForm = () => {
 
         // Reset form fields (leave `domain` intact).
         form.setFieldValue('localPart', '')
-        form.setFieldValue('alias', '')
+        form.setFieldValue('displayName', '')
 
         listEmailAddressesHandler()
       } catch (error) {

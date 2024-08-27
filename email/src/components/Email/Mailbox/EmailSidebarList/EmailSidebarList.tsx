@@ -26,19 +26,21 @@ export const EmailSidebarList = (): React.ReactElement => {
         <StyledLoader />
       ) : (
         <>
-          {emailFolders.map(({ id, folderName, unseenCount }) => (
-            <ListItem
-              key={id}
-              selected={id === selectedEmailFolderId}
-              onClick={() => {
-                setSelectedEmailFolderId(id)
-                setBlocklistSelected(false)
-              }}
-            >
-              {capitaliseFirst(folderName)}
-              {unseenCount > 0 && <Tag color="blue">{unseenCount}</Tag>}
-            </ListItem>
-          ))}
+          {emailFolders
+            .filter(({ folderName }) => folderName.toLowerCase() !== 'outbox')
+            .map(({ id, folderName, unseenCount }) => (
+              <ListItem
+                key={id}
+                selected={id === selectedEmailFolderId}
+                onClick={() => {
+                  setSelectedEmailFolderId(id)
+                  setBlocklistSelected(false)
+                }}
+              >
+                {capitaliseFirst(folderName)}
+                {unseenCount > 0 && <Tag color="blue">{unseenCount}</Tag>}
+              </ListItem>
+            ))}
           <ListItem
             key="blocklist"
             selected={blocklistSelected}

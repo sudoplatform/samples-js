@@ -14,7 +14,7 @@ export const ErrorContainer = styled.div`
   margin-bottom: 20px;
 `
 
-export const AliasInput = styled(Input)`
+export const DisplayNameInput = styled(Input)`
   display: inline-block;
   width: 200px;
   margin: 0;
