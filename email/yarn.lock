@@ -3686,10 +3686,10 @@
     pkijs "^3.2.4"
     tslib "^2.6.3"
 
-"@sudoplatform/sudo-email@^21.5.2":
-  version "21.5.2"
-  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-email/-/sudo-email-21.5.2.tgz#3676afb114f24611373f9e160ef2d4d02cc01326"
-  integrity sha512-X+/kp6p5zp6K4XMfvMMsFSHez1weUFZaJTDcjgf9EVqXLjsu4+hJki4O/XGODsT5yYqfx43bmMkWX8m/yQzing==
+"@sudoplatform/sudo-email@^21.7.1":
+  version "21.7.1"
+  resolved "https://registry.yarnpkg.com/@sudoplatform/sudo-email/-/sudo-email-21.7.1.tgz#e9c3d3ea1061f95aaadab11449a525937e74fd8e"
+  integrity sha512-in8HxpvI9PxStK5aW24iJlQiHtSgw/tZL6DCw5HA5S/9s1wFV8u+frG5X5XxssA30SbSnnx4hzfUB1bfkdR7gg==
   dependencies:
     "@aws-sdk/client-s3" "^3.369.0"
     "@aws-sdk/credential-provider-cognito-identity" "^3.369.0"

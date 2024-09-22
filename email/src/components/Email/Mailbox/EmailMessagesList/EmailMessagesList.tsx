@@ -277,10 +277,16 @@ export const EmailMessagesList = ({ minimized }: Props): React.ReactElement => {
           })`,
         )
       },
-      emailMessageCreated: () => {
+      emailMessageCreated: (message: EmailMessage) => {
+        console.debug({ message })
         setReceivedSubscriptionNotification(true)
       },
-      emailMessageDeleted: () => {
+      emailMessageDeleted: (message: EmailMessage) => {
+        console.debug({ message })
+        setReceivedSubscriptionNotification(true)
+      },
+      emailMessageUpdated: (message: EmailMessage) => {
+        console.debug({ message })
         setReceivedSubscriptionNotification(true)
       },
     }
