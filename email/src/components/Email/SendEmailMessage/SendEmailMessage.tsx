@@ -16,19 +16,27 @@ import { parseMessage, ParsedMessage } from '@util/MessageParser'
 import {
   DraftEmailMessage,
   DraftEmailMessageMetadata,
+  EmailMessage,
 } from '@sudoplatform/sudo-email'
 import { DraftsDropdown } from './DraftsDropdown/DraftsDropdown'
 import { EncryptedIndicator } from './EncryptedIndicator'
 import { DeleteOutlined } from '@ant-design/icons'
 
 interface Props {
+  replyingToMessage?: EmailMessage
+  forwardingMessage?: EmailMessage
   onExit: () => void
 }
+
 /**
  * Form component that allows a user to send an email message
  * from the current active email address and handle drafts.
  */
-export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
+export const SendEmailMessage = ({
+  replyingToMessage,
+  forwardingMessage,
+  onExit,
+}: Props): React.ReactElement => {
   const {
     loading: sendEmailMessageLoading,
     draftLoading: draftEmailLoading,
@@ -46,7 +54,6 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
     onFileUpload,
     onDeleteAttachment,
   } = useSendEmailMessageForm()
-
   const [toEmailAddresses, setToEmailAddresses] = useState<string[]>([])
   const [ccEmailAddresses, setCcEmailAddresses] = useState<string[]>([])
   const [bccEmailAddresses, setBccEmailAddresses] = useState<string[]>([])
@@ -62,7 +69,26 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
   /* eslint-disable */
   useEffect(() => {
     void getDrafts()
-  }, [])
+
+    if (replyingToMessage) {
+      // Appent data to subject and body to indicate message is replying to another
+      let subjectField = replyingToMessage.subject as string
+      if (!subjectField || subjectField.length === 0) {
+        subjectField = '(no subject)'
+      }
+      form.setFieldValue('subject', `Re: ${subjectField}`)
+      setToEmailAddresses(
+        replyingToMessage.to.map(({ emailAddress }) => emailAddress),
+      )
+    } else if (forwardingMessage) {
+      // Append data to subject and body to indicate message is forwarding another
+      let subjectField = forwardingMessage.subject as string
+      if (!subjectField || subjectField.length === 0) {
+        subjectField = '(no subject)'
+      }
+      form.setFieldValue('subject', `Fwd: ${subjectField}`)
+    }
+  }, [replyingToMessage, forwardingMessage])
   /* eslint-enable */
 
   const decodeAndParseMessage = async (
@@ -96,6 +122,7 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
       console.log(error)
     }
   }
+
   const clearForm = (): void => {
     // Reset form fields to default (except sender email address).
     form.resetFields([
@@ -180,6 +207,8 @@ export const SendEmailMessage = ({ onExit }: Props): React.ReactElement => {
         toEmailAddresses,
         ccEmailAddresses,
         bccEmailAddresses,
+        replyingMessageId: replyingToMessage?.id,
+        forwardingMessageId: forwardingMessage?.id,
       })
 
       void message.success('Email message sent successfully!')

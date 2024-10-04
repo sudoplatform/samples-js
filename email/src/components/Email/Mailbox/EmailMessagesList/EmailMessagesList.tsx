@@ -49,9 +49,15 @@ const messages_refresh_interval = 60
 
 interface Props {
   minimized: boolean
+  replyToMessageHandler: (emailMessage: EmailMessage) => void
+  forwardMessageHandler: (emailMessage: EmailMessage) => void
 }
 
-export const EmailMessagesList = ({ minimized }: Props): React.ReactElement => {
+export const EmailMessagesList = ({
+  minimized,
+  replyToMessageHandler,
+  forwardMessageHandler,
+}: Props): React.ReactElement => {
   const { activeEmailAddress } = useContext(EmailContext)
   const { focusedEmailMessage, setFocusedEmailMessage } =
     useContext(MailboxContext)
@@ -468,6 +474,8 @@ export const EmailMessagesList = ({ minimized }: Props): React.ReactElement => {
                       emailMessage={emailMessage}
                       key={`${emailMessage.id}`}
                       onClick={() => focusEmailMessage(emailMessage)}
+                      onReply={() => replyToMessageHandler(emailMessage)}
+                      onForward={() => forwardMessageHandler(emailMessage)}
                       onDelete={() => {
                         void deleteEmailMessages([emailMessage])
                       }}

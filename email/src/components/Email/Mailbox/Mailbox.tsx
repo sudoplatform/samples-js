@@ -29,6 +29,13 @@ export const Mailbox = (): React.ReactElement => {
   const [sendEmailMessageFormActive, setSendEmailMessageFormActive] =
     useState(false)
 
+  const [replyingToMessage, setReplyingToMessage] = useState<
+    EmailMessage | undefined
+  >()
+  const [forwardingMessage, setForwardingToMessage] = useState<
+    EmailMessage | undefined
+  >()
+
   const {
     emailFoldersLoading,
     emailFoldersError,
@@ -46,6 +53,16 @@ export const Mailbox = (): React.ReactElement => {
     setBlocklistSelected,
     listBlockedAddressesHandler,
   } = useEmailBlocklist()
+
+  const replyToMessageHandler = (emailMessage: EmailMessage) => {
+    setReplyingToMessage(emailMessage)
+    setSendEmailMessageFormActive(true)
+  }
+
+  const forwardMessageHandler = (emailMessage: EmailMessage) => {
+    setForwardingToMessage(emailMessage)
+    setSendEmailMessageFormActive(true)
+  }
 
   return (
     <>
@@ -80,7 +97,13 @@ export const Mailbox = (): React.ReactElement => {
                 width={750}
               >
                 <SendEmailMessage
-                  onExit={() => setSendEmailMessageFormActive(false)}
+                  replyingToMessage={replyingToMessage}
+                  forwardingMessage={forwardingMessage}
+                  onExit={() => {
+                    setSendEmailMessageFormActive(false)
+                    setReplyingToMessage(undefined)
+                    setForwardingToMessage(undefined)
+                  }}
                 />
               </Modal>
             )}
@@ -109,7 +132,11 @@ export const Mailbox = (): React.ReactElement => {
                     <EmailFoldersList />
                   </EmailFoldersContainer>
                   <EmailMessagesContainer>
-                    <EmailMessagesList minimized={!!focusedEmailMessage} />
+                    <EmailMessagesList
+                      minimized={!!focusedEmailMessage}
+                      replyToMessageHandler={replyToMessageHandler}
+                      forwardMessageHandler={forwardMessageHandler}
+                    />
                   </EmailMessagesContainer>
                   {focusedEmailMessage && (
                     <EmailMessageViewContainer>

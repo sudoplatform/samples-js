@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components'
 import { MailTwoTone } from '@ant-design/icons'
-import { DangerLink } from '@components/Table'
+import { ActionLink, DangerLink } from '@components/Table'
 import { theme } from '../../../../../theme'
 
 export const StyledRow = styled.div<{ selected?: boolean }>`
@@ -10,7 +10,8 @@ export const StyledRow = styled.div<{ selected?: boolean }>`
   padding-right: 5px;
   margin: 0;
 
-  &:hover .delete-message-button {
+  &:hover .hover-button {
+    margin-left: 5px;
     visibility: visible;
   }
 
@@ -52,6 +53,10 @@ export const DateColumn = styled.div`
   text-align: right;
   color: #aaaaaa;
   min-width: 80px;
+`
+
+export const StyledActionLink = styled(ActionLink)`
+  visibility: hidden;
 `
 
 export const StyledDangerLink = styled(DangerLink)`

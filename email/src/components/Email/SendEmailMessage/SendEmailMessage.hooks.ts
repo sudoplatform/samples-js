@@ -5,6 +5,7 @@ import {
   EmailAddress,
   EmailAttachment,
   EmailMessageOperationFailureResult,
+  SendEmailMessageInput,
 } from '@sudoplatform/sudo-email'
 import { useForm } from '@sudoplatform/web-ui'
 import moment from 'moment'
@@ -29,6 +30,8 @@ interface FormSubmitParams {
   toEmailAddresses: string[]
   ccEmailAddresses: string[]
   bccEmailAddresses: string[]
+  replyingMessageId?: string
+  forwardingMessageId?: string
 }
 
 interface EmailMessageParams extends FormSubmitParams {
@@ -102,7 +105,7 @@ export const useSendEmailMessageForm = () => {
     clearError()
 
     try {
-      const result = await sudoEmailClient.sendEmailMessage({
+      const input: SendEmailMessageInput = {
         senderEmailAddressId: emailMessageParams.senderEmailAddress.id,
         attachments: emailMessageParams.attachments,
         body: emailMessageParams.messageBody,
@@ -124,7 +127,14 @@ export const useSendEmailMessageForm = () => {
           replyTo: [],
           subject: emailMessageParams.subject,
         },
-      })
+      }
+      if (emailMessageParams.replyingMessageId) {
+        input.replyingMessageId = emailMessageParams.replyingMessageId
+      } else if (emailMessageParams.forwardingMessageId) {
+        input.forwardingMessageId = emailMessageParams.forwardingMessageId
+      }
+      const result = await sudoEmailClient.sendEmailMessage(input)
+
       return result.id
     } catch (error) {
       setError(error as Error, 'Failed to send email message')
@@ -174,7 +184,6 @@ export const useSendEmailMessageForm = () => {
   const listDraftEmailMessageMetadataHandler = async (
     activeEmailAddress: EmailAddress,
   ): Promise<DraftEmailMessageMetadata[]> => {
-    const emailAddressId = activeEmailAddress.id
     return await sudoEmailClient.listDraftEmailMessageMetadata()
   }
 

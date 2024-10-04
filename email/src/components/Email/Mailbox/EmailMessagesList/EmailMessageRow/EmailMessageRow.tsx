@@ -10,6 +10,7 @@ import {
   MailIcon,
   SubjectText,
   DateColumn,
+  StyledActionLink,
   StyledDangerLink,
 } from './EmailMessageRow.styled'
 import { Tag } from 'antd'
@@ -35,6 +36,8 @@ interface Props {
   emailMessage: EmailMessage
   selected?: boolean
   onClick: () => void
+  onReply: (emailMessage: EmailMessage) => void
+  onForward: (emailMessage: EmailMessage) => void
   onDelete: () => void
   emailFolders: EmailFolder[]
 }
@@ -47,6 +50,8 @@ export const EmailMessageRow = ({
   emailMessage,
   selected,
   onClick,
+  onReply,
+  onForward,
   onDelete,
   emailFolders,
 }: Props): React.ReactElement => {
@@ -62,6 +67,8 @@ export const EmailMessageRow = ({
       <ContentColumn style={{ marginLeft: '-20px' }}>
         {emailMessage.hasAttachments && <PaperClipOutlined />}
         {emailMessage.encryptionStatus === EncryptionStatus.ENCRYPTED && '🔒 '}
+        {emailMessage.repliedTo === true && <Tag color="blue">Replied To</Tag>}
+        {emailMessage.forwarded === true && <Tag color="blue">Forwarded</Tag>}
         {!emailMessage.seen && <MailIcon />}
         <span>{displayName ?? emailAddress}</span>
         <SubjectText seen={emailMessage.seen}>
@@ -70,7 +77,19 @@ export const EmailMessageRow = ({
         </SubjectText>
       </ContentColumn>
       <DateColumn>
-        <StyledDangerLink onClick={onDelete} className="delete-message-button">
+        <StyledActionLink
+          onClick={() => onReply(emailMessage)}
+          className="hover-button"
+        >
+          Reply
+        </StyledActionLink>
+        <StyledActionLink
+          onClick={() => onForward(emailMessage)}
+          className="hover-button"
+        >
+          Forward
+        </StyledActionLink>
+        <StyledDangerLink onClick={onDelete} className="hover-button">
           Delete
         </StyledDangerLink>
         <div>{getFormattedDate(emailMessage.sortDate)}</div>
