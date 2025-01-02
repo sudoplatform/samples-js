@@ -18,6 +18,18 @@ export const ListItem = styled.div<{ selected?: boolean }>`
   transition: ease 0.25s;
   padding: 0 20px;
 
+  &.custom-folder-item {
+    ${({ selected }) =>
+      selected &&
+      `
+      padding: 0 10px;
+    `}
+
+    & button {
+      padding: 8px;
+    }
+  }
+
   &:hover {
     cursor: pointer;
   }

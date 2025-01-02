@@ -60,7 +60,7 @@ export const Project = ({ sudoUserClient }: Props): React.ReactElement => {
     try {
       if (sudoProfilesClient) {
         await sudoProfilesClient.reset()
-        sudoUserClient.reset()
+        await sudoUserClient.reset()
 
         void message.success('Successfully signed out')
         navigate('/sign-in')

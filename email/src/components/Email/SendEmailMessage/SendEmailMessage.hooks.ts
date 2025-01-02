@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react'
 import { EmailContext, ProjectContext } from '@contexts'
 import { useErrorBoundary } from '@components/ErrorBoundary'
 import {
+  DeleteEmailMessageSuccessResult,
   EmailAddress,
   EmailAttachment,
   EmailMessageOperationFailureResult,
@@ -191,7 +192,10 @@ export const useSendEmailMessageForm = () => {
     ids: string[],
     activeEmailAddress: EmailAddress,
   ): Promise<
-    BatchOperationResult<string, EmailMessageOperationFailureResult>
+    BatchOperationResult<
+      DeleteEmailMessageSuccessResult,
+      EmailMessageOperationFailureResult
+    >
   > => {
     try {
       setDraftLoading(true)

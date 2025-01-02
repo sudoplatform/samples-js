@@ -21,11 +21,11 @@
     "@ant-design/icons": "^5.1.4",
     "@aws-sdk/abort-controller": "^3.347.0",
     "@sudoplatform/sudo-api-client": "^14.0.1",
-    "@sudoplatform/sudo-common": "^8.10.0",
-    "@sudoplatform/sudo-email": "^22.7.2",
+    "@sudoplatform/sudo-common": "^9.0.2",
+    "@sudoplatform/sudo-email": "^23.2.0",
     "@sudoplatform/sudo-entitlements": "^16.0.6",
     "@sudoplatform/sudo-profiles": "^17.0.5",
-    "@sudoplatform/sudo-user": "^13.1.0",
+    "@sudoplatform/sudo-user": "^14.0.0",
     "@sudoplatform/web-ui": "^2.1.4",
     "@swc/helpers": "^0.5.1",
     "@types/react-html-parser": "^2.0.2",
@@ -120,10 +120,11 @@
     "@parcel/plugin": "2.8.3",
     "linkify-it": "4.0.1",
     "micromatch": "^4.0.8",
-    "elliptic": "^6.5.7",
+    "elliptic": "^6.6.0",
     "fast-xml-parser": "^4.4.1",
     "@swc/helpers": "^0.5.12",
-    "ws": "^8.18.0"
+    "ws": "^8.18.0",
+    "cross-spawn": "^7.0.5"
   },
   "staticFiles": {
     "staticPath": "public/images"
@@ -158,6 +159,10 @@
   "browserslist": "> 0.25%, not dead",
   "auditSuppressions": {
     "1092278": 1688364028,
-    "1094902": 1735256539
+    "1094902": {
+      "until": 1738369582,
+      "untilISO": "2025-02-01T00:26:22Z",
+      "reason": "Not updating chrome"
+    }
   }
 }
