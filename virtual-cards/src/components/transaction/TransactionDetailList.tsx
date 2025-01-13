@@ -21,6 +21,12 @@ export const TransactionDetailList: React.FC<Props> = (props) => {
             )&nbsp;&nbsp;&nbsp;&nbsp;
             {formatCurrencyAmount(item.virtualCardAmount)}{' '}
             {item.virtualCardAmount.currency}
+            <br />
+            &nbsp;&nbsp;&nbsp;&nbsp; TransactedAt:{' '}
+            {item.transactedAt ? item.transactedAt.toUTCString() : '(none)'}
+            <br />
+            &nbsp;&nbsp;&nbsp;&nbsp; SettledAt:{' '}
+            {item.settledAt ? item.settledAt.toUTCString() : '(none)'}
           </List.Item>
         </>
       )}

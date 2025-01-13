@@ -30,11 +30,11 @@
     "@sudoplatform/sudo-profiles": "^17.0.0",
     "@sudoplatform/sudo-secure-id-verification": "^8.0.0",
     "@sudoplatform/sudo-user": "^13.0.0",
-    "@sudoplatform/sudo-virtual-cards": "^12.0.0",
+    "@sudoplatform/sudo-virtual-cards": "^12.3.0",
     "@sudoplatform/sudo-virtual-cards-simulator": "^5.0.0",
     "@sudoplatform/sudo-web-crypto-provider": "^8.0.0",
     "@sudoplatform/web-ui": "^2.1.4",
-    "@swc/helpers": "^0.4.14",
+    "@swc/helpers": "^0.5.15",
     "antd": "^4.24.8",
     "aws-appsync": "^4.1.9",
     "core-js": "^3.29.1",
@@ -116,6 +116,10 @@
   },
   "browserslist": "> 0.25%, not dead",
   "auditSuppressions": {
-    "1094902": 1713328104
+    "1094902": 1737681181,
+    "1099357": 1737681149,
+    "1098094": 1737681160,
+    "1097493": 1737681171,
+    "1098681": 1737681202
   }
 }
