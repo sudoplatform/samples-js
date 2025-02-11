@@ -4,19 +4,14 @@ import {
   BankAccountFundingSource,
   CheckoutBankAccountProvisionalFundingSourceProvisioningData,
   CheckoutBankAccountRefreshFundingSourceInteractionData,
-  CheckoutCardProvisionalFundingSourceInteractionData,
   CompleteFundingSourceCompletionDataInput,
   FundingSource,
   fundingSourceNeedsRefresh,
   FundingSourceRequiresUserInteractionError,
   FundingSourceState,
   FundingSourceType,
-  isCheckoutBankAccountFundingSourceClientConfiguration,
   isCheckoutBankAccountProvisionalFundingSourceProvisioningData,
   isCheckoutBankAccountRefreshFundingSourceInteractionData,
-  isCheckoutCardFundingSourceClientConfiguration,
-  isCheckoutCardProvisionalFundingSourceInteractionData,
-  isCheckoutCardProvisionalFundingSourceProvisioningData,
   isStripeCardFundingSourceClientConfiguration,
   isStripeCardProvisionalFundingSourceProvisioningData,
   ProvisionalFundingSource,
@@ -35,7 +30,6 @@ import { AddStripeCardFundingSourceForm } from './AddStripeCardFundingSourceForm
 import { FundingSourceList } from './FundingSourceList'
 import Collapse from 'antd/lib/collapse/Collapse'
 import CollapsePanel from 'antd/lib/collapse/CollapsePanel'
-import { AddCheckoutCardFundingSourceForm } from './AddCheckoutCardFundingSourceForm'
 import { AddCheckoutBankAccountFundingSourceForm } from './AddCheckoutBankAccountFundingSourceForm'
 import { RefreshCheckoutBankAccountFundingSourceForm } from './RefreshCheckoutBankAccountFundingSourceForm'
 
@@ -54,17 +48,11 @@ interface Props {
 }
 
 let stripePromise: Promise<Stripe | null> | null
-let checkoutPublicKey: string | null
-let redirectUrl: string | undefined = undefined
 let refreshInteractionData: (
   | CheckoutBankAccountRefreshFundingSourceInteractionData
   | undefined
 )[] = []
 let fundingSourcesNeedingRefresh: FundingSource[] = []
-
-let checkoutCardProvisionalFundingSource:
-  | (ProvisionalFundingSource & ProviderSetupData)
-  | null
 
 let checkoutBankAccountProvisionalFundingSource:
   | (ProvisionalFundingSource & ProviderSetupData)
@@ -116,7 +104,6 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
     },
   )
 
-  const [checkoutCardKey, setCheckoutCardKey] = useState(0)
   const [stripeKey, setStripeKey] = useState(1)
   const [checkoutBankAccountKey, setCheckoutBankAccountKey] = useState(2)
 
@@ -128,8 +115,6 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
   useEffect(() => {
     if (props.deregisterResult.value === 'complete') {
       stripePromise = null
-      checkoutPublicKey = null
-      checkoutCardProvisionalFundingSource = null
       checkoutBankAccountProvisionalFundingSource = null
       stripeProvisionalFundingSource = null
     }
@@ -140,19 +125,14 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
     if (stripePromise) {
       return stripePromise
     }
-    const clientConfiguration =
-      await virtualCardsClient.getFundingSourceClientConfiguration()
+    const clientConfiguration = (
+      await virtualCardsClient.getVirtualCardsConfig()
+    ).fundingSourceClientConfiguration
     clientConfiguration.forEach((config) => {
       if (isStripeCardFundingSourceClientConfiguration(config)) {
         stripePromise = loadStripe(config.apiKey, {
           apiVersion: '2020-08-27',
         })
-      }
-      if (isCheckoutCardFundingSourceClientConfiguration(config)) {
-        checkoutPublicKey = config.apiKey
-      }
-      if (isCheckoutBankAccountFundingSourceClientConfiguration(config)) {
-        checkoutPublicKey = config.apiKey
       }
     })
     return stripePromise
@@ -168,13 +148,6 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
           providerType ?? '<unknown>'
         } funding source`,
       )
-      if (
-        checkoutCardProvisionalFundingSource &&
-        checkoutCardProvisionalFundingSource.provider == providerName &&
-        checkoutCardProvisionalFundingSource.type == providerType
-      ) {
-        return checkoutCardProvisionalFundingSource
-      }
       if (
         checkoutBankAccountProvisionalFundingSource &&
         checkoutBankAccountProvisionalFundingSource.provider == providerName &&
@@ -213,17 +186,6 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
         return stripeProvisionalFundingSource
       }
       if (
-        isCheckoutCardProvisionalFundingSourceProvisioningData(
-          provisionalFS.provisioningData,
-        )
-      ) {
-        checkoutCardProvisionalFundingSource = {
-          ...provisionalFS,
-          ...provisionalFS.provisioningData,
-        }
-        return checkoutCardProvisionalFundingSource
-      }
-      if (
         isCheckoutBankAccountProvisionalFundingSourceProvisioningData(
           provisionalFS.provisioningData,
         )
@@ -234,19 +196,6 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
         }
         return checkoutBankAccountProvisionalFundingSource
       }
-    },
-  )
-
-  const [, handleCheckoutCardCompletionUserInteractionRequired] = useAsyncFn(
-    async (
-      userInteractionData: CheckoutCardProvisionalFundingSourceInteractionData,
-      provisionalFundingSourceId: string,
-    ) => {
-      console.log(
-        `user interaction required to complete funding source ${provisionalFundingSourceId}`,
-      )
-      // Handled by the AddCheckoutFundingSourceForm
-      redirectUrl = userInteractionData.redirectUrl
     },
   )
 
@@ -273,7 +222,6 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
       completionData: CompleteFundingSourceCompletionDataInput,
     ): Promise<FundingSource | undefined> => {
       console.log('completing funding source')
-      redirectUrl = undefined
       try {
         const fundingSource = await virtualCardsClient.completeFundingSource({
           id: provisionalFundingSourceId,
@@ -292,14 +240,6 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
           }
           if (
             provisionalFundingSourceId ==
-            checkoutCardProvisionalFundingSource?.id
-          ) {
-            // force remount of checkout form
-            setCheckoutCardKey((prev) => prev + 2)
-            checkoutCardProvisionalFundingSource = null
-          }
-          if (
-            provisionalFundingSourceId ==
             checkoutBankAccountProvisionalFundingSource?.id
           ) {
             // force remount of checkout form
@@ -313,24 +253,6 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
       } catch (err) {
         console.error('completeFundingSource failed', err)
         const error = err as Error
-        const userInteractionError =
-          err as FundingSourceRequiresUserInteractionError
-        if (userInteractionError && userInteractionError.interactionData) {
-          if (
-            isCheckoutCardProvisionalFundingSourceInteractionData(
-              userInteractionError?.interactionData,
-            )
-          ) {
-            await handleCheckoutCardCompletionUserInteractionRequired(
-              userInteractionError?.interactionData,
-              provisionalFundingSourceId,
-            )
-            void message.warning(
-              `Warning: user interaction required to complete Funding Source setup`,
-            )
-            return
-          }
-        }
         void message.error(
           `Failed to add Funding Source - unexpected exception ${error?.message}`,
         )
@@ -391,19 +313,11 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
   const [, cancelFundingSourceSetup] = useAsyncFn(
     async (provisionalFundingSourceId: string): Promise<void> => {
       console.log('cancelling funding source setup')
-      redirectUrl = undefined
       // No need to notify the client
       if (provisionalFundingSourceId == stripeProvisionalFundingSource?.id) {
         // force remount of stripe form
         setStripeKey((prev) => prev + 2)
         stripeProvisionalFundingSource = null
-      }
-      if (
-        provisionalFundingSourceId == checkoutCardProvisionalFundingSource?.id
-      ) {
-        // force remount of checkout card form
-        setCheckoutCardKey((prev) => prev + 2)
-        checkoutCardProvisionalFundingSource = null
       }
       if (
         provisionalFundingSourceId ==
@@ -473,24 +387,6 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
                     key={stripeKey}
                   />
                 </Elements>
-              </CollapsePanel>
-              <CollapsePanel
-                key="checkoutCard"
-                id="checkoutCard"
-                header="Add Checkout Card Funding Source"
-              >
-                <AddCheckoutCardFundingSourceForm
-                  key={checkoutCardKey}
-                  onSetupFundingSource={provisionalFundingSource}
-                  onCancelFundingSourceSetup={(fundingSourceId) =>
-                    cancelFundingSourceSetup(fundingSourceId)
-                  }
-                  clientSecret={checkoutPublicKey ?? 'undefined'}
-                  redirectUrl={redirectUrl}
-                  onSubmitFundingSource={(fundingSourceId, completionData) =>
-                    completeFundingSource(fundingSourceId, completionData)
-                  }
-                />
               </CollapsePanel>
               <CollapsePanel
                 key="checkoutBankAccount"

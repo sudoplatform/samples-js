@@ -13,7 +13,7 @@ interface Props {
 export const More: React.FC<Props> = (props) => {
   const [deregisterResult, deregister] = useAsyncFn(async () => {
     await props.profilesClient.reset()
-    props.userClient.reset()
+    await props.userClient.reset()
     return 'complete'
   })
 

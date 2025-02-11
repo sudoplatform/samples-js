@@ -65,7 +65,7 @@ export const VirtualCardsPage: React.FC<Props> = ({ userClient }) => {
   const [deregisterResult, deregister] = useAsyncFn(async () => {
     await initState?.value?.profilesClient.reset()
     await initState?.value?.identityVerificationClient.reset()
-    userClient.reset()
+    await userClient.reset()
     return 'complete'
   })
 
