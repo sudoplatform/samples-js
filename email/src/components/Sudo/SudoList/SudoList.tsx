@@ -64,7 +64,7 @@ export const SudoList = (): React.ReactElement => {
             {
               key: 'action',
               width: otherColumnPercentStr,
-              render: (_: any, rowData: any, index) => {
+              render: (_: any, rowData: any, index: number) => {
                 const sudo = rowData as Sudo
 
                 return sudoDeleteLoadingId === sudo.id ? (

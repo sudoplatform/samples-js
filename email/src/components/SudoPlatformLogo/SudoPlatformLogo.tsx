@@ -10,7 +10,8 @@ const SudoPlatformLogoContainer = styled.div`
 
 const StyledImage = styled(Image)<{ width?: number }>`
   display: block;
-  width: ${(props) => (props.width ? `${props.width}px` : 'auto')};
+  width: ${(props: { width?: number }) =>
+    props.width ? `${props.width}px` : 'auto'};
   height: auto;
 `
 

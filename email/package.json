@@ -3,6 +3,9 @@
   "author": "Anonyome Labs, Inc.",
   "version": "0.0.0",
   "description": "Sample app to show Sudo Email JS SDK Capabilities",
+  "engines": {
+    "node": ">=20 <21"
+  },
   "scripts": {
     "start": "yarn clean && yarn build:assets && yarn start:parcel",
     "start:parcel": "parcel --port 3000 --no-autoinstall src/index.html",
@@ -19,13 +22,14 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@ant-design/icons": "^5.1.4",
-    "@aws-sdk/abort-controller": "^3.347.0",
-    "@sudoplatform/sudo-api-client": "^14.0.1",
-    "@sudoplatform/sudo-common": "^9.0.2",
-    "@sudoplatform/sudo-email": "^23.2.0",
-    "@sudoplatform/sudo-entitlements": "^16.0.6",
-    "@sudoplatform/sudo-profiles": "^17.0.5",
-    "@sudoplatform/sudo-user": "^14.0.0",
+    "@aws-sdk/abort-controller": "<3.663.0",
+    "@aws-sdk/core": "<3.663.0",
+    "@sudoplatform/sudo-api-client": "^15.0.0",
+    "@sudoplatform/sudo-common": "^10.0.2",
+    "@sudoplatform/sudo-email": "^24.0.0",
+    "@sudoplatform/sudo-entitlements": "^17.0.0",
+    "@sudoplatform/sudo-profiles": "^18.0.0",
+    "@sudoplatform/sudo-user": "^15.0.0",
     "@sudoplatform/web-ui": "^2.1.4",
     "@swc/helpers": "^0.5.1",
     "@types/react-html-parser": "^2.0.2",
@@ -64,7 +68,7 @@
     "@parcel/validator-typescript": "2.8.3",
     "@types/color": "^3.0.3",
     "@types/jest": "^29.5.2",
-    "@types/node": "^16.18.36",
+    "@types/node": "^18.19.74",
     "@types/react": "^18.2.12",
     "@types/react-dom": "^18.2.5",
     "@types/react-router": "^5.1.20",
@@ -158,10 +162,9 @@
   },
   "browserslist": "> 0.25%, not dead",
   "auditSuppressions": {
-    "1092278": 1688364028,
     "1094902": {
-      "until": 1738369582,
-      "untilISO": "2025-02-01T00:26:22Z",
+      "until": 1744432856,
+      "untilISO": "2025-04-12T04:40:56Z",
       "reason": "Not updating chrome"
     }
   }

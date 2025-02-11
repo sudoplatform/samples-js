@@ -416,7 +416,10 @@ export const EmailMessagesList = ({
               selectedRowKeys: selectedBlockedAddresses.map(
                 ({ address }) => address,
               ),
-              onChange: (rowKeys, rows) => {
+              onChange: (
+                rowKeys: string | string[],
+                rows: { address: string }[],
+              ) => {
                 setSelectedBlockedAddresses(
                   (rows as { address: string }[]).filter(
                     ({ address }) => rowKeys.indexOf(address) !== -1,
@@ -456,11 +459,9 @@ export const EmailMessagesList = ({
               type: 'checkbox',
               columnWidth: '40px',
               selectedRowKeys: selectedEmailMessages.map(({ id }) => id),
-              onChange: (rowKeys, rows) => {
+              onChange: (rowKeys: string | string[], rows: EmailMessage[]) => {
                 setSelectedEmailMessages(
-                  (rows as EmailMessage[]).filter(
-                    ({ id }) => rowKeys.indexOf(id) !== -1,
-                  ),
+                  rows.filter(({ id }) => rowKeys.indexOf(id) !== -1),
                 )
               },
             }}

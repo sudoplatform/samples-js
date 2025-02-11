@@ -95,7 +95,11 @@ export const EmailAddressList = (): React.ReactElement => {
                 return updateId === id ? (
                   <DisplayNameInput
                     defaultValue={displayName ?? ''}
-                    onChange={(e) => setUpdateDisplayNameValue(e.target.value)}
+                    onChange={(e: {
+                      target: {
+                        value: React.SetStateAction<string | undefined>
+                      }
+                    }) => setUpdateDisplayNameValue(e.target.value)}
                     placeholder="Enter new display name..."
                   />
                 ) : (
