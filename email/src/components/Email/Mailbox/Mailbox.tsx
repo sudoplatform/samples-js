@@ -21,6 +21,8 @@ import { EmailMessageView } from './EmailMessageView'
 import { Modal } from 'antd'
 import { useEmailBlocklist } from '../../../hooks/useEmailBlocklist'
 import { EmailBlocklistContext } from '../../../contexts/EmailBlocklistContext'
+import { useDraftEmailMessages } from '../../../hooks/useDraftEmailMessages'
+import { DraftEmailMessagesContext } from '../../../contexts/DraftEmailMessagesContext'
 
 export const Mailbox = (): React.ReactElement => {
   const { activeEmailAddress } = useContext(EmailContext)
@@ -53,6 +55,22 @@ export const Mailbox = (): React.ReactElement => {
     setBlocklistSelected,
     listBlockedAddressesHandler,
   } = useEmailBlocklist()
+
+  const {
+    draftMessagesMetadataList,
+    draftsLoading,
+    listDraftEmailMessagesHandler,
+    scheduledMessages,
+    scheduledMessagesLoading,
+    listScheduledMessagesHandler,
+    cancelScheduledMessageHandler,
+    createDraftEmailMessageHandler,
+    deleteDraftEmailMessagesHandler,
+    getDraftEmailMessageHandler,
+    scheduleSendMessagesHandler,
+    setDraftMessagesMetadataList,
+    setScheduledMessages,
+  } = useDraftEmailMessages()
 
   const replyToMessageHandler = (emailMessage: EmailMessage) => {
     setReplyingToMessage(emailMessage)
@@ -89,63 +107,81 @@ export const Mailbox = (): React.ReactElement => {
               setFocusedEmailMessage,
             }}
           >
-            {activeEmailAddress && (
-              <Modal
-                open={sendEmailMessageFormActive}
-                title={'Send Email Message'}
-                footer={null}
-                width={750}
-              >
-                <SendEmailMessage
-                  replyingToMessage={replyingToMessage}
-                  forwardingMessage={forwardingMessage}
-                  onExit={() => {
-                    setSendEmailMessageFormActive(false)
-                    setReplyingToMessage(undefined)
-                    setForwardingToMessage(undefined)
-                  }}
-                />
-              </Modal>
-            )}
-            <ErrorBoundary
-              error={emailFoldersError || blockEmailAddressesError}
+            <DraftEmailMessagesContext.Provider
+              value={{
+                draftMessagesMetadataList,
+                draftsLoading,
+                listDraftEmailMessagesHandler,
+                scheduledMessages,
+                scheduledMessagesLoading,
+                listScheduledMessagesHandler,
+                cancelScheduledMessageHandler,
+                createDraftEmailMessageHandler,
+                deleteDraftEmailMessagesHandler,
+                getDraftEmailMessageHandler,
+                scheduleSendMessagesHandler,
+                setDraftMessagesMetadataList,
+                setScheduledMessages,
+              }}
             >
-              <EmailBlocklistContext.Provider
-                value={{
-                  blockedAddresses,
-                  blocklistLoading,
-                  blocklistSelected,
-                  listBlockedAddressesHandler,
-                  setBlocklistSelected,
-                }}
+              {activeEmailAddress && (
+                <Modal
+                  open={sendEmailMessageFormActive}
+                  title={'Send Email Message'}
+                  footer={null}
+                  width={750}
+                >
+                  <SendEmailMessage
+                    replyingToMessage={replyingToMessage}
+                    forwardingMessage={forwardingMessage}
+                    onExit={() => {
+                      setSendEmailMessageFormActive(false)
+                      setReplyingToMessage(undefined)
+                      setForwardingToMessage(undefined)
+                    }}
+                  />
+                </Modal>
+              )}
+              <ErrorBoundary
+                error={emailFoldersError || blockEmailAddressesError}
               >
-                <EmailFoldersContext.Provider
+                <EmailBlocklistContext.Provider
                   value={{
-                    emailFolders,
-                    emailFoldersLoading,
-                    listEmailFoldersHandler,
-                    selectedEmailFolderId,
-                    setSelectedEmailFolderId,
+                    blockedAddresses,
+                    blocklistLoading,
+                    blocklistSelected,
+                    listBlockedAddressesHandler,
+                    setBlocklistSelected,
                   }}
                 >
-                  <EmailFoldersContainer>
-                    <EmailFoldersList />
-                  </EmailFoldersContainer>
-                  <EmailMessagesContainer>
-                    <EmailMessagesList
-                      minimized={!!focusedEmailMessage}
-                      replyToMessageHandler={replyToMessageHandler}
-                      forwardMessageHandler={forwardMessageHandler}
-                    />
-                  </EmailMessagesContainer>
-                  {focusedEmailMessage && (
-                    <EmailMessageViewContainer>
-                      <EmailMessageView emailMessage={focusedEmailMessage} />
-                    </EmailMessageViewContainer>
-                  )}
-                </EmailFoldersContext.Provider>
-              </EmailBlocklistContext.Provider>
-            </ErrorBoundary>
+                  <EmailFoldersContext.Provider
+                    value={{
+                      emailFolders,
+                      emailFoldersLoading,
+                      listEmailFoldersHandler,
+                      selectedEmailFolderId,
+                      setSelectedEmailFolderId,
+                    }}
+                  >
+                    <EmailFoldersContainer>
+                      <EmailFoldersList />
+                    </EmailFoldersContainer>
+                    <EmailMessagesContainer>
+                      <EmailMessagesList
+                        minimized={!!focusedEmailMessage}
+                        replyToMessageHandler={replyToMessageHandler}
+                        forwardMessageHandler={forwardMessageHandler}
+                      />
+                    </EmailMessagesContainer>
+                    {focusedEmailMessage && (
+                      <EmailMessageViewContainer>
+                        <EmailMessageView emailMessage={focusedEmailMessage} />
+                      </EmailMessageViewContainer>
+                    )}
+                  </EmailFoldersContext.Provider>
+                </EmailBlocklistContext.Provider>
+              </ErrorBoundary>
+            </DraftEmailMessagesContext.Provider>
           </MailboxContext.Provider>
         </MailboxContainer>
       )}

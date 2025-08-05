@@ -13,14 +13,12 @@ import TextArea from 'antd/lib/input/TextArea'
 import { message, Space } from 'antd'
 import { EmailContext } from '@contexts'
 import { parseMessage, ParsedMessage } from '@util/MessageParser'
-import {
-  DraftEmailMessage,
-  DraftEmailMessageMetadata,
-  EmailMessage,
-} from '@sudoplatform/sudo-email'
+import { DraftEmailMessage, EmailMessage } from '@sudoplatform/sudo-email'
 import { DraftsDropdown } from './DraftsDropdown/DraftsDropdown'
 import { EncryptedIndicator } from './EncryptedIndicator'
 import { DeleteOutlined } from '@ant-design/icons'
+
+import { DraftEmailMessagesContext } from '../../../contexts/DraftEmailMessagesContext'
 
 interface Props {
   replyingToMessage?: EmailMessage
@@ -39,7 +37,6 @@ export const SendEmailMessage = ({
 }: Props): React.ReactElement => {
   const {
     loading: sendEmailMessageLoading,
-    draftLoading: draftEmailLoading,
     buttonDisabled: draftDisabled,
     error: sendEmailMessageError,
     form,
@@ -48,23 +45,25 @@ export const SendEmailMessage = ({
     changesInForm,
     createDraftEmailMessageHandler,
     getDraftEmailMessageHandler,
-    listDraftEmailMessageIdsHandler,
-    listDraftEmailMessageMetadataHandler,
     deleteDraftEmailMessagesHandler,
     onFileUpload,
     onDeleteAttachment,
+    scheduleSendMessagesHandler,
+    cancelScheduledMessageHandler,
   } = useSendEmailMessageForm()
   const [toEmailAddresses, setToEmailAddresses] = useState<string[]>([])
   const [ccEmailAddresses, setCcEmailAddresses] = useState<string[]>([])
   const [bccEmailAddresses, setBccEmailAddresses] = useState<string[]>([])
   const [selectedDraft, setSelectedDraft] = useState<string>()
-  const [savedDraftSelected, setSavedDraftSelected] = useState(true)
-  const [draftMessagesMetadataList, setDraftMessagesMetadataList] =
-    useState<DraftEmailMessageMetadata[]>()
   const [fileUploading, setFileUploading] = useState<boolean>(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { error, setError, clearError } = useErrorBoundary()
   const { activeEmailAddress } = useContext(EmailContext)
+  const {
+    draftsLoading,
+    scheduledMessagesLoading,
+    listDraftEmailMessagesHandler,
+  } = useContext(DraftEmailMessagesContext)
 
   /* eslint-disable */
   useEffect(() => {
@@ -115,9 +114,10 @@ export const SendEmailMessage = ({
         attachments: attachmentsList,
       }
 
-      await createDraftEmailMessageHandler(draftEmailFormItems)
+      const metadata = await createDraftEmailMessageHandler(draftEmailFormItems)
       void getDrafts()
       void message.success('Draft email has been saved')
+      setSelectedDraft(metadata.id)
     } catch (error) {
       console.log(error)
     }
@@ -138,12 +138,11 @@ export const SendEmailMessage = ({
     setCcEmailAddresses([])
     setBccEmailAddresses([])
 
-    setSavedDraftSelected(true)
+    setSelectedDraft(undefined)
   }
 
   const getDrafts = async () => {
-    const metaData = await listDraftEmailMessageMetadataHandler()
-    setDraftMessagesMetadataList(metaData)
+    await listDraftEmailMessagesHandler()
   }
 
   const populateForm = (decodedDraft: ParsedMessage) => {
@@ -170,11 +169,10 @@ export const SendEmailMessage = ({
   }
 
   const onDraftSelect = async (selectedSavedDraftId: string) => {
-    setSelectedDraft(selectedSavedDraftId)
     const draftData = await getDraftEmailMessageHandler(selectedSavedDraftId)
     const decodedDraft = await decodeAndParseMessage(draftData)
     populateForm(decodedDraft)
-    setSavedDraftSelected(false)
+    setSelectedDraft(selectedSavedDraftId)
   }
 
   const deleteDraft = async () => {
@@ -185,15 +183,8 @@ export const SendEmailMessage = ({
       }
       await deleteDraftEmailMessagesHandler(draftArray)
       void getDrafts()
-      const currentDraftsList = await listDraftEmailMessageIdsHandler()
-      if (
-        selectedDraft &&
-        currentDraftsList &&
-        !currentDraftsList.includes(selectedDraft)
-      ) {
-        void message.success('Draft has been deleted')
-      }
-      setSavedDraftSelected(true)
+      void message.success('Draft has been deleted')
+      setSelectedDraft(undefined)
     } catch (error) {
       setError(error as Error, 'Failed to delete draft email message')
       console.log(error)
@@ -246,11 +237,10 @@ export const SendEmailMessage = ({
     <div id="send-email-message-card">
       <DraftsDropdown
         selectedDraftId={selectedDraft}
-        draftsLoading={draftEmailLoading}
-        savedDraftSelected={savedDraftSelected}
-        draftMessagesMetadataList={draftMessagesMetadataList ?? []}
         onChange={onDraftSelect}
         deleteDraft={deleteDraft}
+        scheduleSendMessagesHandler={scheduleSendMessagesHandler}
+        setError={setError}
       />
       <ErrorBoundary error={sendEmailMessageError}>
         <EncryptedIndicator emailAddresses={inputEmailAddresses} />
@@ -321,7 +311,11 @@ export const SendEmailMessage = ({
               <Button
                 className="provision-email-submit-button"
                 type="submit"
-                loading={sendEmailMessageLoading || draftEmailLoading}
+                loading={
+                  sendEmailMessageLoading ||
+                  draftsLoading ||
+                  scheduledMessagesLoading
+                }
                 disabled={draftDisabled}
                 onClick={submitForm}
                 kind="primary"
@@ -337,7 +331,12 @@ export const SendEmailMessage = ({
               <Button
                 className="add-attachment-button"
                 type="button"
-                loading={sendEmailMessageLoading || fileUploading}
+                loading={
+                  sendEmailMessageLoading ||
+                  fileUploading ||
+                  draftsLoading ||
+                  scheduledMessagesLoading
+                }
                 disabled={sendEmailMessageLoading}
                 onClick={() => fileInputRef.current?.click()}
               >
@@ -346,14 +345,14 @@ export const SendEmailMessage = ({
               <Button
                 className="draft-email-save-button"
                 type="button"
-                loading={draftEmailLoading}
+                loading={draftsLoading || scheduledMessagesLoading}
                 disabled={draftDisabled || sendEmailMessageLoading}
                 onClick={saveDraft}
               >
                 Save Draft
               </Button>
               <Button
-                loading={draftEmailLoading}
+                loading={draftsLoading || scheduledMessagesLoading}
                 onClick={() => {
                   clearForm()
                   onExit()
@@ -364,7 +363,7 @@ export const SendEmailMessage = ({
               <Button
                 className="form-clear-button"
                 type="button"
-                loading={draftEmailLoading}
+                loading={draftsLoading || scheduledMessagesLoading}
                 disabled={draftDisabled}
                 kind="primary"
                 onClick={clearForm}

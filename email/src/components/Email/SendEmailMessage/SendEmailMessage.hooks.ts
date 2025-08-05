@@ -17,6 +17,7 @@ import {
   DraftEmailMessage,
 } from '@sudoplatform/sudo-email'
 import { Base64 } from '@sudoplatform/sudo-common'
+import { DraftEmailMessagesContext } from '../../../contexts/DraftEmailMessagesContext'
 
 interface FormInputs {
   senderEmailAddress: string
@@ -35,7 +36,7 @@ interface FormSubmitParams {
   forwardingMessageId?: string
 }
 
-interface EmailMessageParams extends FormSubmitParams {
+export interface EmailMessageParams extends FormSubmitParams {
   senderEmailAddress: EmailAddress
   subject: string
   messageBody: string
@@ -47,7 +48,7 @@ interface EmailMessageParams extends FormSubmitParams {
  *
  * RFC822: https://learn.microsoft.com/en-us/previous-versions/office/developer/exchange-server-2010/aa563032(v=exchg.140)
  */
-const formatEmailMessage = ({
+export const formatEmailMessage = ({
   senderEmailAddress,
   toEmailAddresses,
   ccEmailAddresses,
@@ -80,9 +81,20 @@ const formatEmailMessage = ({
 export const useSendEmailMessageForm = () => {
   const { sudoEmailClient } = useContext(ProjectContext)
   const { activeEmailAddress } = useContext(EmailContext)
+  const {
+    draftMessagesMetadataList,
+    draftsLoading,
+    listDraftEmailMessagesHandler,
+    scheduledMessages,
+    createDraftEmailMessageHandler,
+    deleteDraftEmailMessagesHandler,
+    getDraftEmailMessageHandler,
+    cancelScheduledMessageHandler,
+    scheduleSendMessagesHandler,
+    scheduledMessagesLoading,
+  } = useContext(DraftEmailMessagesContext)
   const [form] = useForm<FormInputs>()
   const [loading, setLoading] = useState(false)
-  const [draftLoading, setDraftLoading] = useState(false)
   const [buttonDisabled, setButtonDisabled] = useState(true)
   const [attachmentsList, setAttachmentsList] = useState<EmailAttachment[]>([])
   const { error, setError, clearError } = useErrorBoundary()
@@ -143,70 +155,46 @@ export const useSendEmailMessageForm = () => {
     }
   }
 
-  const createDraftEmailMessageHandler = async (
+  const createDraftEmailMessage = async (
     emailMessageParams: EmailMessageParams,
   ): Promise<DraftEmailMessageMetadata> => {
     clearError()
-    setDraftLoading(true)
     try {
       const draftMetadata = formatEmailMessage(emailMessageParams)
-
-      return await sudoEmailClient.createDraftEmailMessage({
-        rfc822Data: Buffer.from(draftMetadata),
-        senderEmailAddressId: emailMessageParams.senderEmailAddress.id,
-      })
+      return createDraftEmailMessageHandler(draftMetadata)
     } catch (error) {
       setError(error as Error, 'Failed to save a draft email message')
       throw error
-    } finally {
-      setDraftLoading(false)
     }
   }
 
-  const getDraftEmailMessageHandler = async (
+  const getDraftEmailMessage = async (
     draftEmailId: string,
-    activeEmailAddress: EmailAddress,
   ): Promise<DraftEmailMessage | undefined> => {
-    const emailAddressId = activeEmailAddress.id
-    return await sudoEmailClient.getDraftEmailMessage({
-      emailAddressId,
-      id: draftEmailId,
-    })
+    return await getDraftEmailMessageHandler(draftEmailId)
   }
 
-  const listDraftEmailMessageIdsHandler = async (
-    activeEmailAddress: EmailAddress,
-  ): Promise<string[]> => {
-    const emailAddressId = activeEmailAddress.id
-    const draftMetadata = await sudoEmailClient.listDraftEmailMessageMetadata()
-    return draftMetadata.map((m) => m.id)
+  const listDraftEmailMessageIdsHandler = async (): Promise<string[]> => {
+    await listDraftEmailMessagesHandler()
+    return draftMessagesMetadataList.map((m) => m.id)
   }
 
   const listDraftEmailMessageMetadataHandler = async (
     activeEmailAddress: EmailAddress,
   ): Promise<DraftEmailMessageMetadata[]> => {
-    return await sudoEmailClient.listDraftEmailMessageMetadata()
+    await listDraftEmailMessagesHandler()
+    return draftMessagesMetadataList
   }
 
-  const deleteDraftEmailMessagesHandler = async (
+  const deleteDraftEmailMessages = async (
     ids: string[],
-    activeEmailAddress: EmailAddress,
   ): Promise<
     BatchOperationResult<
       DeleteEmailMessageSuccessResult,
       EmailMessageOperationFailureResult
     >
   > => {
-    try {
-      setDraftLoading(true)
-      const emailAddressId = activeEmailAddress.id
-      return await sudoEmailClient.deleteDraftEmailMessages({
-        emailAddressId,
-        ids,
-      })
-    } finally {
-      setDraftLoading(false)
-    }
+    return await deleteDraftEmailMessagesHandler(ids)
   }
 
   // Wrapper function to get form fields and set UI error if fail occurs.
@@ -265,22 +253,22 @@ export const useSendEmailMessageForm = () => {
   return {
     form,
     loading,
-    draftLoading,
+    draftsLoading,
     buttonDisabled,
     error,
     attachmentsList,
     onFormSubmit,
     changesInForm,
-    createDraftEmailMessageHandler,
+    scheduleSendMessagesHandler,
+    scheduledMessages,
+    scheduledMessagesLoading,
+    cancelScheduledMessageHandler,
+    createDraftEmailMessageHandler: createDraftEmailMessage,
     getDraftEmailMessageHandler: (draftEmailId: string) => {
-      return activeEmailAddress
-        ? getDraftEmailMessageHandler(draftEmailId, activeEmailAddress)
-        : undefined
+      return activeEmailAddress ? getDraftEmailMessage(draftEmailId) : undefined
     },
     listDraftEmailMessageIdsHandler: () => {
-      return activeEmailAddress
-        ? listDraftEmailMessageIdsHandler(activeEmailAddress)
-        : undefined
+      return activeEmailAddress ? listDraftEmailMessageIdsHandler() : undefined
     },
     listDraftEmailMessageMetadataHandler: () => {
       return activeEmailAddress
@@ -288,9 +276,7 @@ export const useSendEmailMessageForm = () => {
         : undefined
     },
     deleteDraftEmailMessagesHandler: (ids: string[]) => {
-      return activeEmailAddress
-        ? deleteDraftEmailMessagesHandler(ids, activeEmailAddress)
-        : undefined
+      return activeEmailAddress ? deleteDraftEmailMessages(ids) : undefined
     },
     onFileUpload: async (file: File) => {
       const dataArrayBuffer = await file.arrayBuffer()

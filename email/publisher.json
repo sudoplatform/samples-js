@@ -4,7 +4,8 @@
   "internalFiles": [
     ".publisher.json",
     ".gitlab-ci.yml",
-    ".vscode"
+    ".vscode",
+    ".yarnrc.yml"
   ],
   "gitlabUrl": "https://gitlab.tools.anonyome.com/api/v4/projects/1113/",
   "subProjectName": "email"

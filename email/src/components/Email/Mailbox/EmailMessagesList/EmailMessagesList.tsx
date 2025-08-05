@@ -44,6 +44,7 @@ import {
   ContentColumn,
   StyledRow,
 } from './EmailMessageRow/EmailMessageRow.styled'
+import { DraftEmailMessagesContext } from '../../../../contexts/DraftEmailMessagesContext'
 
 const messages_refresh_interval = 60
 
@@ -64,6 +65,13 @@ export const EmailMessagesList = ({
 
   const { emailFolders, selectedEmailFolderId, listEmailFoldersHandler } =
     useContext(EmailFoldersContext)
+
+  const {
+    draftMessagesMetadataList,
+    scheduledMessages,
+    setScheduledMessages,
+    setDraftMessagesMetadataList,
+  } = useContext(DraftEmailMessagesContext)
 
   const {
     blockedAddresses,
@@ -274,6 +282,32 @@ export const EmailMessagesList = ({
     }
   }, [refreshHandler])
 
+  const processCreatedMessage = useCallback(
+    (message: EmailMessage): void => {
+      // Check if the id of the message matches an existing draft
+      // if so remove the draft and its schedule send from their lists
+      console.debug('processCreatedMessage', { message })
+      console.debug({ draftMessagesMetadataList, scheduledMessages })
+      const draftMessage = draftMessagesMetadataList.find(
+        (draft) => draft.id === message.id,
+      )
+      if (draftMessage) {
+        setScheduledMessages((prev) =>
+          prev.filter((msg) => msg.id !== message.id),
+        )
+        setDraftMessagesMetadataList((prev) =>
+          prev.filter((draft) => draft.id !== message.id),
+        )
+      }
+    },
+    [
+      draftMessagesMetadataList,
+      scheduledMessages,
+      setDraftMessagesMetadataList,
+      setScheduledMessages,
+    ],
+  )
+
   useEffect(() => {
     const subscriber = {
       connectionStatusChanged(state: ConnectionState): void {
@@ -284,15 +318,16 @@ export const EmailMessagesList = ({
         )
       },
       emailMessageCreated: (message: EmailMessage) => {
-        console.debug({ message })
+        console.debug('emailMessageCreated', { message })
+        processCreatedMessage(message)
         setReceivedSubscriptionNotification(true)
       },
       emailMessageDeleted: (message: EmailMessage) => {
-        console.debug({ message })
+        console.debug('emailMessageDeleted', { message })
         setReceivedSubscriptionNotification(true)
       },
       emailMessageUpdated: (message: EmailMessage) => {
-        console.debug({ message })
+        console.debug('emailMessageUpdated', { message })
         setReceivedSubscriptionNotification(true)
       },
     }
@@ -307,7 +342,7 @@ export const EmailMessagesList = ({
     return () => {
       sudoEmailClient.unsubscribeFromEmailMessages('EmailMessagesList')
     }
-  }, [sudoEmailClient])
+  }, [sudoEmailClient, processCreatedMessage])
 
   useSelectedEmailFolderUpdate((folderId) => {
     if (folderId) {

@@ -13,7 +13,7 @@
     "build:assets": "cp -rf config public",
     "build:parcel": "parcel build --no-optimize src/index.html --public-url ./",
     "clean": "rm -rf .parcel-cache ./dist",
-    "verify": "yarn audit-with-suppressions && yarn lint",
+    "verify": "./node_modules/.bin/audit-with-suppressions && yarn lint",
     "lint": "yarn lint:lint && yarn lint:prettier",
     "lint:prettier": "yarn prettier --list-different \"{src,test}/**/*.{js,jsx,ts,tsx,yml}\"",
     "lint:lint": "yarn eslint \"{src,test}/**/*.{js,jsx,ts,tsx,yml}\""
@@ -25,11 +25,11 @@
     "@aws-sdk/abort-controller": "<3.663.0",
     "@aws-sdk/core": "<3.663.0",
     "@sudoplatform/sudo-api-client": "^15.0.0",
-    "@sudoplatform/sudo-common": "^10.0.2",
-    "@sudoplatform/sudo-email": "^24.0.0",
+    "@sudoplatform/sudo-common": "^10.0.6",
+    "@sudoplatform/sudo-email": "^24.7.0",
     "@sudoplatform/sudo-entitlements": "^17.0.0",
-    "@sudoplatform/sudo-profiles": "^18.0.0",
-    "@sudoplatform/sudo-user": "^15.0.0",
+    "@sudoplatform/sudo-profiles": "^18.0.1",
+    "@sudoplatform/sudo-user": "^15.1.1",
     "@sudoplatform/web-ui": "^2.1.4",
     "@swc/helpers": "^0.5.1",
     "@types/react-html-parser": "^2.0.2",
@@ -79,7 +79,7 @@
     "assert": "^2.0.0",
     "browserify-zlib": "^0.2.0",
     "buffer": "^5.7.1",
-    "chromedriver": "114.0.2",
+    "chromedriver": "^119.0.1",
     "crypto-browserify": "^3.12.0",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^8.8.0",
@@ -108,11 +108,6 @@
     "vm-browserify": "^1.1.2"
   },
   "resolutions": {
-    "**/apollo-client": "^2.4.10",
-    "**/apollo-link": "^1.2.14",
-    "**/apollo-link-http": "^1.5.8",
-    "**/apollo-cache-inmemory": "^1.6.6",
-    "**/node-fetch": "^2.6.7",
     "ansi-regex": "^5.0.1",
     "glob-parent": "^6.0.2",
     "minimatch": ">=3.0.5",
@@ -161,11 +156,5 @@
     }
   },
   "browserslist": "> 0.25%, not dead",
-  "auditSuppressions": {
-    "1094902": {
-      "until": 1744432856,
-      "untilISO": "2025-04-12T04:40:56Z",
-      "reason": "Not updating chrome"
-    }
-  }
+  "packageManager": "yarn@4.9.2+sha512.1fc009bc09d13cfd0e19efa44cbfc2b9cf6ca61482725eb35bbc5e257e093ebf4130db6dfe15d604ff4b79efd8e1e8e99b25fa7d0a6197c9f9826358d4d65c3c"
 }
