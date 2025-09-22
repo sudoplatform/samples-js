@@ -16,6 +16,7 @@ import { message } from 'antd'
 import { LearnMore } from './LearnMore'
 import { AppContext } from '../containers/AppContext'
 import { AuthContext } from './AuthContext'
+import { IdentityVerificationConsent } from './IdentityVerificationConsent'
 
 interface Props {
   isVerified: boolean
@@ -111,6 +112,9 @@ export const IdentityVerification: React.FC<Props> = (props) => {
             successfully in the sandbox environment."
             helpUrl="https://docs.sudoplatform.com/guides/identity-verification/verifying-an-identity"
           />
+        </VSpace>
+        <VSpace>
+          <IdentityVerificationConsent />
         </VSpace>
         <VSpace>
           <h3 id="status">
