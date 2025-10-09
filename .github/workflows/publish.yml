@@ -56,11 +56,12 @@ jobs:
 
       - name: Build project
         run: |
-          DEST_DIR="${{ env.PACKAGE_DIR }}/config"
+          DEST_DIR="config"
           mkdir -p "$DEST_DIR"
           echo "{}" > "${DEST_DIR}/sudoplatformconfig.json"
           touch "${DEST_DIR}/register_key.private"
           touch "${DEST_DIR}/register_key.id"
+          pwd
           yarn build
         working-directory: ${{ env.PACKAGE_DIR }}
 
