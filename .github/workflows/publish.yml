@@ -50,6 +50,12 @@ jobs:
       - name: Enable Corepack (for Yarn Modern)
         run: corepack enable
 
+      - name: Clear caches
+        run: |
+          yarn cache clean --all
+          rm -rf .parcel-cache
+          rm -rf node_modules
+
       - name: Install dependencies
         run: yarn install --immutable
         working-directory: ${{ env.PACKAGE_DIR }}
