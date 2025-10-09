@@ -55,7 +55,13 @@ jobs:
         working-directory: ${{ env.PACKAGE_DIR }}
 
       - name: Build project
-        run: yarn build
+        run: |
+          DEST_DIR="${{ env.PACKAGE_DIR }}/config"
+          mkdir -p "$DEST_DIR"
+          echo "{}" > "${DEST_DIR}/sudoplatformconfig.json"
+          touch "${DEST_DIR}/register_key.private"
+          touch "${DEST_DIR}/register_key.id"
+          yarn build
         working-directory: ${{ env.PACKAGE_DIR }}
 
       - name: Ensure latest npm
