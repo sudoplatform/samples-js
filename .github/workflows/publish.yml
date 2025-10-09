@@ -1,0 +1,66 @@
+name: Publish Library to npmjs (Trusted Publishing)
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write # REQUIRED for npmjs trusted publishing
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org/'
+          always-auth: true
+
+      - name: Parse tag and set package directory/version
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          # If tag is <prefix>-<version> (allowing hyphens in prefix)
+          if [[ "$TAG" =~ ^(.+)-([0-9]+\.[0-9]+\.[0-9]+.*)$ ]]; then
+            PACKAGE_DIR="${BASH_REMATCH[1]}"
+            VERSION="${BASH_REMATCH[2]}"
+          # If tag is just a version
+          elif [[ "$TAG" =~ ^([0-9]+\.[0-9]+\.[0-9]+.*)$ ]]; then
+            PACKAGE_DIR="."
+            VERSION="${BASH_REMATCH[1]}"
+          else
+            echo "Tag format not recognized: $TAG"
+            exit 1
+          fi
+          echo "PACKAGE_DIR=$PACKAGE_DIR" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Publishing from $PACKAGE_DIR with version $VERSION"
+
+
+      - name: Update package.json version from tag
+        run: npm version "$VERSION" --no-git-tag-version
+        working-directory: ${{ env.PACKAGE_DIR }}
+        
+      - name: Enable Corepack (for Yarn Modern)
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+        working-directory: ${{ env.PACKAGE_DIR }}
+
+      - name: Build project
+        run: yarn build
+        working-directory: ${{ env.PACKAGE_DIR }}
+
+      - name: Ensure latest npm
+        run: npm install -g npm@latest
+
+      - name: Publish package via Trusted Publishing
+        run: npm publish --provenance --access public
+        working-directory: ${{ env.PACKAGE_DIR }}
