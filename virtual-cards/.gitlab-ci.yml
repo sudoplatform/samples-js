@@ -33,7 +33,7 @@ stages:
   script:
     - corepack enable
     - yarn install --immutable
-    - yarn dlx @sudoplatform-private/sdk-publisher@2.1.0-19-g39292ac-39292acf --verbose
+    - yarn dlx @sudoplatform-private/sdk-publisher@2.1.0-25-g2e8f7ed-2e8f7ed4 --verbose
   tags:
     - docker
 

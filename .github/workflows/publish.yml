@@ -61,7 +61,12 @@ jobs:
 
       - name: Build project
         run: |
-          DEST_DIR="config"\nmkdir -p ""\necho {} > "/sudoplatformconfig.json"\ntouch "/register_key.private"\ntouch "/register_key.id"\n          yarn build
+          DEST_DIR="config"
+          mkdir -p ""
+          echo "{}" > "/sudoplatformconfig.json"
+          touch "/register_key.private"
+          touch "/register_key.id"
+          yarn build
         working-directory: ${{ env.PACKAGE_DIR }}
 
       - name: Test project
