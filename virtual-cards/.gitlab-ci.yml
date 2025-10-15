@@ -26,10 +26,10 @@ stages:
     PUB_NO_RELEASE: true
     PUB_CUSTOM_BUILD_SCRIPT: |
       DEST_DIR="config"
-      mkdir -p "$DEST_DIR"
-      echo "{}" > "${DEST_DIR}/sudoplatformconfig.json"
-      touch "${DEST_DIR}/register_key.private"
-      touch "${DEST_DIR}/register_key.id"
+      mkdir -p "\$DEST_DIR"
+      echo "{}" > "\${DEST_DIR}/sudoplatformconfig.json"
+      touch "\${DEST_DIR}/register_key.private"
+      touch "\${DEST_DIR}/register_key.id"
   script:
     - corepack enable
     - yarn install --immutable
