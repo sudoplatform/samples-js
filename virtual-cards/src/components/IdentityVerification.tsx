@@ -1,18 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { VerificationMethod } from '@sudoplatform/sudo-secure-id-verification'
-import {
-  Button,
-  Card,
-  Form,
-  FormItem,
-  HSpace,
-  Input,
-  useForm,
-  VSpace,
-} from '@sudoplatform/web-ui'
+import { Button, Card, HSpace, Input, VSpace } from '@sudoplatform/web-ui'
 import { useAsyncFn } from 'react-use'
 import { ErrorFeedback } from './ErrorFeedback'
-import { message } from 'antd'
+import { message, Form } from 'antd'
+const { Item: FormItem, useForm } = Form
 import { LearnMore } from './LearnMore'
 import { AppContext } from '../containers/AppContext'
 import { AuthContext } from './AuthContext'

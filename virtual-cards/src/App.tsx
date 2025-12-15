@@ -1,4 +1,4 @@
-import 'antd/dist/antd.min.css'
+import 'antd/dist/reset.css'
 import React, { useMemo, useState } from 'react'
 import baseSdkConfig from '../config/sudoplatformconfig.json'
 import { DefaultConfigurationManager } from '@sudoplatform/sudo-common'
@@ -65,7 +65,7 @@ export const App: React.FC = () => {
           setAuthenticationTokens: setAuthTokens,
         }}
       >
-        <GlobalStyles />
+        {React.createElement(GlobalStyles as React.ComponentType)}
         <Routes>
           {/* Main app page */}
           <Route

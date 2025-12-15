@@ -6,7 +6,8 @@ import { AppContext } from '../../../containers/AppContext'
 import { Button } from '@sudoplatform/web-ui'
 import { UpdateCardModal } from './UpdateCardModal'
 import { List } from 'antd'
-import Cards, { Focused } from 'react-credit-cards'
+import Cards from 'react-credit-cards'
+import type { Focused } from 'react-credit-cards'
 import 'react-credit-cards/es/styles-compiled.css'
 
 interface Props {
@@ -54,6 +55,7 @@ export const VirtualCardList: React.FC<Props> = (props) => {
             <List.Item key={item.id}>
               <>
                 <div onClick={() => toggleCVCVisible()}>
+                  {/* @ts-expect-error  react-credit-cards usage error*/}
                   <Cards
                     cvc={item.csc}
                     expiry={`${item.expiry.mm.padStart(2, '0')}/${
@@ -90,12 +92,14 @@ export const VirtualCardList: React.FC<Props> = (props) => {
           )
         }}
       ></List>
-      <UpdateCardModal
-        chosenCard={chosenCard}
-        visible={modalVisible}
-        setVisible={setModalVisible}
-        onCardUpdated={(id) => props.onVirtualCardUpdated?.(id)}
-      />
+      {modalVisible && (
+        <UpdateCardModal
+          chosenCard={chosenCard}
+          open={modalVisible}
+          setVisible={setModalVisible}
+          onCardUpdated={(id) => props.onVirtualCardUpdated?.(id)}
+        />
+      )}
     </>
   )
 }

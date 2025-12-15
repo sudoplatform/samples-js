@@ -1,16 +1,20 @@
 import { DefaultSudoProfilesClient } from '@sudoplatform/sudo-profiles'
 import { DefaultSudoSecureIdVerificationClient } from '@sudoplatform/sudo-secure-id-verification'
-import { SudoUserClient } from '@sudoplatform/sudo-user'
+import {
+  GraphQLClientAuthMode,
+  internal,
+  SudoUserClient,
+} from '@sudoplatform/sudo-user'
 import { HSpace, Spinner } from '@sudoplatform/web-ui'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAsync, useAsyncFn } from 'react-use'
 import { ErrorFeedback } from '../components/ErrorFeedback'
 import {
+  AlignLeftOutlined,
+  CreditCardOutlined,
+  DollarOutlined,
   IdcardOutlined,
   TeamOutlined,
-  DollarOutlined,
-  CreditCardOutlined,
-  AlignLeftOutlined,
 } from '@ant-design/icons'
 import { DefaultSudoEntitlementsClient } from '@sudoplatform/sudo-entitlements'
 import { Button, Layout, Menu, message } from 'antd'
@@ -26,7 +30,6 @@ import { TransactionManagement } from '../components/transaction/TransactionMana
 import { DefaultSudoVirtualCardsSimulatorClient } from '@sudoplatform/sudo-virtual-cards-simulator'
 import { DefaultConfigurationManager } from '@sudoplatform/sudo-common'
 import * as t from 'io-ts'
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync'
 
 const { Header, Content, Sider } = Layout
 
@@ -69,6 +72,13 @@ export const VirtualCardsPage: React.FC<Props> = ({ userClient }) => {
     return 'complete'
   })
 
+  // Handle deregister error as side effect
+  useEffect(() => {
+    if (deregisterResult.error) {
+      void message.error('Failed to deregister')
+    }
+  }, [deregisterResult.error])
+
   const initState = useAsync(async () => {
     const identityVerificationClient =
       new DefaultSudoSecureIdVerificationClient({ sudoUserClient: userClient })
@@ -89,18 +99,15 @@ export const VirtualCardsPage: React.FC<Props> = ({ userClient }) => {
         SimulatorApiConfig,
         'vcSimulator',
       )
-    const appSyncClient = new AWSAppSyncClient({
-      disableOffline: true,
-      url: config.apiUrl,
+    const graphQLClient = new internal.AmplifyClient({
+      graphqlUrl: config.apiUrl,
       region: config.region,
-      auth: {
-        type: AUTH_TYPE.API_KEY,
-        apiKey: config.apiKey,
-      },
+      authMode: GraphQLClientAuthMode.ApiKey,
+      apiKey: config.apiKey,
     })
 
     const virtualCardsSimulatorClient =
-      new DefaultSudoVirtualCardsSimulatorClient({ appSyncClient })
+      new DefaultSudoVirtualCardsSimulatorClient({ graphQLClient })
     return {
       identityVerificationClient,
       entitlementsClient,
@@ -109,6 +116,34 @@ export const VirtualCardsPage: React.FC<Props> = ({ userClient }) => {
       virtualCardsSimulatorClient,
     }
   })
+
+  const menuItems = [
+    {
+      key: '1',
+      icon: <IdcardOutlined />,
+      label: <Link to="identity-verification">Identity Verification</Link>,
+    },
+    {
+      key: '2',
+      icon: <TeamOutlined />,
+      label: <Link to="sudos">Sudos</Link>,
+    },
+    {
+      key: '3',
+      icon: <DollarOutlined />,
+      label: <Link to="funding-sources">Funding Sources</Link>,
+    },
+    {
+      key: '4',
+      icon: <CreditCardOutlined />,
+      label: <Link to="orphaned-virtual-cards">Orphaned Virtual Cards</Link>,
+    },
+    {
+      key: '5',
+      icon: <AlignLeftOutlined />,
+      label: <Link to="transactions">Transactions</Link>,
+    },
+  ]
 
   if (initState.error) {
     return (
@@ -138,46 +173,24 @@ export const VirtualCardsPage: React.FC<Props> = ({ userClient }) => {
         <Layout style={{ minHeight: '100vh' }}>
           <Sider>
             <SudoLogo>Virtual Cards Sample</SudoLogo>
-            <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
-              <Menu.Item key="1" icon={<IdcardOutlined />}>
-                Identity Verification
-                <Link to="identity-verification" />
-              </Menu.Item>
-              <Menu.Item key="2" icon={<TeamOutlined />}>
-                Sudos
-                <Link to="sudos" />
-              </Menu.Item>
-              <Menu.Item key="3" icon={<DollarOutlined />}>
-                Funding Sources
-                <Link to="funding-sources" />
-              </Menu.Item>
-              <Menu.Item key="4" icon={<CreditCardOutlined />}>
-                Orphaned Virtual Cards
-                <Link to="orphaned-virtual-cards" />
-              </Menu.Item>
-              <Menu.Item key="5" icon={<AlignLeftOutlined />}>
-                Transactions
-                <Link to="transactions" />
-              </Menu.Item>
-            </Menu>
+            <Menu
+              theme="dark"
+              defaultSelectedKeys={['1']}
+              mode="inline"
+              items={menuItems}
+            ></Menu>
           </Sider>
           <Layout>
             <Header style={{ padding: 0 }}>
               <HSpace horizontalAlign="right">
-                <>
-                  <Button
-                    type="dashed"
-                    onClick={deregister}
-                    style={{ background: 'none', color: 'white' }}
-                  >
-                    Sign Out
-                  </Button>
-                  {deregisterResult.error
-                    ? message.error('Failed to deregister')
-                    : deregisterResult.value === 'complete' && (
-                        <Navigate to="/" />
-                      )}
-                </>
+                <Button
+                  type="dashed"
+                  onClick={deregister}
+                  style={{ background: 'none', color: 'white' }}
+                >
+                  Sign Out
+                </Button>
+                {deregisterResult.value === 'complete' && <Navigate to="/" />}
               </HSpace>
             </Header>
             <Content style={{ margin: '0 16px' }}>

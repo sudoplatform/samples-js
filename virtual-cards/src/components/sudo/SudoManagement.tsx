@@ -1,7 +1,6 @@
 import { FetchOption } from '@sudoplatform/sudo-profiles'
 import { Card, VSpace } from '@sudoplatform/web-ui'
-import Collapse from 'antd/lib/collapse/Collapse'
-import CollapsePanel from 'antd/lib/collapse/CollapsePanel'
+import { Collapse } from 'antd'
 import React, { useContext, useEffect } from 'react'
 import useAsyncFn from 'react-use/lib/useAsyncFn'
 import { AppContext } from '../../containers/AppContext'
@@ -37,17 +36,26 @@ export const SudoManagement: React.FC = () => {
           Select a Sudo to see the associated virtual cards."
           helpUrl="https://docs.sudoplatform.com/guides/virtual-cards/manage-virtual-cards"
         />
-        <Collapse defaultActiveKey={'create'}>
-          <CollapsePanel header="Create Sudo" key="create">
-            <SudoCreate onSudoCreated={listSudos} />
-          </CollapsePanel>
-          <CollapsePanel header="Existing Sudos" key="manage">
-            <SudoList
-              listSudosResult={listSudosResult}
-              onSudoDeleted={listSudos}
-            />
-          </CollapsePanel>
-        </Collapse>
+        <Collapse
+          defaultActiveKey={'create'}
+          items={[
+            {
+              key: 'create',
+              label: 'Create Sudo',
+              children: <SudoCreate onSudoCreated={listSudos} />,
+            },
+            {
+              key: 'manage',
+              label: 'Existing Sudos',
+              children: (
+                <SudoList
+                  listSudosResult={listSudosResult}
+                  onSudoDeleted={listSudos}
+                />
+              ),
+            },
+          ]}
+        />
       </VSpace>
     </Card>
   )

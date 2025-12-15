@@ -7,8 +7,10 @@ import { ErrorFeedback } from '../components/ErrorFeedback'
 import { Navigate } from 'react-router-dom'
 import styled from 'styled-components'
 
-const Container = styled(HSpace)`
+const Container = styled.div`
   width: 100%;
+  display: flex;
+  justify-content: center;
 `
 
 const CenteredContent = styled.div`
@@ -53,7 +55,7 @@ export const SignInPage: React.FC = () => {
   })
 
   return (
-    <Container horizontalAlign="center">
+    <Container>
       <CenteredContent>
         <h1>Virtual Cards Sample</h1>
         <Card title="Sign in">

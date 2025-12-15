@@ -1,7 +1,6 @@
 import { ListOperationResultStatus } from '@sudoplatform/sudo-common'
 import { VirtualCard } from '@sudoplatform/sudo-virtual-cards'
-import Collapse from 'antd/lib/collapse/Collapse'
-import CollapsePanel from 'antd/lib/collapse/CollapsePanel'
+import { Collapse } from 'antd'
 import React, { useContext, useEffect } from 'react'
 import { useAsyncFn } from 'react-use'
 import { AppContext } from '../../../containers/AppContext'
@@ -38,13 +37,13 @@ export const VirtualCardForSudo: React.FC<Props> = (props) => {
   }, [listVirtualCards])
 
   let addVirtualCardCommand
-  if (props.sudoId != '') {
+  if (props.sudoId && props.sudoId.trim() !== '') {
     addVirtualCardCommand = (
       <>
         <h4>Add Virtual Card</h4>
         <AddVirtualCardForm
           onVirtualCardProvisioned={() => listVirtualCards()}
-          sudoId={props.sudoId ?? ''}
+          sudoId={props.sudoId}
         />
       </>
     )
@@ -53,15 +52,24 @@ export const VirtualCardForSudo: React.FC<Props> = (props) => {
   const panelKey = 'management'
 
   return (
-    <Collapse defaultActiveKey={props.expanded ? panelKey : ''}>
-      <CollapsePanel header={props.title} key={panelKey}>
-        <VirtualCardList
-          listVirtualCardsResult={listVirtualCardsResult}
-          onVirtualCardCancelled={() => listVirtualCards()}
-          onVirtualCardUpdated={() => listVirtualCards()}
-        />
-        {addVirtualCardCommand}
-      </CollapsePanel>
-    </Collapse>
+    <Collapse
+      defaultActiveKey={props.expanded ? panelKey : ''}
+      items={[
+        {
+          key: panelKey,
+          label: props.title,
+          children: (
+            <>
+              <VirtualCardList
+                listVirtualCardsResult={listVirtualCardsResult}
+                onVirtualCardCancelled={() => listVirtualCards()}
+                onVirtualCardUpdated={() => listVirtualCards()}
+              />
+              {addVirtualCardCommand}
+            </>
+          ),
+        },
+      ]}
+    />
   )
 }

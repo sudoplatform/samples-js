@@ -109,132 +109,144 @@ export const IdentityVerificationConsent: React.FC = () => {
 
   return (
     <VSpace>
-      <Collapse defaultActiveKey={consentRequired === true ? ['1'] : undefined}>
-        <Collapse.Panel header="Consent for Identity Data Processing" key="1">
-          <div>
-            <p>
-              To perform identity verification, we may need your consent to use
-              personal data. This is required in some environments to comply
-              with privacy regulations.
-            </p>
-            <p>
-              Consent Required Status:{' '}
-              <b>
-                {consentRequired === null
-                  ? 'Checking...'
-                  : consentRequired
-                    ? 'Consent Required'
-                    : 'Consent Not Required'}
-              </b>{' '}
-              in this environment
-            </p>
-            <div
-              style={{ marginBottom: 8, display: 'flex', alignItems: 'center' }}
-            >
-              {isCheckingConsentStatus ? (
-                <span>Checking consent status...</span>
-              ) : consentStatus ? (
+      <Collapse
+        defaultActiveKey={consentRequired === true ? ['1'] : undefined}
+        items={[
+          {
+            key: '1',
+            label: 'Consent for Identity Data Processing',
+            children: (
+              <div>
+                <p>
+                  To perform identity verification, we may need your consent to
+                  use personal data. This is required in some environments to
+                  comply with privacy regulations.
+                </p>
+                <p>
+                  Consent Required Status:{' '}
+                  <b>
+                    {consentRequired === null
+                      ? 'Checking...'
+                      : consentRequired
+                        ? 'Consent Required'
+                        : 'Consent Not Required'}
+                  </b>{' '}
+                  in this environment
+                </p>
                 <div
                   style={{
+                    marginBottom: 8,
                     display: 'flex',
-                    justifyContent: 'space-between',
                     alignItems: 'center',
-                    width: '100%',
                   }}
                 >
-                  <span
-                    style={{
-                      border: '2px solid #52c41a',
-                      color: '#52c41a',
-                      borderRadius: 4,
-                      padding: '2px 8px',
-                    }}
-                  >
-                    Consented
-                  </span>
-                  <Button
-                    kind="primary"
-                    onClick={handleWithdrawConsent}
-                    loading={isWithdrawingConsent}
-                    disabled={isWithdrawingConsent}
-                  >
-                    Withdraw consent
-                  </Button>
+                  {isCheckingConsentStatus ? (
+                    <span>Checking consent status...</span>
+                  ) : consentStatus ? (
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        width: '100%',
+                      }}
+                    >
+                      <span
+                        style={{
+                          border: '2px solid #52c41a',
+                          color: '#52c41a',
+                          borderRadius: 4,
+                          padding: '2px 8px',
+                        }}
+                      >
+                        Consented
+                      </span>
+                      <Button
+                        kind="primary"
+                        onClick={handleWithdrawConsent}
+                        loading={isWithdrawingConsent}
+                        disabled={isWithdrawingConsent}
+                      >
+                        Withdraw consent
+                      </Button>
+                    </div>
+                  ) : (
+                    <span
+                      style={{
+                        border: '2px solid #ff4d4f',
+                        color: '#ff4d4f',
+                        borderRadius: 4,
+                        padding: '2px 8px',
+                      }}
+                    >
+                      Not Consented
+                    </span>
+                  )}
                 </div>
-              ) : (
-                <span
-                  style={{
-                    border: '2px solid #ff4d4f',
-                    color: '#ff4d4f',
-                    borderRadius: 4,
-                    padding: '2px 8px',
-                  }}
-                >
-                  Not Consented
-                </span>
-              )}
-            </div>
-            <div style={{ marginTop: 16 }}>
-              <label style={{ display: 'block', marginBottom: 8 }}>
-                Preferred Language:
-                <Input
-                  value={preferredLanguage}
-                  onChange={(e) => setPreferredLanguage(e.target.value)}
-                  style={{ width: 200, marginLeft: 8 }}
-                  placeholder="e.g. en-US"
-                />
-              </label>
-              <label style={{ display: 'block', marginBottom: 8 }}>
-                Preferred ContentType:
-                <Input
-                  value={preferredContentType}
-                  onChange={(e) => setPreferredContentType(e.target.value)}
-                  style={{ width: 200, marginLeft: 8 }}
-                  placeholder="e.g. text/plain"
-                />
-              </label>
-              <Button
-                kind="primary"
-                onClick={handleFetchConsentContent}
-                disabled={
-                  !preferredLanguage ||
-                  !preferredContentType ||
-                  isFetchingConsentContent
-                }
-                loading={isFetchingConsentContent}
-              >
-                Get Consent Content
-              </Button>
-              {consentContent?.content && (
                 <div style={{ marginTop: 16 }}>
-                  <strong>
-                    Consent Content
-                    {consentContent.language && consentContent.contentType
-                      ? ` (${consentContent.language}, ${consentContent.contentType})`
-                      : ''}
-                    :
-                  </strong>
-                  <AntdInput.TextArea
-                    value={consentContent.content}
-                    readOnly
-                    autoSize={{ minRows: 3 }}
-                    style={{ width: '100%' }}
-                  />
+                  <label style={{ display: 'block', marginBottom: 8 }}>
+                    Preferred Language:
+                    <Input
+                      value={preferredLanguage}
+                      onChange={(e) => setPreferredLanguage(e.target.value)}
+                      style={{ width: 200, marginLeft: 8 }}
+                      placeholder="e.g. en-US"
+                    />
+                  </label>
+                  <label style={{ display: 'block', marginBottom: 8 }}>
+                    Preferred ContentType:
+                    <Input
+                      value={preferredContentType}
+                      onChange={(e) => setPreferredContentType(e.target.value)}
+                      style={{ width: 200, marginLeft: 8 }}
+                      placeholder="e.g. text/plain"
+                    />
+                  </label>
                   <Button
                     kind="primary"
-                    style={{ marginTop: 8 }}
-                    onClick={handleProvideConsent}
-                    loading={isProvidingConsent}
-                    disabled={isProvidingConsent || !consentContent}
+                    onClick={handleFetchConsentContent}
+                    disabled={
+                      !preferredLanguage ||
+                      !preferredContentType ||
+                      isFetchingConsentContent
+                    }
+                    loading={isFetchingConsentContent}
                   >
-                    I Consent
+                    Get Consent Content
                   </Button>
+                  {consentContent?.content && (
+                    <div style={{ marginTop: 16 }}>
+                      <strong>
+                        Consent Content
+                        {consentContent.language && consentContent.contentType
+                          ? ` (${consentContent.language}, ${consentContent.contentType})`
+                          : ''}
+                        :
+                      </strong>
+                      <AntdInput.TextArea
+                        value={consentContent.content}
+                        readOnly
+                        autoSize={{ minRows: 3 }}
+                        style={{ width: '100%' }}
+                      />
+                      <div style={{ marginTop: 8 }}>
+                        <Button
+                          kind="primary"
+                          onClick={handleProvideConsent}
+                          loading={isProvidingConsent}
+                          disabled={isProvidingConsent || !consentContent}
+                        >
+                          I Consent
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </div>
-        </Collapse.Panel>
-      </Collapse>
+              </div>
+            ),
+          },
+        ]}
+      />
     </VSpace>
   )
 }

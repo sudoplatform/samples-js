@@ -5,8 +5,9 @@ import {
   FundingSourceType,
   ProvisionalFundingSource,
 } from '@sudoplatform/sudo-virtual-cards'
-import { Button, Form, HSpace, Input, VSpace } from '@sudoplatform/web-ui'
-import FormItem from 'antd/lib/form/FormItem'
+import { Button, HSpace, Input, VSpace } from '@sudoplatform/web-ui'
+import { Form as AntdForm } from 'antd'
+const { Item: FormItem } = AntdForm
 import React, { useEffect } from 'react'
 import { useAsyncFn } from 'react-use'
 import { ErrorFeedback } from '../ErrorFeedback'
@@ -116,7 +117,7 @@ export const AddStripeCardFundingSourceForm: React.FC<Props> = ({
 
   return (
     <VSpace>
-      <Form requiredMark={true} onFinish={submitFundingSource}>
+      <AntdForm requiredMark={true} onFinish={submitFundingSource}>
         <FormItem name="Card Information">
           <CardElement
             id="card-number-element"
@@ -163,7 +164,7 @@ export const AddStripeCardFundingSourceForm: React.FC<Props> = ({
             error={submitFundingSourceResult.error}
           />
         )}
-      </Form>
+      </AntdForm>
     </VSpace>
   )
 }

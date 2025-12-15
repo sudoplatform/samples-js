@@ -1,20 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { BillingAddress, VirtualCard } from '@sudoplatform/sudo-virtual-cards'
-import {
-  Form,
-  FormItem,
-  HSpace,
-  Input,
-  useForm,
-  VSpace,
-} from '@sudoplatform/web-ui'
-import { Modal } from 'antd'
+import { HSpace, Input, VSpace } from '@sudoplatform/web-ui'
+import { Modal, Form } from 'antd'
+const { Item: FormItem, useForm } = Form
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { AppContext } from '../../../containers/AppContext'
 
 interface Props {
   chosenCard: VirtualCard | undefined
-  visible: boolean
+  open: boolean
   setVisible: React.Dispatch<React.SetStateAction<boolean>>
   onCardUpdated: (id: string) => void
 }
@@ -32,7 +26,7 @@ interface UpdateVirtualCardInputs {
 
 export const UpdateCardModal: React.FC<Props> = ({
   chosenCard,
-  visible,
+  open,
   setVisible,
   onCardUpdated,
 }) => {
@@ -123,7 +117,7 @@ export const UpdateCardModal: React.FC<Props> = ({
   return (
     <Modal
       title="Update Card"
-      visible={visible}
+      open={open}
       confirmLoading={confirmLoading}
       onOk={handleOk}
       onCancel={handleCancel}

@@ -1,14 +1,7 @@
 import { Sudo } from '@sudoplatform/sudo-profiles'
-import {
-  Button,
-  Form,
-  FormItem,
-  HSpace,
-  Input,
-  useForm,
-  VSpace,
-} from '@sudoplatform/web-ui'
-import { message } from 'antd'
+import { Button, HSpace, Input, VSpace } from '@sudoplatform/web-ui'
+import { Form, message } from 'antd'
+const { Item: FormItem, useForm } = Form
 import React, { useContext } from 'react'
 import { useAsyncFn } from 'react-use'
 import { AppContext } from '../../containers/AppContext'

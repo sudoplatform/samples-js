@@ -1,14 +1,7 @@
 import React, { useContext } from 'react'
-import {
-  Button,
-  Form,
-  Input,
-  Select,
-  Spinner,
-  useForm,
-  VSpace,
-} from '@sudoplatform/web-ui'
-import FormItem from 'antd/lib/form/FormItem'
+import { Button, Input, Select, Spinner, VSpace } from '@sudoplatform/web-ui'
+import { Form, message } from 'antd'
+const { Item: FormItem, useForm } = Form
 import {
   ProvisionalVirtualCard,
   ProvisioningState,
@@ -16,7 +9,6 @@ import {
 } from '@sudoplatform/sudo-virtual-cards'
 import { useAsync, useAsyncFn } from 'react-use'
 import { ErrorFeedback } from '../../ErrorFeedback'
-import { message } from 'antd'
 import { AppContext } from '../../../containers/AppContext'
 import { CachePolicy } from '@sudoplatform/sudo-common'
 import { delay } from '../../../util/delay'
@@ -131,10 +123,10 @@ export const AddVirtualCardForm: React.FC<Props> = ({
         </FormItem>
         <FormItem name="fundingSource" label="Funding Source">
           {fundingSourcesResult.loading ? (
-            <>
+            <div>
               <Spinner />
               Loading...
-            </>
+            </div>
           ) : fundingSourcesResult.value?.length ? (
             <Select
               placeholder="Please choose a Funding Source..."
@@ -145,7 +137,7 @@ export const AddVirtualCardForm: React.FC<Props> = ({
               }))}
             ></Select>
           ) : (
-            <>Please add a funding source</>
+            <div>Please add a funding source</div>
           )}
         </FormItem>
         <Button
