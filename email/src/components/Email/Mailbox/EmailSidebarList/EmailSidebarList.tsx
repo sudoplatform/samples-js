@@ -1,12 +1,12 @@
 import React, { useContext, useState } from 'react'
-import { EmailFoldersContext } from '@contexts'
+import { EmailFoldersContext } from '@contexts/index'
 import { capitaliseFirst } from '@util/capitaliseFirst'
 import { Container, ListItem, StyledLoader } from './EmailSidebarList.styled'
 import { Tag } from 'antd'
 import { EmailBlocklistContext } from '../../../../contexts/EmailBlocklistContext'
 import { CloseOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import { useEmailFolders } from '../../../../hooks/useEmailFolders'
-import { Button } from '@sudoplatform/web-ui'
+import { Button } from '@components/Button'
 import { CustomFolderInput } from './CustomFolderInput'
 
 /**

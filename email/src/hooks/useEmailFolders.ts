@@ -1,9 +1,8 @@
 import { useCallback, useContext, useEffect, useState } from 'react'
 import { EmailFolder } from '@sudoplatform/sudo-email'
-import { CachePolicy } from '@sudoplatform/sudo-common'
 import { useErrorBoundary } from '@components/ErrorBoundary'
 import { useActiveEmailAddressUpdate } from '@hooks/useActiveEmailAddressUpdate'
-import { EmailContext, ProjectContext } from '@contexts'
+import { EmailContext, ProjectContext } from '@contexts/index'
 import { message } from 'antd'
 
 /**
@@ -46,7 +45,6 @@ export const useEmailFolders = () => {
         const foldersResult =
           await sudoEmailClient.listEmailFoldersForEmailAddressId({
             emailAddressId: activeEmailAddress.id,
-            cachePolicy: CachePolicy.RemoteOnly,
             nextToken,
           })
 

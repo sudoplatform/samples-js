@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import { StyledDropdown, StyledButton } from './Dropdown.styled'
-import { ItemType } from 'antd/lib/menu/hooks/useItems'
+import type { MenuProps } from 'antd'
 import { Space } from 'antd'
 import { DownOutlined, LoadingOutlined } from '@ant-design/icons'
 
@@ -14,6 +14,7 @@ interface Props<T> {
   id?: string
   emptyItemsLabel: string
   noItemSelectedLabel: string
+  getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement
   selectedItem?: Item<T>
   items?: Item<T>[]
   itemsLoading: boolean
@@ -36,6 +37,7 @@ export const Dropdown = <T,>({
   id,
   emptyItemsLabel,
   noItemSelectedLabel,
+  getPopupContainer,
   selectedItem,
   items,
   itemsLoading,
@@ -50,7 +52,7 @@ export const Dropdown = <T,>({
   const dropdownProps = useMemo(() => {
     return disabled
       ? {
-          dropdownRender: () => <></>,
+          popupRender: () => <></>,
         }
       : {
           menu: {
@@ -58,13 +60,17 @@ export const Dropdown = <T,>({
               label: item.label,
               key: item.id,
               onClick: () => onChange(item),
-            })) as ItemType[],
+            })) as MenuProps['items'],
           },
         }
   }, [disabled, items, onChange])
 
   return (
-    <StyledDropdown placement={dropdownPlacement} {...dropdownProps}>
+    <StyledDropdown
+      getPopupContainer={getPopupContainer}
+      placement={dropdownPlacement}
+      {...dropdownProps}
+    >
       {itemsLoading ? (
         <LoadingOutlined />
       ) : (

@@ -11,7 +11,7 @@ import {
   EmailFoldersContext,
   MailboxContext,
   ProjectContext,
-} from '@contexts'
+} from '@contexts/index'
 import { ErrorBoundary } from '@components/ErrorBoundary'
 import { MenuLink } from '@components/MenuLink'
 import { EmailMessageRow } from './EmailMessageRow'
@@ -451,13 +451,10 @@ export const EmailMessagesList = ({
               selectedRowKeys: selectedBlockedAddresses.map(
                 ({ address }) => address,
               ),
-              onChange: (
-                rowKeys: string | string[],
-                rows: { address: string }[],
-              ) => {
+              onChange: (rowKeys, rows) => {
                 setSelectedBlockedAddresses(
                   (rows as { address: string }[]).filter(
-                    ({ address }) => rowKeys.indexOf(address) !== -1,
+                    (row) => rowKeys.indexOf(row.address) !== -1,
                   ),
                 )
               },
@@ -494,9 +491,11 @@ export const EmailMessagesList = ({
               type: 'checkbox',
               columnWidth: '40px',
               selectedRowKeys: selectedEmailMessages.map(({ id }) => id),
-              onChange: (rowKeys: string | string[], rows: EmailMessage[]) => {
+              onChange: (rowKeys, rows) => {
                 setSelectedEmailMessages(
-                  rows.filter(({ id }) => rowKeys.indexOf(id) !== -1),
+                  (rows as EmailMessage[]).filter(
+                    ({ id }) => rowKeys.indexOf(id) !== -1,
+                  ),
                 )
               },
             }}

@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from 'react'
 import { EmailAddress } from '@sudoplatform/sudo-email'
-import { EmailContext, ProjectContext, SudosContext } from '@contexts'
+import { EmailContext, ProjectContext, SudosContext } from '@contexts/index'
 import { useErrorBoundary } from '@components/ErrorBoundary'
 
 /**

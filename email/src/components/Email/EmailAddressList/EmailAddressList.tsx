@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
 import { EmailAddress } from '@sudoplatform/sudo-email'
-import { EmailContext } from '@contexts'
+import { EmailContext } from '@contexts/index'
 import { TableCard as Card } from '@components/Card'
 import { Table, DangerLink } from '@components/Table'
 import { ErrorBoundary } from '@components/ErrorBoundary'
@@ -89,7 +89,7 @@ export const EmailAddressList = (): React.ReactElement => {
           columns={[
             {
               title: 'Display Name',
-              dataIndex: 'displayName',
+              dataIndex: 'alias',
               render: (colData, rowData) => {
                 const { alias: displayName, id } = rowData as EmailAddress
                 return updateId === id ? (

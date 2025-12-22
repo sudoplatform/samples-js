@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { ProjectContext } from '@contexts'
+import { ProjectContext } from '@contexts/index'
 import { useErrorBoundary } from '@components/ErrorBoundary'
 import { useAsync } from 'react-use'
 

@@ -1,8 +1,5 @@
 import { useErrorBoundary } from '@components/ErrorBoundary'
-import {
-  CachePolicy,
-  ListOperationResultStatus,
-} from '@sudoplatform/sudo-common'
+import { ListOperationResultStatus } from '@sudoplatform/sudo-common'
 import {
   BatchOperationResultStatus,
   EmailMessage,
@@ -42,7 +39,6 @@ export const useEmailMessages = (sudoEmailClient: SudoEmailClient) => {
           await sudoEmailClient.listEmailMessagesForEmailFolderId({
             folderId,
             limit: 20,
-            cachePolicy: CachePolicy.RemoteOnly,
             nextToken,
           })
 

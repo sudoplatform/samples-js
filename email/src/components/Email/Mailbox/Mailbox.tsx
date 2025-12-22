@@ -1,6 +1,10 @@
 import React, { useContext, useState } from 'react'
 import { EmailMessage } from '@sudoplatform/sudo-email'
-import { EmailContext, MailboxContext, EmailFoldersContext } from '@contexts'
+import {
+  EmailContext,
+  MailboxContext,
+  EmailFoldersContext,
+} from '@contexts/index'
 import { ErrorBoundary } from '@components/ErrorBoundary'
 import { EmailFoldersList } from './EmailSidebarList'
 import { EmailMessagesList } from './EmailMessagesList'

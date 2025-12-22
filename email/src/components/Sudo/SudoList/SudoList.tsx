@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { Sudo } from '@sudoplatform/sudo-profiles'
-import { SudosContext } from '@contexts'
+import { SudosContext } from '@contexts/index'
 import { TableCard as Card } from '@components/Card'
 import { Table, DangerLink } from '@components/Table'
 import { ErrorBoundary } from '@components/ErrorBoundary'

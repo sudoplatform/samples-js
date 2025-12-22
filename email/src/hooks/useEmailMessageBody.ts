@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from 'react'
 import { EmailAttachment, EmailMessage } from '@sudoplatform/sudo-email'
-import { EmailContext, ProjectContext } from '@contexts'
+import { EmailContext, ProjectContext } from '@contexts/index'
 import { useErrorBoundary } from '@components/ErrorBoundary'
 
 interface MessageBodyResult {

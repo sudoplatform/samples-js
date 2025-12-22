@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAsync } from 'react-use'
-import { AuthContext } from '@contexts'
+import { AuthContext } from '@contexts/index'
 
 interface Props {
   children?: React.ReactNode

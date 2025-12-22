@@ -1,11 +1,8 @@
 import { useCallback, useContext, useEffect, useState } from 'react'
-import {
-  CachePolicy,
-  ListOperationResultStatus,
-} from '@sudoplatform/sudo-common'
+import { ListOperationResultStatus } from '@sudoplatform/sudo-common'
 import { EmailMessage } from '@sudoplatform/sudo-email'
 import { useErrorBoundary } from '@components/ErrorBoundary'
-import { ProjectContext } from '@contexts'
+import { ProjectContext } from '@contexts/index'
 
 /**
  * Hook to provide a list of email messages belonging to the
@@ -40,7 +37,6 @@ export const useEmailMessages = () => {
           await sudoEmailClient.listEmailMessagesForEmailFolderId({
             folderId,
             limit: 20,
-            cachePolicy: CachePolicy.RemoteOnly,
             nextToken,
           })
 

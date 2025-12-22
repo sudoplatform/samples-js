@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAsyncFn } from 'react-use'
-import { AuthContext } from '@contexts'
+import { AuthContext } from '@contexts/index'
 import { ErrorFeedback } from '@components/ErrorFeedback'
 import { authenticateWithRegisterKey } from './authenticate'
 import { Button } from '@components/Button'

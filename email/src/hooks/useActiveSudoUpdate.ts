@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react'
 import { Sudo } from '@sudoplatform/sudo-profiles'
-import { SudosContext } from '@contexts'
+import { SudosContext } from '@contexts/index'
 
 /**
  * Hook to invoke `onUpdate` callback argument if active sudo updates.

@@ -1,5 +1,5 @@
 import { useContext, useMemo, useState } from 'react'
-import { ProjectContext } from '@contexts'
+import { ProjectContext } from '@contexts/index'
 
 /**
  * Custom hook that returns the encryption status for a list of email addresses

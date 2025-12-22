@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { SudosContext } from '@contexts'
+import { SudosContext } from '@contexts/index'
 import { Dropdown } from '@components/Dropdown'
 
 export const SudosDropdown = (): React.ReactElement => {

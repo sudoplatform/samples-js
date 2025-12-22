@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react'
 import { useErrorBoundary } from '@components/ErrorBoundary'
-import { ProjectContext, SudosContext } from '@contexts'
+import { ProjectContext, SudosContext } from '@contexts/index'
 import { Sudo } from '@sudoplatform/sudo-profiles'
 
 /**

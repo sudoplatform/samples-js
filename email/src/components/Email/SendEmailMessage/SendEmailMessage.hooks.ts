@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react'
-import { EmailContext, ProjectContext } from '@contexts'
+import { EmailContext, ProjectContext } from '@contexts/index'
 import { useErrorBoundary } from '@components/ErrorBoundary'
 import {
   DeleteEmailMessageSuccessResult,

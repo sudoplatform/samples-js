@@ -1,4 +1,11 @@
-import React, { useState, useContext, useEffect, useMemo, useRef } from 'react'
+import React, {
+  useState,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from 'react'
 import { ErrorBoundary, useErrorBoundary } from '@components/ErrorBoundary'
 import { Input, Form } from '@sudoplatform/web-ui'
 import { Button } from '@components/Button'
@@ -11,7 +18,7 @@ import {
 import { EmailAddressesFormItem } from './EmailAddressesFormItem'
 import TextArea from 'antd/lib/input/TextArea'
 import { message, Space } from 'antd'
-import { EmailContext } from '@contexts'
+import { EmailContext } from '@contexts/index'
 import { parseMessage, ParsedMessage } from '@util/MessageParser'
 import { DraftEmailMessage, EmailMessage } from '@sudoplatform/sudo-email'
 import { DraftsDropdown } from './DraftsDropdown/DraftsDropdown'
@@ -145,28 +152,41 @@ export const SendEmailMessage = ({
     await listDraftEmailMessagesHandler()
   }
 
-  const populateForm = (decodedDraft: ParsedMessage) => {
-    clearForm()
-    form.setFieldValue('subject', decodedDraft.subject)
-    form.setFieldValue('messageBody', decodedDraft.text)
+  const populateForm = useCallback(
+    (decodedDraft: ParsedMessage) => {
+      // Clear form fields
+      form.resetFields([
+        'toEmailAddresses',
+        'ccEmailAddresses',
+        'bccEmailAddresses',
+        'subject',
+        'messageBody',
+      ])
 
-    if (decodedDraft.to)
-      setToEmailAddresses(decodedDraft.to.map((toAddress) => toAddress.address))
-    if (decodedDraft.cc)
-      setCcEmailAddresses(decodedDraft.cc.map((ccEmail) => ccEmail.address))
-    if (decodedDraft.bcc)
-      setBccEmailAddresses(decodedDraft.bcc.map((bccEmail) => bccEmail.address))
+      // Set form values (this might trigger changesInForm, but that's OK after reset)
+      form.setFieldsValue({
+        subject: decodedDraft.subject,
+        messageBody: decodedDraft.text,
+      })
 
-    if (
-      decodedDraft.subject === undefined &&
-      decodedDraft.text === undefined &&
-      !decodedDraft.to &&
-      !decodedDraft.cc &&
-      !decodedDraft.bcc
-    ) {
-      void message.warning('Editing empty draft')
-    }
-  }
+      // Update state arrays
+      setToEmailAddresses(decodedDraft.to?.map((addr) => addr.address) || [])
+      setCcEmailAddresses(decodedDraft.cc?.map((addr) => addr.address) || [])
+      setBccEmailAddresses(decodedDraft.bcc?.map((addr) => addr.address) || [])
+
+      // Show warning for empty drafts
+      if (
+        !decodedDraft.subject &&
+        !decodedDraft.text &&
+        !decodedDraft.to &&
+        !decodedDraft.cc &&
+        !decodedDraft.bcc
+      ) {
+        void message.warning('Editing empty draft')
+      }
+    },
+    [form],
+  )
 
   const onDraftSelect = async (selectedSavedDraftId: string) => {
     const draftData = await getDraftEmailMessageHandler(selectedSavedDraftId)

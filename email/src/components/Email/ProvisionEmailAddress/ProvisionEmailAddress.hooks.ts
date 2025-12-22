@@ -1,11 +1,9 @@
 import { useContext, useState } from 'react'
 import { useAsync } from 'react-use'
-import { ProjectContext, EmailContext, SudosContext } from '@contexts'
-import { CachePolicy } from '@sudoplatform/sudo-common'
+import { EmailContext, ProjectContext, SudosContext } from '@contexts/index'
 import { Sudo } from '@sudoplatform/sudo-profiles'
-import { useForm } from '@sudoplatform/web-ui'
+import { Form, message } from 'antd'
 import { useErrorBoundary } from '@components/ErrorBoundary'
-import { message } from 'antd'
 import { useActiveSudoUpdate } from '@hooks/useActiveSudoUpdate'
 
 const emailAudience = 'sudoplatform.email.email-address'
@@ -20,7 +18,7 @@ export const useSupportedEmailDomains = () => {
   const { loading, value } = useAsync(async () => {
     try {
       const supportedEmailDomainsResult =
-        await sudoEmailClient.getSupportedEmailDomains(CachePolicy.RemoteOnly)
+        await sudoEmailClient.getSupportedEmailDomains()
 
       return supportedEmailDomainsResult
     } catch (error) {
@@ -53,7 +51,7 @@ export const useProvisionEmailAddressForm = () => {
   const { sudoEmailClient, sudoProfilesClient } = useContext(ProjectContext)
   const { activeSudo } = useContext(SudosContext)
   const { listEmailAddressesHandler } = useContext(EmailContext)
-  const [form] = useForm<EmailAddressInputs>()
+  const [form] = Form.useForm<EmailAddressInputs>()
   const [loading, setLoading] = useState(false)
 
   // Use hook for managing error state for <ErrorBoundary>.
@@ -113,8 +111,7 @@ export const useProvisionEmailAddressForm = () => {
         )
 
         // Reset form fields (leave `domain` intact).
-        form.setFieldValue('localPart', '')
-        form.setFieldValue('displayName', '')
+        form.resetFields(['localPart', 'displayName'])
 
         listEmailAddressesHandler()
       } catch (error) {

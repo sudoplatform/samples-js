@@ -1,6 +1,6 @@
 import React from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router'
-import { ProjectContext, SudosContext } from '@contexts'
+import { ProjectContext, SudosContext } from '@contexts/index'
 import { SudoUserClient } from '@sudoplatform/sudo-user'
 import { ErrorBoundary } from '@components/ErrorBoundary'
 import { Sidebar } from '@components/Sidebar'

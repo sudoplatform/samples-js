@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { EmailContext } from '@contexts'
+import { EmailContext } from '@contexts/index'
 import { Dropdown } from '@components/Dropdown'
 
 export const EmailAddressDropdown = (): React.ReactElement => {
@@ -14,6 +14,9 @@ export const EmailAddressDropdown = (): React.ReactElement => {
     <Dropdown
       emptyItemsLabel="No email addresses"
       noItemSelectedLabel="Select email address"
+      getPopupContainer={(triggerNode) =>
+        triggerNode.parentElement || document.body
+      }
       selectedItem={
         activeEmailAddress && {
           label: activeEmailAddress.emailAddress,

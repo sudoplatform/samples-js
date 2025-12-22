@@ -4,7 +4,7 @@ import {
   EmailMessage,
 } from '@sudoplatform/sudo-email'
 import { useErrorBoundary } from '@components/ErrorBoundary'
-import { ProjectContext } from '@contexts'
+import { ProjectContext } from '@contexts/index'
 
 /**
  * Hook for setting the `seen` and `folderId` attributes of an array

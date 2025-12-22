@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { AuthContext } from '@contexts'
+import { AuthContext } from '@contexts/index'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AppContainer } from './App.styled'
 import { AuthenticationTokens } from '@sudoplatform/sudo-user'
@@ -11,7 +11,7 @@ import { DefaultConfigurationManager } from '@sudoplatform/sudo-common'
 import { DefaultSudoUserClient } from '@sudoplatform/sudo-user'
 import { DefaultLogger } from '@sudoplatform/sudo-common'
 import { DefaultApiClientManager } from '@sudoplatform/sudo-api-client'
-import { GlobalStyle } from './global-style'
+import { createGlobalStyle } from 'styled-components'
 
 // Import sdk config and cast to object.
 const sdkConfig = require('@config/sudoplatformconfig.json') as Record<
@@ -19,6 +19,11 @@ const sdkConfig = require('@config/sudoplatformconfig.json') as Record<
   unknown
 >
 
+const GlobalStyles = createGlobalStyle`
+  body {
+    background: #f6f6f6;
+  }
+`
 /**
  * Returns a sudo user client instance from a given Sudo Platform SDK config.
  */
@@ -42,7 +47,36 @@ const initUserClient = (sdkConfig: string): DefaultSudoUserClient => {
     )
   }
 }
+if (process.env.NODE_ENV === 'development') {
+  // Suppress specific React errors and warnings
+  const originalConsoleError = console.error
+  const originalConsoleWarn = console.warn
 
+  const ignoredStrings: string[] = [
+    'findDOMNode is deprecated',
+    'trigger element and popup element should in same shadow root',
+  ]
+
+  console.error = (...args: any[]) => {
+    if (
+      typeof args[0] === 'string' &&
+      ignoredStrings.some((ignored) => (args[0] as string).includes(ignored))
+    ) {
+      return // Ignore these specific errors
+    }
+    originalConsoleError.apply(console, args)
+  }
+
+  console.warn = (...args: any[]) => {
+    if (
+      typeof args[0] === 'string' &&
+      ignoredStrings.some((ignored) => (args[0] as string).includes(ignored))
+    ) {
+      return // Ignore these specific warnings
+    }
+    originalConsoleWarn.apply(console, args)
+  }
+}
 /**
  * The <App> container provides the minimum context needed
  * to launch the app, including the environment config
@@ -71,7 +105,7 @@ export const App = (): React.ReactElement => {
       }}
     >
       <BrowserRouter>
-        <GlobalStyle />
+        {React.createElement(GlobalStyles as React.ComponentType)}
         <AppContainer>
           <Routes>
             <Route

@@ -3,7 +3,7 @@ import { Navigate, Route, Routes } from 'react-router'
 import { EmailManagementPage } from '@pages/Email/EmailManagementPage'
 import { MailboxPage } from '@pages/Email/MailboxPage'
 import { useEmailAddresses } from '@hooks/useEmailAddresses'
-import { EmailContext } from '@contexts'
+import { EmailContext } from '@contexts/index'
 import { ErrorBoundary } from '@components/ErrorBoundary'
 
 export const EmailContainer = (): React.ReactElement => {

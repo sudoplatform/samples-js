@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react'
 import { Sudo } from '@sudoplatform/sudo-profiles'
-import { ProjectContext, SudosContext } from '@contexts'
+import { ProjectContext, SudosContext } from '@contexts/index'
 import { message } from 'antd'
 import { useForm } from '@sudoplatform/web-ui'
 import { useErrorBoundary } from '@components/ErrorBoundary'

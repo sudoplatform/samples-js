@@ -28,7 +28,7 @@
       "@util/*": ["src/util/*"],
       "@images/*": ["public/images/*"],
       "@hooks/*": ["src/hooks/*"],
-      "@contexts": ["src/contexts"]
+      "@contexts/*": ["src/contexts/*"]
     },
     "types": ["jest"]
   },

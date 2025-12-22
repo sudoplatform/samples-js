@@ -4,7 +4,7 @@ import {
   EmailMessage,
 } from '@sudoplatform/sudo-email'
 import { useErrorBoundary } from '@components/ErrorBoundary'
-import { ProjectContext } from '@contexts'
+import { ProjectContext } from '@contexts/index'
 
 /**
  * Hook for deleting email messages via the `deleteEmailMessageHandler`
@@ -32,7 +32,9 @@ export const useDeleteEmailMessages = () => {
       )
 
       if (deleteMessagesResult.status !== BatchOperationResultStatus.Failure) {
-        setResultIds(deleteMessagesResult.successValues ?? [])
+        setResultIds(
+          (deleteMessagesResult.successValues ?? []).map((val) => val.id),
+        )
       } else {
         throw new Error('`deleteEmailMessages` returned status: Failure')
       }

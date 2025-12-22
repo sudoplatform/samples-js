@@ -33,29 +33,13 @@ export const FixedRightColumn = styled.div`
   right: 20px;
 `
 
-export const StyledTable = styled(Table)`
+export const StyledTable = styled(Table).attrs({
+  style: {
+    height: '100%',
+  },
+})`
   // Make rows adhere to width condensing and ellipsis text
   .ant-table-content > table {
     table-layout: fixed !important;
   }
-  // & {
-  //   .ant-table-wrapper,
-  //   .ant-spin-nested-loading,
-  //   .ant-spin-container,
-  //   .ant-table,
-  //   .ant-table-container,
-  //   .ant-table-content,
-  //   .ant-table-tbody {
-  //     height: 100%;
-  //   }
-
-  //   table {
-  //     height: calc(100% - 55px);
-  //   }
-  // }
 `
-StyledTable.defaultProps = {
-  style: {
-    height: '100%',
-  },
-}

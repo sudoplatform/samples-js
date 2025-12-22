@@ -1,9 +1,6 @@
 import { useCallback, useContext, useState } from 'react'
-import { ProjectContext, SudosContext } from '@contexts'
-import {
-  CachePolicy,
-  ListOperationResultStatus,
-} from '@sudoplatform/sudo-common'
+import { ProjectContext, SudosContext } from '@contexts/index'
+import { ListOperationResultStatus } from '@sudoplatform/sudo-common'
 import { EmailAddress } from '@sudoplatform/sudo-email'
 import { Sudo } from '@sudoplatform/sudo-profiles'
 import { useErrorBoundary } from '@components/ErrorBoundary'
@@ -36,7 +33,6 @@ export const useEmailAddresses = () => {
         // A `Partial` or `Failure` status will be thrown as an error.
         const result = await sudoEmailClient.listEmailAddressesForSudoId({
           sudoId: activeSudo.id as string,
-          cachePolicy: CachePolicy.RemoteOnly,
         })
 
         if (

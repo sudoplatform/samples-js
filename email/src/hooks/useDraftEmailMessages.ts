@@ -1,6 +1,6 @@
 import { useCallback, useContext, useState } from 'react'
 import { message } from 'antd'
-import { EmailContext, ProjectContext } from '@contexts'
+import { EmailContext, ProjectContext } from '@contexts/index'
 import {
   BatchOperationResult,
   DeleteEmailMessageSuccessResult,
@@ -145,11 +145,19 @@ export const useDraftEmailMessages = () => {
     clearError()
     setDraftsLoading(true)
     try {
-      const metadataList =
-        await sudoEmailClient.listDraftEmailMessageMetadataForEmailAddressId(
-          activeEmailAddress.id,
-        )
-      setDraftMessagesMetadataList(metadataList)
+      const allItems: DraftEmailMessageMetadata[] = []
+      let nextToken: string | undefined = undefined
+      do {
+        const paginatedMetadata =
+          await sudoEmailClient.listDraftEmailMessageMetadataForEmailAddressId({
+            emailAddressId: activeEmailAddress.id,
+            limit: 20,
+            nextToken,
+          })
+        allItems.push(...paginatedMetadata.items)
+        nextToken = paginatedMetadata.nextToken
+      } while (nextToken !== undefined)
+      setDraftMessagesMetadataList(allItems)
     } catch (error) {
       setError(error as Error, 'Failed to list draft email messages')
     } finally {
@@ -174,7 +182,7 @@ export const useDraftEmailMessages = () => {
       setDraftsLoading(true)
       try {
         return await sudoEmailClient.createDraftEmailMessage({
-          rfc822Data: Buffer.from(rfc822Data),
+          rfc822Data: Buffer.from(rfc822Data).buffer,
           senderEmailAddressId: activeEmailAddress.id,
         })
       } catch (error) {

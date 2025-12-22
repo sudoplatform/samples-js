@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react'
-import { EmailFoldersContext } from '@contexts'
+import { EmailFoldersContext } from '@contexts/index'
 
 /**
  * Hook that will run the `onChangeCallback` function given if

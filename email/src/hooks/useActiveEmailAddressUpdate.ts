@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react'
 import { EmailAddress } from '@sudoplatform/sudo-email'
-import { EmailContext } from '@contexts'
+import { EmailContext } from '@contexts/index'
 
 /**
  * Hook that will run the `onChangeCallback` function given if

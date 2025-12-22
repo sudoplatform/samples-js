@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Input } from '@sudoplatform/web-ui'
+import { Input } from 'antd'
 import { FormItem } from '../SendEmailMessage.styled'
 import { TagsContainer, Tag, ClearIcon } from './EmailAddressesFormItem.styled'
 import { FormInstance } from 'antd'
@@ -113,7 +113,7 @@ export const EmailAddressesFormItem = ({
         label={fieldLabel}
         validateStatus={inputValidationMessage ? 'error' : 'success'}
         help={inputValidationMessage}
-        requiredMark={required}
+        required={required}
         rules={
           required
             ? [
