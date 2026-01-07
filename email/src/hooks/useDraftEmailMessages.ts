@@ -145,18 +145,26 @@ export const useDraftEmailMessages = () => {
     clearError()
     setDraftsLoading(true)
     try {
-      const allItems: DraftEmailMessageMetadata[] = []
       let nextToken: string | undefined = undefined
+      let allItems: DraftEmailMessageMetadata[] = []
       do {
-        const paginatedMetadata =
+        const metadataList =
           await sudoEmailClient.listDraftEmailMessageMetadataForEmailAddressId({
             emailAddressId: activeEmailAddress.id,
-            limit: 20,
-            nextToken,
+            limit: 5,
+            nextToken: nextToken,
           })
-        allItems.push(...paginatedMetadata.items)
-        nextToken = paginatedMetadata.nextToken
-      } while (nextToken !== undefined)
+
+        allItems = [...allItems, ...metadataList.items]
+
+        nextToken = metadataList.nextToken
+        console.debug(
+          'next token:',
+          nextToken,
+          metadataList.items.length,
+          allItems.length,
+        )
+      } while (nextToken !== undefined && allItems.length < 50)
       setDraftMessagesMetadataList(allItems)
     } catch (error) {
       setError(error as Error, 'Failed to list draft email messages')
