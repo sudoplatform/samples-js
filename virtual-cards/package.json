@@ -6,9 +6,9 @@
     "start": "yarn clean && parcel --port 3000 --https --no-cache --no-autoinstall ./src/index.html",
     "build": "yarn clean && parcel build --no-optimize ./src/index.html --public-url ./",
     "clean": "rm -rf ./dist",
-    "verify": "./node_modules/.bin/audit-with-suppressions && yarn lint",
+    "verify": "yarn dlx --package @anonyome/platform-build-tools audit-with-suppressions && yarn lint",
     "lint": "yarn lint:eslint && yarn lint:prettier",
-    "lint:eslint": "eslint \"{bin,integration-tests,src}/**/*.{ts,tsx}\"",
+    "lint:eslint": "eslint src/",
     "lint:prettier": "prettier -l \"{bin,integration-tests,src}/**/*.{js,json,jsx,ts,tsx}\""
   },
   "repository": "git+https://github.com/sudoplatform/samples-js.git",
@@ -59,6 +59,7 @@
     "@babel/preset-env": "^7.28.5",
     "@babel/preset-react": "^7.28.5",
     "@babel/preset-typescript": "^7.28.5",
+    "@eslint/js": "^10.0.1",
     "@jest/globals": "^27.5.1",
     "@parcel/config-default": "^2.16.3",
     "@parcel/core": "^2.16.3",
@@ -72,15 +73,13 @@
     "@types/react-router-dom": "^5.3.3",
     "@types/selenium-webdriver": "^4.35.4",
     "@types/styled-components": "^5.1.36",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
     "buffer": "^6.0.3",
     "chromedriver": "^132.0.2",
     "crypto-browserify": "^3.12.1",
-    "eslint": "^8.57.1",
-    "eslint-config-prettier": "^9.1.2",
+    "eslint": "^9",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-hooks": "7.0.0",
     "events": "^3.3.0",
     "geckodriver": "^5.0.0",
     "https-browserify": "^1.0.0",
@@ -99,6 +98,7 @@
     "string_decoder": "^1.3.0",
     "ts-jest": "^29.4.6",
     "typescript": "~5.9.3",
+    "typescript-eslint": "8.58.1",
     "url": "^0.11.4",
     "util": "^0.12.5",
     "vm-browserify": "^1.1.2"
@@ -121,6 +121,126 @@
       "until": 1768360820,
       "untilISO": "2026-01-14T03:20:20Z",
       "reason": "Suppress moderate vuln in sample application"
+    },
+    "1112052": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "@remix-run/router pinned by react-router-dom — transitive dep"
+    },
+    "1112453": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "lodash-es pinned by redux — transitive dep"
+    },
+    "1112666": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "@parcel/reporter-dev-server pinned by @parcel/config-default — transitive dep"
+    },
+    "1113153": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "fast-xml-parser pinned by @aws-sdk — transitive dep"
+    },
+    "1113275": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "axios 1.12.0 pinned by chromedriver — transitive dep"
+    },
+    "1113441": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "bn.js pinned by browserify-sign — transitive dep"
+    },
+    "1113442": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "bn.js pinned by create-ecdh — transitive dep"
+    },
+    "1113518": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "basic-ftp 5.0.5 pinned by get-uri — transitive dep"
+    },
+    "1113567": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "fast-xml-parser 4.4.1 pinned by @aws-sdk/core — transitive dep"
+    },
+    "1113568": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "fast-xml-parser pinned by @aws-sdk — transitive dep"
+    },
+    "1113569": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "fast-xml-parser pinned by @aws-sdk — transitive dep"
+    },
+    "1113570": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "fast-xml-parser 4.4.1 pinned by @aws-sdk/core — transitive dep"
+    },
+    "1114158": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "immutable 3.7.6 pinned by @ardatan/relay-compiler — transitive dep"
+    },
+    "1115338": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "fast-xml-parser 4.4.1 pinned by @aws-sdk/core — transitive dep"
+    },
+    "1115339": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "fast-xml-parser pinned by @aws-sdk — transitive dep"
+    },
+    "1115805": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "lodash-es pinned by redux — transitive dep"
+    },
+    "1115809": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "lodash-es pinned by redux — transitive dep"
+    },
+    "1116276": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "axios 1.12.0 pinned by chromedriver — transitive dep"
+    },
+    "1116307": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "fast-xml-parser pinned by @aws-sdk — transitive dep"
+    },
+    "1116308": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "fast-xml-parser 4.4.1 pinned by @aws-sdk/core — transitive dep"
+    },
+    "1116365": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "axios 1.12.0 pinned by chromedriver — transitive dep"
+    },
+    "1116454": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "basic-ftp 5.0.5 pinned by get-uri — transitive dep"
+    },
+    "1116473": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "axios 1.12.0 pinned by chromedriver — transitive dep"
+    },
+    "1116544": {
+      "until": 1778626309,
+      "untilISO": "2026-05-12T22:51:49Z",
+      "reason": "@parcel/reporter-dev-server - version too new."
     }
   }
 }

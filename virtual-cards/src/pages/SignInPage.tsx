@@ -24,10 +24,8 @@ export const SignInPage: React.FC = () => {
 
   const [keyRegistrationResult, registerWithKey] = useAsyncFn(async () => {
     const registerKeyUrl =
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       require('../../config/register_key.private') as RequestInfo
     const registerKeyIdUrl =
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       require('../../config/register_key.id') as RequestInfo
     const [registerKey, registerKeyId] = await Promise.all([
       fetch(registerKeyUrl).then((response) => {

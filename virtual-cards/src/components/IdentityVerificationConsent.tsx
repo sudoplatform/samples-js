@@ -27,7 +27,7 @@ export const IdentityVerificationConsent: React.FC = () => {
       const status =
         await identityVerificationClient.getIdentityDataProcessingConsentStatus()
       setConsentStatus(status?.consented ?? false)
-    } catch (e) {
+    } catch (_e) {
       setConsentStatus(false)
     } finally {
       setIsCheckingConsentStatus(false)
@@ -41,7 +41,7 @@ export const IdentityVerificationConsent: React.FC = () => {
         const required =
           await identityVerificationClient.isConsentRequiredForVerification()
         setConsentRequired(required)
-      } catch (e) {
+      } catch (_e) {
         setConsentRequired(false)
       }
     }
@@ -63,7 +63,7 @@ export const IdentityVerificationConsent: React.FC = () => {
           },
         )
       setConsentContent(content ?? null)
-    } catch (e) {
+    } catch (_e) {
       setConsentContent({
         content: 'Failed to fetch consent content.',
         language: preferredLanguage,
@@ -87,7 +87,7 @@ export const IdentityVerificationConsent: React.FC = () => {
       })
       void message.success('Consent provided successfully.')
       await fetchConsentStatus()
-    } catch (e) {
+    } catch (_e) {
       void message.error('Failed to provide consent.')
     } finally {
       setIsProvidingConsent(false)
@@ -100,7 +100,7 @@ export const IdentityVerificationConsent: React.FC = () => {
       await identityVerificationClient.withdrawIdentityDataProcessingConsent()
       void message.success('Consent withdrawn successfully.')
       await fetchConsentStatus()
-    } catch (e) {
+    } catch (_e) {
       void message.error('Failed to withdraw consent.')
     } finally {
       setIsWithdrawingConsent(false)
