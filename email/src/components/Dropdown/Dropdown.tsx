@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react'
 import { StyledDropdown, StyledButton } from './Dropdown.styled'
-import type { MenuProps } from 'antd'
 import { Space } from 'antd'
 import { DownOutlined, LoadingOutlined } from '@ant-design/icons'
 
@@ -60,7 +59,7 @@ export const Dropdown = <T,>({
               label: item.label,
               key: item.id,
               onClick: () => onChange(item),
-            })) as MenuProps['items'],
+            })),
           },
         }
   }, [disabled, items, onChange])

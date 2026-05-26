@@ -1,7 +1,2 @@
-export {
-  parseMessage,
-  Header,
-  Entity,
-  Attachment,
-  ParsedMessage,
-} from './MessageParser.js'
+export { parseMessage } from './MessageParser.js'
+export type { Header, Entity, Attachment, ParsedMessage } from './MessageParser'

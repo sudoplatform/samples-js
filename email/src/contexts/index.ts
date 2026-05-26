@@ -1,5 +1,6 @@
 export { AuthContext } from './AuthContext'
 export { EmailContext } from './EmailContext'
+export { EmailMaskContext } from './EmailMaskContext'
 export { EmailFoldersContext } from './EmailFoldersContext'
 export { MailboxContext } from './MailboxContext'
 export { ProjectContext } from './ProjectContext'

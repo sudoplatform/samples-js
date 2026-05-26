@@ -10,7 +10,7 @@ module.exports = {
     {
       files: ['**/*.js', '**/*.jsx'],
       extends: 'eslint:recommended',
-      parserOptions: { ecmaVersion: 2018 },
+      parserOptions: { ecmaVersion: 2018, sourceType: 'module' },
       env: { node: true },
     },
     // Standard typescript rules
@@ -58,14 +58,6 @@ module.exports = {
         '@typescript-eslint/no-unused-vars': 'off',
         '@typescript-eslint/no-use-before-define': 'off',
         '@typescript-eslint/no-var-requires': 'off',
-        '@typescript-eslint/quotes': [
-          'error',
-          'single',
-          {
-            avoidEscape: true,
-            allowTemplateLiterals: true,
-          },
-        ],
         '@typescript-eslint/require-await': 'error',
         'jest/no-disabled-tests': 'warn',
         'jest/no-focused-tests': 'error',

@@ -14,10 +14,7 @@ import { DefaultApiClientManager } from '@sudoplatform/sudo-api-client'
 import { createGlobalStyle } from 'styled-components'
 
 // Import sdk config and cast to object.
-const sdkConfig = require('@config/sudoplatformconfig.json') as Record<
-  string,
-  unknown
->
+import sdkConfig from '@config/sudoplatformconfig.json'
 
 const GlobalStyles = createGlobalStyle`
   body {

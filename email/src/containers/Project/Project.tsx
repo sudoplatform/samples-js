@@ -116,6 +116,10 @@ export const Project = ({ sudoUserClient }: Props): React.ReactElement => {
                           label: 'Mailbox',
                           path: '/mailbox',
                         },
+                        {
+                          label: 'Masks',
+                          path: '/masks',
+                        },
                       ],
                     },
                   ]}

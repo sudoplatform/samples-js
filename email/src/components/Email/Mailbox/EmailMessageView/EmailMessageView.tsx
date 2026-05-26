@@ -67,8 +67,25 @@ export const EmailMessageView = ({
         <ErrorBoundary error={emailMessageBodyError}>
           {emailMessageBodyLoading ? (
             <LoadingOutlined />
+          ) : emailMessageBody?.text ? (
+            emailMessageBody.text.trim().startsWith('<') ? (
+              <iframe
+                srcDoc={emailMessageBody.text}
+                sandbox=""
+                style={{
+                  width: '100%',
+                  minHeight: '400px',
+                  border: 'none',
+                }}
+                title="Email body"
+              />
+            ) : (
+              <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>
+                {emailMessageBody.text}
+              </pre>
+            )
           ) : (
-            emailMessageBody && (emailMessageBody.text ?? '')
+            ''
           )}
         </ErrorBoundary>
       </MessageTextBox>

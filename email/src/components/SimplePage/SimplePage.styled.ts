@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { theme } from '../../theme'
-import platformTilesImg from '../../../public/images/platform_tiles.png'
+const platformTilesImg = '/images/platform_tiles.png'
 
 export const FlexContainer = styled.div`
   position: absolute;

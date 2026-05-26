@@ -4,7 +4,6 @@ import {
   StyledButton,
   DropDownContainer,
 } from './DraftsDropdown.styled'
-import type { MenuProps } from 'antd'
 import { Space, Modal, DatePicker, message } from 'antd'
 import {
   DownOutlined,
@@ -216,17 +215,16 @@ export const DraftsDropdown = ({
         trigger={['click']}
         empty={draftMessagesMetadataList.length === 0}
         disabled={loading}
-        getPopupContainer={(triggerNode) =>
-          triggerNode.parentElement || document.body
-        }
         menu={{
-          items: draftMessagesMetadataList.map((draft) => ({
-            label: 'Draft saved at: ' + draft.updatedAt.toLocaleString(),
-            key: draft.updatedAt.toString(),
-            onClick: () => {
-              onChange(draft.id)
-            },
-          })) as MenuProps['items'],
+          items: [...draftMessagesMetadataList]
+            .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+            .map((draft) => ({
+              label: 'Draft saved at: ' + draft.updatedAt.toLocaleString(),
+              key: draft.updatedAt.toString(),
+              onClick: () => {
+                onChange(draft.id)
+              },
+            })),
         }}
         placement="bottomRight"
       >

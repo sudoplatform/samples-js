@@ -123,7 +123,9 @@ export const EmailAddressesFormItem = ({
                   message: 'At least one email address required',
                   validator: (_, value) => {
                     return emailAddresses.length === 0
-                      ? Promise.reject()
+                      ? Promise.reject(
+                          new Error('At least one email address required'),
+                        )
                       : Promise.resolve()
                   },
                 },
@@ -140,7 +142,7 @@ export const EmailAddressesFormItem = ({
             }
           }}
           onBlur={(e) => {
-            const { value } = e.target as HTMLInputElement
+            const { value } = e.target
 
             if (value.length !== 0) {
               /* Validate input value if user has clicked away from input but

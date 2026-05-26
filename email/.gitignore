@@ -9,6 +9,7 @@ config
 yarn-error.log
 .DS_Store
 coverage
+.kiro
 
 # VS Code
 .vscode

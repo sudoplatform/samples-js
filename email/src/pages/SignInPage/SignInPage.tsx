@@ -11,13 +11,12 @@ import {
   ContentContainer,
   StyledHeading,
 } from './SignInPage.styled'
+import registerKeyUrl from '@config/register_key.private?url'
+import registerKeyIdUrl from '@config/register_key.id?url'
 
 export const SignInPage = (): React.ReactElement => {
   const { sudoUserClient, setAuthenticationTokens } = useContext(AuthContext)
   const navigate = useNavigate()
-
-  const registerKeyUrl = require('@config/register_key.private') as RequestInfo
-  const registerKeyIdUrl = require('@config/register_key.id') as RequestInfo
 
   const [authResult, authHandler] = useAsyncFn(async () => {
     const authTokens = await authenticateWithRegisterKey(

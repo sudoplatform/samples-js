@@ -66,7 +66,7 @@ export const useSudoClients = (sudoUserClient: SudoUserClient) => {
 
     try {
       await Promise.all([
-        initEmailClient(sudoUserClient),
+        Promise.resolve(initEmailClient(sudoUserClient)),
         initEntitlementsClient(sudoUserClient),
         initProfilesClient(sudoUserClient),
       ])

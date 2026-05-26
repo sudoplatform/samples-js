@@ -1,6 +1,5 @@
 import React from 'react'
 import { StyledDropdown } from './MoveMessageFolderDropdown.styled'
-import { ItemType } from 'antd/es/menu/interface'
 import { FolderOutlined } from '@ant-design/icons'
 import { EmailFolder } from '@sudoplatform/sudo-email'
 import { MenuLink } from '@components/MenuLink'
@@ -32,7 +31,7 @@ export const MoveMessageFolderDropdown = ({
             onClick: () => {
               onChange(id)
             },
-          })) as ItemType[],
+          })),
       }}
       placement="bottomRight"
       disabled={disabled}

@@ -1,4 +1,4 @@
-import { useContext, useMemo, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { ProjectContext } from '@contexts/index'
 
 /**
@@ -13,41 +13,54 @@ export const useEncryptionStatus = (emailAddresses: string[]) => {
   const { sudoEmailClient } = useContext(ProjectContext)
   const [encrypted, setEncrypted] = useState(false)
 
-  useMemo(() => {
+  useEffect(() => {
     setEncrypted(false)
 
     if (emailAddresses.length === 0) {
       return
     }
 
+    let cancelled = false
+
     void (async () => {
-      let encrypted = false
+      let isEncrypted = false
       try {
         const result = await sudoEmailClient.lookupEmailAddressesPublicInfo({
           emailAddresses,
         })
 
         // Only set `encrypted` to true if all requested email addresses are found in
-        // result array
+        // result array and all have encryption enabled
         if (result.length !== 0 && emailAddresses.length === result.length) {
-          const inputEmailAddresses = emailAddresses.sort()
+          const inputEmailAddresses = [...emailAddresses].sort()
           const resultEmailAddresses = result
-            .map(({ emailAddress }) => emailAddress)
-            .sort()
+            .map(({ emailAddress, enableEncryption }) => ({
+              emailAddress,
+              enableEncryption,
+            }))
+            .sort((a, b) => a.emailAddress.localeCompare(b.emailAddress))
           if (
             inputEmailAddresses.every(
-              (address, i) => address === resultEmailAddresses[i],
+              (address, i) =>
+                address === resultEmailAddresses[i].emailAddress &&
+                resultEmailAddresses[i].enableEncryption,
             )
           ) {
-            encrypted = true
+            isEncrypted = true
           }
         }
       } catch (error) {
-        encrypted = false
+        isEncrypted = false
       } finally {
-        setEncrypted(encrypted)
+        if (!cancelled) {
+          setEncrypted(isEncrypted)
+        }
       }
     })()
+
+    return () => {
+      cancelled = true
+    }
   }, [emailAddresses, sudoEmailClient])
 
   return { encrypted }
