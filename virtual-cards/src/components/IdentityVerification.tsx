@@ -165,7 +165,7 @@ export const IdentityVerification: React.FC<Props> = (props) => {
             >
               <Input type="date" />
             </FormItem>
-            <FormItem label={<>&nbsp;</>}>
+            <FormItem>
               <Button
                 kind="primary"
                 type="submit"

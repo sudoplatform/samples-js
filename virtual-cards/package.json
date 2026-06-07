@@ -19,86 +19,86 @@
     "@react-native-community/async-storage": "^1.12.1",
     "@react-native-community/netinfo": "^5.9.10",
     "@redux-offline/redux-offline": "^2.6.0",
-    "@stripe/react-stripe-js": "^5.4.1",
-    "@stripe/stripe-js": "^8.5.3",
-    "@sudoplatform/sudo-api-client": "^16.1.1",
-    "@sudoplatform/sudo-common": "^12.2.1",
-    "@sudoplatform/sudo-entitlements": "^18.0.0",
-    "@sudoplatform/sudo-profiles": "^19.0.0",
-    "@sudoplatform/sudo-secure-id-verification": "^13.0.0",
-    "@sudoplatform/sudo-user": "^16.0.1",
-    "@sudoplatform/sudo-virtual-cards": "^15.0.0",
+    "@stripe/react-stripe-js": "^5.6.1",
+    "@stripe/stripe-js": "^8.11.0",
+    "@sudoplatform/sudo-api-client": "^16.2.0",
+    "@sudoplatform/sudo-common": "^12.2.7",
+    "@sudoplatform/sudo-entitlements": "^18.0.3",
+    "@sudoplatform/sudo-profiles": "^19.0.2",
+    "@sudoplatform/sudo-secure-id-verification": "^13.1.1",
+    "@sudoplatform/sudo-user": "^17.1.1",
+    "@sudoplatform/sudo-virtual-cards": "^16.0.0",
     "@sudoplatform/sudo-virtual-cards-simulator": "^7.0.0",
-    "@sudoplatform/sudo-web-crypto-provider": "^12.0.0",
+    "@sudoplatform/sudo-web-crypto-provider": "^12.0.2",
     "@sudoplatform/web-ui": "^2.1.4",
-    "@swc/helpers": "^0.5.17",
-    "antd": "^5.29.1",
-    "core-js": "^3.47.0",
+    "@swc/helpers": "^0.5.23",
+    "antd": "^5.29.3",
+    "core-js": "^3.49.0",
     "fp-ts": "^2.16.11",
-    "frames-react": "^1.2.3",
-    "graphql": "^16.12.0",
+    "frames-react": "^1.2.4",
+    "graphql": "^16.14.0",
     "io-ts": "^2.2.22",
     "react": "^18.3.1",
     "react-credit-cards": "^0.8.3",
     "react-dom": "^18.3.1",
     "react-error-boundary": "^3.1.4",
-    "react-is": "^19.2.3",
+    "react-is": "^19.2.6",
     "react-native": "^0.77.3",
     "react-plaid-link": "^3.6.1",
-    "react-router": "^6.30.2",
-    "react-router-dom": "^6.30.2",
+    "react-router": "^6.30.3",
+    "react-router-dom": "^6.30.3",
     "react-use": "^17.6.0",
     "redux": "^4.2.1",
     "regenerator-runtime": "^0.14.1",
     "styled-components": "^5.3.11"
   },
   "devDependencies": {
-    "@babel/core": "^7.28.5",
+    "@babel/core": "^7.29.7",
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.18.6",
     "@babel/plugin-proposal-optional-chaining": "^7.21.0",
-    "@babel/preset-env": "^7.28.5",
-    "@babel/preset-react": "^7.28.5",
-    "@babel/preset-typescript": "^7.28.5",
+    "@babel/preset-env": "^7.29.7",
+    "@babel/preset-react": "^7.29.7",
+    "@babel/preset-typescript": "^7.29.7",
     "@eslint/js": "^10.0.1",
     "@jest/globals": "^27.5.1",
-    "@parcel/config-default": "^2.16.3",
-    "@parcel/core": "^2.16.3",
-    "@parcel/transformer-typescript-tsc": "^2.16.3",
+    "@parcel/config-default": "^2.16.4",
+    "@parcel/core": "^2.16.4",
+    "@parcel/transformer-typescript-tsc": "^2.16.4",
     "@types/jest": "^29.5.14",
     "@types/path-browserify": "^1.0.3",
-    "@types/react": "^18.3.27",
+    "@types/react": "^18.3.29",
     "@types/react-credit-cards": "^0.8.4",
     "@types/react-dom": "^18.3.7",
     "@types/react-router": "^5.1.20",
     "@types/react-router-dom": "^5.3.3",
-    "@types/selenium-webdriver": "^4.35.4",
+    "@types/selenium-webdriver": "^4.35.5",
     "@types/styled-components": "^5.1.36",
     "buffer": "^6.0.3",
-    "chromedriver": "^132.0.2",
+    "chromedriver": "^149.0.0",
     "crypto-browserify": "^3.12.1",
-    "eslint": "^9",
+    "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "7.0.0",
+    "eslint-plugin-react-hooks": "7.1.1",
     "events": "^3.3.0",
     "geckodriver": "^5.0.0",
     "https-browserify": "^1.0.0",
     "jest": "^29.7.0",
     "os-browserify": "^0.3.0",
-    "parcel": "^2.16.3",
+    "parcel": "^2.16.4",
     "parcel-plugin-static-files-copy": "^2.6.0",
     "path-browserify": "^1.0.1",
-    "prettier": "^3.7.4",
+    "prettier": "^3.8.3",
     "punycode": "^2.3.1",
     "querystring-es3": "^0.2.1",
     "reflect-metadata": "^0.1.14",
-    "selenium-webdriver": "^4.39.0",
+    "selenium-webdriver": "^4.44.0",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "string_decoder": "^1.3.0",
-    "ts-jest": "^29.4.6",
+    "ts-jest": "^29.4.11",
     "typescript": "~5.9.3",
-    "typescript-eslint": "8.58.1",
+    "typescript-eslint": "8.60.0",
     "url": "^0.11.4",
     "util": "^0.12.5",
     "vm-browserify": "^1.1.2"
@@ -107,7 +107,8 @@
     "node-fetch": "^3.3.1",
     "minimatch": "^5.1.6",
     "http-cache-semantics": "^4.1.1",
-    "react-devtools-core": "^4.28.4"
+    "react-devtools-core": "^4.28.4",
+    "socks": "2.8.8"
   },
   "staticFiles": {
     "staticPath": [
@@ -117,130 +118,70 @@
   "browserslist": "> 0.25%, not dead",
   "packageManager": "yarn@4.12.0+sha512.f45ab632439a67f8bc759bf32ead036a1f413287b9042726b7cc4818b7b49e14e9423ba49b18f9e06ea4941c1ad062385b1d8760a8d5091a1a31e5f6219afca8",
   "auditSuppressions": {
-    "1111271": {
-      "until": 1768360820,
-      "untilISO": "2026-01-14T03:20:20Z",
-      "reason": "Suppress moderate vuln in sample application"
-    },
-    "1112052": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
-      "reason": "@remix-run/router pinned by react-router-dom — transitive dep"
-    },
-    "1112453": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
-      "reason": "lodash-es pinned by redux — transitive dep"
-    },
-    "1112666": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
-      "reason": "@parcel/reporter-dev-server pinned by @parcel/config-default — transitive dep"
-    },
     "1113153": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
-      "reason": "fast-xml-parser pinned by @aws-sdk — transitive dep"
-    },
-    "1113275": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
-      "reason": "axios 1.12.0 pinned by chromedriver — transitive dep"
-    },
-    "1113441": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
-      "reason": "bn.js pinned by browserify-sign — transitive dep"
-    },
-    "1113442": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
-      "reason": "bn.js pinned by create-ecdh — transitive dep"
-    },
-    "1113518": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
-      "reason": "basic-ftp 5.0.5 pinned by get-uri — transitive dep"
+      "until": 1783135885,
+      "untilISO": "2026-07-04T03:31:25Z",
+      "reason": "fast-xml-parser pinned by @aws-sdk - transitive dep"
     },
     "1113567": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
+      "until": 1783135885,
+      "untilISO": "2026-07-04T03:31:25Z",
       "reason": "fast-xml-parser 4.4.1 pinned by @aws-sdk/core — transitive dep"
     },
     "1113568": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
+      "until": 1783135885,
+      "untilISO": "2026-07-04T03:31:25Z",
       "reason": "fast-xml-parser pinned by @aws-sdk — transitive dep"
     },
     "1113569": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
+      "until": 1783135885,
+      "untilISO": "2026-07-04T03:31:25Z",
       "reason": "fast-xml-parser pinned by @aws-sdk — transitive dep"
     },
     "1113570": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
+      "until": 1783135885,
+      "untilISO": "2026-07-04T03:31:25Z",
       "reason": "fast-xml-parser 4.4.1 pinned by @aws-sdk/core — transitive dep"
     },
-    "1114158": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
-      "reason": "immutable 3.7.6 pinned by @ardatan/relay-compiler — transitive dep"
-    },
     "1115338": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
+      "until": 1783135885,
+      "untilISO": "2026-07-04T03:31:25Z",
       "reason": "fast-xml-parser 4.4.1 pinned by @aws-sdk/core — transitive dep"
     },
     "1115339": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
+      "until": 1783135885,
+      "untilISO": "2026-07-04T03:31:25Z",
       "reason": "fast-xml-parser pinned by @aws-sdk — transitive dep"
     },
-    "1115805": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
-      "reason": "lodash-es pinned by redux — transitive dep"
-    },
-    "1115809": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
-      "reason": "lodash-es pinned by redux — transitive dep"
-    },
-    "1116276": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
-      "reason": "axios 1.12.0 pinned by chromedriver — transitive dep"
-    },
     "1116307": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
+      "until": 1783135885,
+      "untilISO": "2026-07-04T03:31:25Z",
       "reason": "fast-xml-parser pinned by @aws-sdk — transitive dep"
     },
     "1116308": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
+      "until": 1783135885,
+      "untilISO": "2026-07-04T03:31:25Z",
       "reason": "fast-xml-parser 4.4.1 pinned by @aws-sdk/core — transitive dep"
     },
-    "1116365": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
-      "reason": "axios 1.12.0 pinned by chromedriver — transitive dep"
+    "1117911": {
+      "until": 1783135885,
+      "untilISO": "2026-07-04T03:31:25Z",
+      "reason": "fast-xml-parser: Not relevant to our use case"
     },
-    "1116454": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
-      "reason": "basic-ftp 5.0.5 pinned by get-uri — transitive dep"
+    "1119441": {
+      "until": 1783135760,
+      "untilISO": "2026-07-04T03:29:20Z",
+      "reason": "uuid: pinned by @sudoplatform/web-ui to old version"
     },
-    "1116473": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
-      "reason": "axios 1.12.0 pinned by chromedriver — transitive dep"
+    "1119459": {
+      "until": 1783135829,
+      "untilISO": "2026-07-04T03:30:29Z",
+      "reason": "js-cookie: Suppress for sample app"
     },
-    "1116544": {
-      "until": 1778626309,
-      "untilISO": "2026-05-12T22:51:49Z",
-      "reason": "@parcel/reporter-dev-server - version too new."
+    "1120064": {
+      "until": 1783135784,
+      "untilISO": "2026-07-04T03:29:44Z",
+      "reason": "react-router: Suppress for sample app"
     }
   }
 }

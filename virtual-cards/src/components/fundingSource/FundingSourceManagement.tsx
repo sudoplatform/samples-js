@@ -11,8 +11,8 @@ import {
 } from '@sudoplatform/sudo-virtual-cards'
 import { CachePolicy } from '@sudoplatform/sudo-common'
 import { Card, Spinner, VSpace } from '@sudoplatform/web-ui'
-import { Collapse, message } from 'antd'
-import React, { useContext, useEffect, useState } from 'react'
+import { Collapse, message, Modal } from 'antd'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { useAsync, useAsyncFn } from 'react-use'
 import { AsyncState } from 'react-use/lib/useAsyncFn'
 import { AppContext } from '../../containers/AppContext'
@@ -20,6 +20,7 @@ import { ErrorFeedback } from '../ErrorFeedback'
 import { LearnMore } from '../LearnMore'
 import { AddStripeCardFundingSourceForm } from './AddStripeCardFundingSourceForm'
 import { FundingSourceList } from './FundingSourceList'
+import { ProvisionalFundingSourceList } from './ProvisionalFundingSourceList'
 
 export interface CardFundingSourceInputs {
   addressLine1: string
@@ -63,6 +64,29 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
   )
 
   const [stripeKey, setStripeKey] = useState(1)
+  const [changedFundingSourceId, setChangedFundingSourceId] = useState<
+    string | undefined
+  >(undefined)
+  const [changeModalVisible, setChangeModalVisible] = useState(false)
+
+  const handleCloseChangeModal = useCallback(() => {
+    setChangeModalVisible(false)
+  }, [])
+
+  // Subscribe to funding source changes
+  useEffect(() => {
+    const subscriptionId = 'funding-source-change-subscription'
+    void virtualCardsClient.subscribeToFundingSourceChanges(subscriptionId, {
+      fundingSourceChanged: async (fundingSource: FundingSource) => {
+        setChangedFundingSourceId(fundingSource.id)
+        setChangeModalVisible(true)
+        void listFundingSources()
+      },
+    })
+    return () => {
+      virtualCardsClient.unsubscribeFromFundingSourceChanges(subscriptionId)
+    }
+  }, [virtualCardsClient, listFundingSources])
 
   // Initial load of funding sources on mount.
   useEffect(() => {
@@ -200,7 +224,6 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
           <FundingSourceList
             listFundingSourcesResult={listFundingSourcesResult}
             onFundingSourceCancelled={() => listFundingSources()}
-            onFundingSourceReviewed={() => listFundingSources()}
           />
           <h4>Add Funding Source</h4>
           {fundingSourceProvidersConfigPromiseResult.loading ? (
@@ -247,10 +270,26 @@ export const FundingSourceManagement: React.FC<Props> = (props) => {
               }
             />
           )}
+          <ProvisionalFundingSourceList />
         </>
       ) : (
         <VSpace>❌ Identity is not verified</VSpace>
       )}
+      <Modal
+        title="Funding Source Changed"
+        open={changeModalVisible}
+        onOk={handleCloseChangeModal}
+        onCancel={handleCloseChangeModal}
+        footer={null}
+        getContainer={false}
+      >
+        <p>
+          A funding source change notification was received for funding source:
+        </p>
+        <p>
+          <strong>{changedFundingSourceId}</strong>
+        </p>
+      </Modal>
     </Card>
   )
 }

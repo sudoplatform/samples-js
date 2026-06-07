@@ -53,7 +53,7 @@ export const SudoCreate: React.FC<Props> = (props) => {
             <Input />
           </FormItem>
         </HSpace>
-        <FormItem label={<>&nbsp;</>}>
+        <FormItem>
           <Button
             class-name="create-sudo"
             kind="primary"

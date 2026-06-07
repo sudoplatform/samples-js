@@ -66,8 +66,10 @@ export const VirtualCardsPage: React.FC<Props> = ({ userClient }) => {
   const [isVerified, setIsVerified] = useState(false)
 
   const [deregisterResult, deregister] = useAsyncFn(async () => {
+    await initState?.value?.virtualCardsClient.reset()
     await initState?.value?.profilesClient.reset()
     await initState?.value?.identityVerificationClient.reset()
+    localStorage.removeItem('virtualCardsKeyArchive')
     await userClient.reset()
     return 'complete'
   })
@@ -93,6 +95,37 @@ export const VirtualCardsPage: React.FC<Props> = ({ userClient }) => {
     )
     const virtualCardsClient = new DefaultSudoVirtualCardsClient({
       sudoUserClient: userClient,
+    })
+
+    // Import previously exported keys if available
+    const storedKeyArchive = localStorage.getItem('virtualCardsKeyArchive')
+    if (storedKeyArchive) {
+      const binaryString = atob(storedKeyArchive)
+      const bytes = new Uint8Array(binaryString.length)
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i)
+      }
+      await virtualCardsClient.importKeys(bytes.buffer)
+    }
+
+    await virtualCardsClient.createKeysIfAbsent()
+
+    // Export keys to localStorage
+    const keyArchive = await virtualCardsClient.exportKeys()
+    const byteArray = new Uint8Array(keyArchive)
+    let binary = ''
+    for (let i = 0; i < byteArray.length; i++) {
+      binary += String.fromCharCode(byteArray[i])
+    }
+    localStorage.setItem('virtualCardsKeyArchive', btoa(binary))
+
+    // Set sign-in callback to notify user if session expires
+    virtualCardsClient.setSignInCallback({
+      signIn: async () => {
+        throw new Error(
+          'Your session has expired. Automatic sign-in is not supported. Please reload the page to start again.',
+        )
+      },
     })
     const config =
       DefaultConfigurationManager.getInstance().bindConfigSet<SimulatorApiConfig>(

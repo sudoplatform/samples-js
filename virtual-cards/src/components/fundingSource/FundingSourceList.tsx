@@ -2,16 +2,14 @@ import { ListOutput } from '@sudoplatform/sudo-common'
 import {
   CreditCardNetwork,
   FundingSource,
-  FundingSourceFlags,
-  fundingSourceNeedsRefresh,
   FundingSourceState,
-  FundingSourceType,
 } from '@sudoplatform/sudo-virtual-cards'
 import { Button } from '@sudoplatform/web-ui'
 import { Avatar, List, Image } from 'antd'
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import useAsyncFn, { AsyncState } from 'react-use/lib/useAsyncFn'
 import { AppContext } from '../../containers/AppContext'
+import { FundingSourceDetailModal } from './FundingSourceDetailModal'
 
 const mastercard_logo_png =
   'iVBORw0KGgoAAAANSUhEUgAAAEoAAAA0CAYAAAAt+K7AAAAACXBIWXMAAAsSAAALEgHS3X78AAADn0lEQVRoge2azU4TURTH/50OhZICjaHBZAw2wT24cimsXIpPAO0LqE+gPIGYuC59A3DpCnyDspeEGLsaQoo2lH6OuZNbUnTaOffOuSJ6f8ms5n6c859z536cC4vFYrFYLBaLFimTsvnwigCKEa9qBdQbOm22Kl4ewFrEq9NsuX6q0yYFVqF8hE5sAngOYB1AfkJx4dQRgI8F1A8mtduqeKKtLdlmlPBDGsM2ARxky3ofIwoWoaRArwC8jBFnHEK0nQLq1dH3rYq3DeBNjDjjECK9B7DLIVhioXx4IoL2NAX6lRqAUq4SOrknIygpoq1Stjw5auNIJJQPTzizzeDMNanMALkPaASuwyH8KNVsuV7Stku3oimRFp6dIb0MdFYXEbgOZ/OQEbuhMxS1LDEpknuvi1Szi8zxGVK9AWcXkLPlvk5FZaF8eG+5RRLMb5yHIg0ZimWA9VbFe6farNLQ8xFO04fcts+u/cDs6vfId/0HOXRXFri7hByCR9TCqhGl/CXiSOf6Y0USpL814TS71OZU2FMpTBbKR7imiVoRJ2KSSEPckwvubgVFuU4joRJRW9yWimiafnQZW85ptJG66nN3D7mYJUESSu7ZOBZ/N8gst8hl3XqTu3vIqCKNEmpEbSazJ5rplfhoGuKc0UVVhOQbVainJiwcXQ7EIYaeoeFH8o0qlM6mdCJT99vKdVJXPW4zQPWNKhT7bJfKBMp1DC0TWIViR2XYXdNXF5eLWxPqrnFrQvXOp+6UVFShatwdBx31E57BQobbDMiDvVioQrEf2utEVDDjcpsBahBQhfqczJbfCTqOkljBTDp8DEDyjSpUovPmcbRPZsllB4tZEyaA6htJqALCfBn7f6rzle58f4kuqgIiF8g69CBTP6z0m2m0v8QLMMhPY5AzMkvuUAuShZI5N/aoujyejy3TM3PCKaKpSigXorqOeq1uz2REVE0SSxwFG4omJV+UhCogPGPeVTYphsvaXOQMGOSm0Hs4x90dpA9HrYp3SD3l1Mrr+fD2uc+oRtNVIa6D9pMlI7m9bLn+WLWSrhUl7v+VWFddfFoMI0usl0wmQHUq/lcpdfFf0r2wkeiTFRDm8l9Q90sEakHHeRy4zgZjxDakQKUkt1r+5Ws/SBpFo5i8SBb3s2/I7QPlItlom3EfYniRrPrXXSQbh48wFZSXEVGUw0kYfyq3Rcq0KjeuO67LaBRPg7odsVgsFovFYrH8IQD8BAkkH/VJeDRYAAAAAElFTkSuQmCC'
@@ -37,40 +35,31 @@ const card_logos: Partial<
 interface Props {
   listFundingSourcesResult: AsyncState<ListOutput<FundingSource>>
   onFundingSourceCancelled?: (fundingSource: FundingSource) => void
-  onFundingSourceRefreshed?: (fundingSource: FundingSource) => void
-  onFundingSourceReviewed?: (fundingSource: FundingSource) => void
 }
 
 export const FundingSourceList: React.FC<Props> = (props) => {
   const { virtualCardsClient } = useContext(AppContext)
+  const [modalVisible, setModalVisible] = useState(false)
+  const [selectedFundingSourceId, setSelectedFundingSourceId] = useState<
+    string | undefined
+  >(undefined)
   const [cancelFundingSourceResult, cancelFundingSource] = useAsyncFn(
     async (fundingSource: FundingSource) => {
       await virtualCardsClient.cancelFundingSource(fundingSource.id)
       props.onFundingSourceCancelled?.(fundingSource)
     },
   )
-  const [reviewFundingSourceResult, reviewFundingSource] = useAsyncFn(
-    async (fundingSource: FundingSource) => {
-      await virtualCardsClient.reviewUnfundedFundingSource(fundingSource.id)
-      props.onFundingSourceReviewed?.(fundingSource)
-    },
-  )
 
   return (
-    <List
-      dataSource={props.listFundingSourcesResult.value?.items}
-      loading={props.listFundingSourcesResult.loading}
-      renderItem={(item) => {
-        console.log({ item })
-        const unfundednessString = item.flags.includes(
-          FundingSourceFlags.Unfunded,
-        )
-          ? ' ***UNFUNDED***'
-          : ''
-        return (
-          <List.Item key={item.id}>
-            {item.type === FundingSourceType.CreditCard ? (
-              item.state === FundingSourceState.Active ? (
+    <>
+      <List
+        dataSource={props.listFundingSourcesResult.value?.items}
+        loading={props.listFundingSourcesResult.loading}
+        renderItem={(item) => {
+          console.log({ item })
+          return (
+            <List.Item key={item.id}>
+              {item.state === FundingSourceState.Active ? (
                 <>
                   <List.Item.Meta
                     avatar={
@@ -92,6 +81,16 @@ export const FundingSourceList: React.FC<Props> = (props) => {
                     description={`****${item.last4 ?? ''} (${item.cardType})`}
                   />
                   <Button
+                    kind="primary"
+                    onClick={() => {
+                      setSelectedFundingSourceId(item.id)
+                      setModalVisible(true)
+                    }}
+                  >
+                    Full Funding Source
+                  </Button>
+                  <span style={{ marginLeft: '8px' }} />
+                  <Button
                     danger={true}
                     disabled={cancelFundingSourceResult.loading}
                     loading={cancelFundingSourceResult.loading}
@@ -101,124 +100,46 @@ export const FundingSourceList: React.FC<Props> = (props) => {
                   </Button>
                 </>
               ) : (
-                <List.Item.Meta
-                  avatar={
-                    card_logos[item.network] ? (
-                      <Avatar
-                        shape={'square'}
-                        src={
-                          <Image
-                            width={'100%'}
-                            src={`data:${
-                              card_logos[item.network]?.type ?? ''
-                            };base64,${card_logos[item.network]?.data ?? ''}`}
-                          />
-                        }
-                      />
-                    ) : undefined
-                  }
-                  title={`Card: ${item.network} - Cancelled`}
-                  description={`****${item.last4 ?? ''} (${item.cardType})`}
-                />
-              )
-            ) : item.state === FundingSourceState.Active ? (
-              <>
-                <List.Item.Meta
-                  avatar={
-                    item.institutionLogo ? (
-                      <Avatar
-                        shape={'square'}
-                        src={
-                          <Image
-                            width={'100%'}
-                            src={`data:${item.institutionLogo.type};base64,${item.institutionLogo.data}`}
-                          />
-                        }
-                      />
-                    ) : undefined
-                  }
-                  title={`Bank Account: ${item.institutionName}`}
-                  description={`****${item.last4 ?? ''} (${
-                    item.bankAccountType
-                  }${unfundednessString})`}
-                />
-                <Button
-                  danger={true}
-                  disabled={
-                    cancelFundingSourceResult.loading ||
-                    unfundednessString.length > 0
-                  }
-                  loading={cancelFundingSourceResult.loading}
-                  onClick={() => cancelFundingSource(item)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  danger={true}
-                  disabled={
-                    reviewFundingSourceResult.loading ||
-                    unfundednessString.length == 0
-                  }
-                  loading={reviewFundingSourceResult.loading}
-                  onClick={() => reviewFundingSource(item)}
-                >
-                  Review
-                </Button>
-              </>
-            ) : fundingSourceNeedsRefresh(item) ? (
-              <>
-                <List.Item.Meta
-                  avatar={
-                    item.institutionLogo ? (
-                      <Avatar
-                        shape={'square'}
-                        src={
-                          <Image
-                            width={'100%'}
-                            src={`data:${item.institutionLogo.type};base64,${item.institutionLogo.data}`}
-                          />
-                        }
-                      />
-                    ) : undefined
-                  }
-                  title={`Bank Account: ${item.institutionName} - Needs Refreshing`}
-                  description={`****${item.last4 ?? ''} (${
-                    item.bankAccountType
-                  })`}
-                />
-                <Button
-                  danger={true}
-                  disabled={cancelFundingSourceResult.loading}
-                  loading={cancelFundingSourceResult.loading}
-                  onClick={() => cancelFundingSource(item)}
-                >
-                  Cancel
-                </Button>
-              </>
-            ) : (
-              <List.Item.Meta
-                avatar={
-                  item.institutionLogo ? (
-                    <Avatar
-                      shape={'square'}
-                      src={
-                        <Image
-                          width={'100%'}
-                          src={`data:${item.institutionLogo.type};base64,${item.institutionLogo.data}`}
+                <>
+                  <List.Item.Meta
+                    avatar={
+                      card_logos[item.network] ? (
+                        <Avatar
+                          shape={'square'}
+                          src={
+                            <Image
+                              width={'100%'}
+                              src={`data:${
+                                card_logos[item.network]?.type ?? ''
+                              };base64,${card_logos[item.network]?.data ?? ''}`}
+                            />
+                          }
                         />
-                      }
-                    />
-                  ) : undefined
-                }
-                title={`Bank Account: ${item.institutionName} - Cancelled`}
-                description={`****${item.last4 ?? ''} (${
-                  item.bankAccountType
-                })`}
-              />
-            )}
-          </List.Item>
-        )
-      }}
-    ></List>
+                      ) : undefined
+                    }
+                    title={`Card: ${item.network} - Cancelled`}
+                    description={`****${item.last4 ?? ''} (${item.cardType})`}
+                  />
+                  <Button
+                    kind="primary"
+                    onClick={() => {
+                      setSelectedFundingSourceId(item.id)
+                      setModalVisible(true)
+                    }}
+                  >
+                    Full Funding Source
+                  </Button>
+                </>
+              )}
+            </List.Item>
+          )
+        }}
+      ></List>
+      <FundingSourceDetailModal
+        fundingSourceId={selectedFundingSourceId}
+        open={modalVisible}
+        setVisible={setModalVisible}
+      />
+    </>
   )
 }

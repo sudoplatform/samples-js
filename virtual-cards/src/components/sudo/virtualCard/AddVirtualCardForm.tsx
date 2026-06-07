@@ -6,6 +6,7 @@ import {
   ProvisionalVirtualCard,
   ProvisioningState,
   VirtualCard,
+  FundingSourceState,
 } from '@sudoplatform/sudo-virtual-cards'
 import { useAsync, useAsyncFn } from 'react-use'
 import { ErrorFeedback } from '../../ErrorFeedback'
@@ -130,11 +131,13 @@ export const AddVirtualCardForm: React.FC<Props> = ({
           ) : fundingSourcesResult.value?.length ? (
             <Select
               placeholder="Please choose a Funding Source..."
-              options={fundingSourcesResult.value.map((f) => ({
-                key: f.id,
-                value: f.id,
-                label: `**** ${f.last4}`,
-              }))}
+              options={fundingSourcesResult.value
+                .filter((f) => f.state === FundingSourceState.Active)
+                .map((f) => ({
+                  key: f.id,
+                  value: f.id,
+                  label: `**** ${f.last4}`,
+                }))}
             ></Select>
           ) : (
             <div>Please add a funding source</div>

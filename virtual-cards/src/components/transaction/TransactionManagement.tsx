@@ -2,6 +2,7 @@ import {
   CachePolicy,
   ListOperationResultStatus,
 } from '@sudoplatform/sudo-common'
+import { TransactionType } from '@sudoplatform/sudo-virtual-cards'
 import { Card, VSpace } from '@sudoplatform/web-ui'
 import { Select } from 'antd'
 import React, { useContext, useState } from 'react'
@@ -14,7 +15,10 @@ import { TransactionList } from './TransactionList'
 export const TransactionManagement: React.FC = () => {
   const { virtualCardsClient } = useContext(AppContext)
 
-  const [, setChosenCardId] = useState<string | undefined>(undefined)
+  const [chosenCardId, setChosenCardId] = useState<string | undefined>(
+    undefined,
+  )
+  const [filterByType, setFilterByType] = useState(false)
 
   const virtualCardsResult = useAsync(async () => {
     const result = await virtualCardsClient.listVirtualCards({
@@ -29,6 +33,15 @@ export const TransactionManagement: React.FC = () => {
   const [listTransactionsResult, listTransactions] = useAsyncFn(
     async (cardId: string) => {
       return await virtualCardsClient.listTransactionsByCardId({ cardId })
+    },
+  )
+
+  const [listTransactionsByTypeResult, listTransactionsByType] = useAsyncFn(
+    async (cardId: string, transactionType: TransactionType) => {
+      return await virtualCardsClient.listTransactionsByCardIdAndType({
+        cardId,
+        transactionType,
+      })
     },
   )
 
@@ -47,25 +60,56 @@ export const TransactionManagement: React.FC = () => {
           error={virtualCardsResult.error}
         />
       ) : virtualCardsResult.value?.length ? (
-        <Select
-          placeholder="Please choose a Virtual Card..."
-          options={virtualCardsResult.value.map((c) => ({
-            key: c.id,
-            value: c.id,
-            label: `${c.alias} **** ${c.last4}`,
-          }))}
-          onSelect={(value: string) => {
-            if (value) {
-              const cardId = value
-              void listTransactions(cardId)
-              setChosenCardId(cardId)
-            }
-          }}
-        />
+        <>
+          <Select
+            placeholder="Please choose a Virtual Card..."
+            options={virtualCardsResult.value.map((c) => ({
+              key: c.id,
+              value: c.id,
+              label: `${c.alias} **** ${c.last4}`,
+            }))}
+            onSelect={(value: string) => {
+              if (value) {
+                const cardId = value
+                void listTransactions(cardId)
+                setChosenCardId(cardId)
+              }
+            }}
+          />{' '}
+          <Select
+            placeholder="Transaction Type"
+            allowClear
+            disabled={!chosenCardId}
+            options={Object.values(TransactionType).map((t) => ({
+              key: t,
+              value: t,
+              label: t,
+            }))}
+            onSelect={(value: string) => {
+              if (chosenCardId && value) {
+                setFilterByType(true)
+                void listTransactionsByType(
+                  chosenCardId,
+                  value as TransactionType,
+                )
+              }
+            }}
+            onClear={() => {
+              setFilterByType(false)
+              if (chosenCardId) {
+                void listTransactions(chosenCardId)
+              }
+            }}
+          />
+        </>
       ) : (
         <>Please add a virtual card</>
       )}
-      <TransactionList listTransactionsResult={listTransactionsResult} />
+      <TransactionList
+        listTransactionsResult={
+          filterByType ? listTransactionsByTypeResult : listTransactionsResult
+        }
+      />
     </Card>
   )
 }

@@ -5,6 +5,7 @@ import { VirtualCard } from '@sudoplatform/sudo-virtual-cards'
 import { AppContext } from '../../../containers/AppContext'
 import { Button } from '@sudoplatform/web-ui'
 import { UpdateCardModal } from './UpdateCardModal'
+import { VirtualCardDetailModal } from './VirtualCardDetailModal'
 import { List } from 'antd'
 import Cards from 'react-credit-cards'
 import type { Focused } from 'react-credit-cards'
@@ -34,6 +35,10 @@ export const VirtualCardList: React.FC<Props> = (props) => {
     undefined,
   )
   const [modalVisible, setModalVisible] = useState(false)
+  const [detailModalVisible, setDetailModalVisible] = useState(false)
+  const [selectedCardId, setSelectedCardId] = useState<string | undefined>(
+    undefined,
+  )
 
   const [cvcVisible, setCvcVisible] = useState('name' as Focused)
 
@@ -67,25 +72,52 @@ export const VirtualCardList: React.FC<Props> = (props) => {
                   />
                 </div>
                 {item.state === CardState.Issued ? (
-                  <>
-                    <Button
-                      disabled={cancelVirtualCardResult.loading}
-                      loading={cancelVirtualCardResult.loading}
-                      onClick={() => showUpdateModal(item)}
-                    >
-                      Update
-                    </Button>
-                    <Button
-                      danger={true}
-                      disabled={cancelVirtualCardResult.loading}
-                      loading={cancelVirtualCardResult.loading}
-                      onClick={() => cancelVirtualCard(item)}
-                    >
-                      Cancel
-                    </Button>
-                  </>
+                  <div>
+                    <div>
+                      <Button
+                        disabled={cancelVirtualCardResult.loading}
+                        loading={cancelVirtualCardResult.loading}
+                        onClick={() => showUpdateModal(item)}
+                      >
+                        Update
+                      </Button>
+                      <span style={{ marginLeft: '8px' }} />
+                      <Button
+                        danger={true}
+                        disabled={cancelVirtualCardResult.loading}
+                        loading={cancelVirtualCardResult.loading}
+                        onClick={() => cancelVirtualCard(item)}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                    <div style={{ textAlign: 'center', marginTop: '8px' }}>
+                      <Button
+                        kind="primary"
+                        onClick={() => {
+                          setSelectedCardId(item.id)
+                          setDetailModalVisible(true)
+                        }}
+                      >
+                        Full Virtual Card
+                      </Button>
+                    </div>
+                  </div>
                 ) : (
-                  <>This card is {item.state}.</>
+                  <div>
+                    <div>This card is {item.state}.</div>
+                    <div style={{ textAlign: 'center', marginTop: '8px' }}>
+                      <Button
+                        kind="primary"
+                        onClick={() => {
+                          setSelectedCardId(item.id)
+                          setDetailModalVisible(true)
+                        }}
+                      >
+                        Full Virtual Card
+                      </Button>
+                    </div>
+                  </div>
                 )}
               </>
             </List.Item>
@@ -100,6 +132,11 @@ export const VirtualCardList: React.FC<Props> = (props) => {
           onCardUpdated={(id) => props.onVirtualCardUpdated?.(id)}
         />
       )}
+      <VirtualCardDetailModal
+        virtualCardId={selectedCardId}
+        open={detailModalVisible}
+        setVisible={setDetailModalVisible}
+      />
     </>
   )
 }
