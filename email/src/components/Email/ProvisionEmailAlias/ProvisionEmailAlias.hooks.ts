@@ -1,6 +1,10 @@
 import { useContext, useState } from 'react'
 import { useAsync } from 'react-use'
-import { EmailMaskContext, ProjectContext, SudosContext } from '@contexts/index'
+import {
+  EmailAliasContext,
+  ProjectContext,
+  SudosContext,
+} from '@contexts/index'
 import { Sudo } from '@sudoplatform/sudo-profiles'
 import { Form, message } from 'antd'
 import { useErrorBoundary } from '@components/ErrorBoundary'
@@ -10,52 +14,53 @@ import {
   VerifyExternalEmailAddressResult,
 } from '@sudoplatform/sudo-email'
 
-const emailMaskAudience = 'sudoplatform.email.email-address'
+const emailAliasAudience = 'sudoplatform.email.email-address'
 
 /**
- * Hook that provides a list of supported email mask domains,
+ * Hook that provides a list of supported email alias domains,
  * based on the `sudoEmailClient` in <ProjectContext>.
  */
-export const useSupportedEmailMaskDomains = () => {
+export const useSupportedEmailAliasDomains = () => {
   const { sudoEmailClient } = useContext(ProjectContext)
   const { error, setError } = useErrorBoundary()
   const { loading, value } = useAsync(async () => {
     try {
-      const supportedEmailMaskDomainsResult =
-        await sudoEmailClient.getEmailMaskDomains()
-      return supportedEmailMaskDomainsResult
+      const emailDomains = await sudoEmailClient.listEmailDomains()
+      return emailDomains
+        .filter((emailDomain) => emailDomain.isAliasDomain)
+        .map((emailDomain) => emailDomain.domain)
     } catch (error) {
       setError(
         error as Error,
-        'Failed to retrieve supported email mask domains (reload required)',
+        'Failed to retrieve supported email alias domains (reload required)',
         true, // fatal
       )
     }
   })
 
   return {
-    supportedEmailMaskDomainsLoading: loading,
-    supportedEmailMaskDomainsError: error,
-    supportedEmailMaskDomains: value,
+    supportedEmailAliasDomainsLoading: loading,
+    supportedEmailAliasDomainsError: error,
+    supportedEmailAliasDomains: value,
   }
 }
 
-export interface EmailMaskAddressInputs {
+export interface EmailAliasAddressInputs {
   internalEmailAddress?: string
   externalEmailAddress?: string
-  maskLocalPart: string
-  maskDomain: string
+  aliasLocalPart: string
+  aliasDomain: string
 }
 
 /**
  * Hook providing api retrival, form logic and error
- * handling for <ProvisionEmailMask> component.
+ * handling for <ProvisionEmailAlias> component.
  */
-export const useProvisionEmailMaskForm = () => {
+export const useProvisionEmailAliasForm = () => {
   const { sudoEmailClient, sudoProfilesClient } = useContext(ProjectContext)
   const { activeSudo } = useContext(SudosContext)
-  const { listEmailMasksHandler } = useContext(EmailMaskContext)
-  const [form] = Form.useForm<EmailMaskAddressInputs>()
+  const { listEmailAliasesHandler } = useContext(EmailAliasContext)
+  const [form] = Form.useForm<EmailAliasAddressInputs>()
   const [loading, setLoading] = useState(false)
 
   // Use hook for managing error state for <ErrorBoundary>.
@@ -64,14 +69,14 @@ export const useProvisionEmailMaskForm = () => {
   // Clear any errors on active Sudo change.
   useActiveSudoUpdate(clearError)
 
-  // Provision new email mask from form input.
-  const provisionEmailMaskHandler = async (
+  // Provision new email alias from form input.
+  const provisionEmailAliasHandler = async (
     {
       externalEmailAddress,
       internalEmailAddress,
-      maskLocalPart,
-      maskDomain,
-    }: EmailMaskAddressInputs,
+      aliasLocalPart,
+      aliasDomain,
+    }: EmailAliasAddressInputs,
     { id: sudoId }: Sudo,
   ) => {
     const realAddress = internalEmailAddress ?? externalEmailAddress
@@ -80,23 +85,26 @@ export const useProvisionEmailMaskForm = () => {
     }
     const ownershipProofToken = await sudoProfilesClient.getOwnershipProof(
       sudoId as string,
-      emailMaskAudience,
+      emailAliasAudience,
     )
 
-    return await sudoEmailClient.provisionEmailMask({
+    return await sudoEmailClient.provisionEmailAlias({
       realAddress,
-      maskAddress: `${maskLocalPart}@${maskDomain}`,
+      aliasAddress: `${aliasLocalPart}@${aliasDomain}`,
       ownershipProofToken,
     })
   }
 
   // Verify external address.
   const verifyExternalEmailAddressHandler = async (
-    emailMaskId: string,
+    emailAliasId: string,
     emailAddress: string,
     verificationCode?: string,
   ): Promise<VerifyExternalEmailAddressResult | undefined> => {
-    const input: VerifyExternalEmailAddressInput = { emailAddress, emailMaskId }
+    const input: VerifyExternalEmailAddressInput = {
+      emailAddress,
+      emailAliasId,
+    }
     if (verificationCode) {
       input.verificationCode = verificationCode
     }
@@ -105,7 +113,7 @@ export const useProvisionEmailMaskForm = () => {
   }
 
   // Return validated form values (null if not validated).
-  const getFormValues = async (): Promise<EmailMaskAddressInputs | null> => {
+  const getFormValues = async (): Promise<EmailAliasAddressInputs | null> => {
     try {
       return await form.validateFields()
     } catch {
@@ -127,7 +135,7 @@ export const useProvisionEmailMaskForm = () => {
           throw new Error('No Sudo identity provided')
         }
 
-        const { maskAddress } = await provisionEmailMaskHandler(
+        const { aliasAddress } = await provisionEmailAliasHandler(
           formValues,
           activeSudo,
         )
@@ -135,20 +143,20 @@ export const useProvisionEmailMaskForm = () => {
         setLoading(false)
 
         void message.success(
-          `Successfully provisioned email mask '${maskAddress}'`,
+          `Successfully provisioned email alias '${aliasAddress}'`,
         )
 
         // Reset form fields (leave `domain` intact).
         form.resetFields([
-          'maskLocalPart',
+          'aliasLocalPart',
           'internalEmailAddress',
           'externalEmailAddress',
         ])
 
-        listEmailMasksHandler()
+        listEmailAliasesHandler()
       } catch (error) {
         setLoading(false)
-        setError(error as Error, 'Failed to provision email mask')
+        setError(error as Error, 'Failed to provision email alias')
 
         throw error
       }
@@ -158,8 +166,8 @@ export const useProvisionEmailMaskForm = () => {
   return {
     form,
     formSubmitHandler,
-    provisionEmailMaskLoading: loading,
-    provisionEmailMaskError: error,
+    provisionEmailAliasLoading: loading,
+    provisionEmailAliasError: error,
     verifyExternalEmailAddressHandler,
   }
 }

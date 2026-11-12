@@ -9,7 +9,7 @@ export const AuthCallbackPage = (): React.ReactElement => {
 
   const status = useAsync(async () => {
     await sudoUserClient.processFederatedSignInTokens(location.href)
-    navigate('/')
+    void navigate('/')
   }, [sudoUserClient])
 
   return (

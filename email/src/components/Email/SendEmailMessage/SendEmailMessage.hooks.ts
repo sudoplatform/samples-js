@@ -5,10 +5,10 @@ import {
   DeleteEmailMessageSuccessResult,
   EmailAddress,
   EmailAttachment,
-  EmailMask,
+  EmailAlias,
   EmailMessageOperationFailureResult,
   SendEmailMessageInput,
-  SendMaskedEmailMessageInput,
+  SendEmailMessageViaAliasInput,
 } from '@sudoplatform/sudo-email'
 import { useForm } from '@sudoplatform/web-ui'
 import moment from 'moment'
@@ -23,7 +23,7 @@ import { DraftEmailMessagesContext } from '../../../contexts/DraftEmailMessagesC
 
 interface FormInputs {
   senderEmailAddress: string
-  senderEmailMask?: string
+  senderEmailAlias?: string
   toEmailAddresses?: string
   ccEmailAddresses?: string
   bccEmailAddresses?: string
@@ -37,7 +37,7 @@ interface FormSubmitParams {
   bccEmailAddresses: string[]
   replyingMessageId?: string
   forwardingMessageId?: string
-  senderEmailMask?: EmailMask
+  senderEmailAlias?: EmailAlias
 }
 
 export interface EmailMessageParams extends FormSubmitParams {
@@ -54,7 +54,7 @@ export interface EmailMessageParams extends FormSubmitParams {
  */
 export const formatEmailMessage = ({
   senderEmailAddress,
-  senderEmailMask,
+  senderEmailAlias,
   toEmailAddresses,
   ccEmailAddresses,
   bccEmailAddresses,
@@ -62,8 +62,8 @@ export const formatEmailMessage = ({
   messageBody,
 }: EmailMessageParams): string => {
   const date = moment(new Date()).format('ddd, DD MMM YYYY HH:mm:ss ZZ')
-  const fromAddress = senderEmailMask
-    ? senderEmailMask.maskAddress
+  const fromAddress = senderEmailAlias
+    ? senderEmailAlias.aliasAddress
     : senderEmailAddress.emailAddress
 
   return (
@@ -134,7 +134,7 @@ export const useSendEmailMessageForm = () => {
         emailMessageHeader: {
           from: {
             emailAddress: emailMessageParams.senderEmailAddress.emailAddress,
-            displayName: emailMessageParams.senderEmailAddress.alias,
+            displayName: emailMessageParams.senderEmailAddress.displayName,
           },
           to: emailMessageParams.toEmailAddresses.map((a) => ({
             emailAddress: a,
@@ -163,24 +163,24 @@ export const useSendEmailMessageForm = () => {
     }
   }
 
-  // Wrapper function to send email mask message and set UI if fail occurs.
-  const sendMaskedEmailMessageHandler = async (
+  // Wrapper function to send email alias message and set UI if fail occurs.
+  const sendEmailMessageViaAliasHandler = async (
     emailMessageParams: EmailMessageParams,
   ): Promise<string> => {
     clearError()
 
     try {
-      const input: SendMaskedEmailMessageInput = {
-        senderEmailMaskId: emailMessageParams.senderEmailMask
-          ? emailMessageParams.senderEmailMask.id
+      const input: SendEmailMessageViaAliasInput = {
+        senderEmailAliasId: emailMessageParams.senderEmailAlias
+          ? emailMessageParams.senderEmailAlias.id
           : '',
         attachments: emailMessageParams.attachments,
         body: emailMessageParams.messageBody,
         inlineAttachments: [],
         emailMessageHeader: {
           from: {
-            emailAddress: emailMessageParams.senderEmailMask
-              ? emailMessageParams.senderEmailMask.maskAddress
+            emailAddress: emailMessageParams.senderEmailAlias
+              ? emailMessageParams.senderEmailAlias.aliasAddress
               : '',
           },
           to: emailMessageParams.toEmailAddresses.map((a) => ({
@@ -201,11 +201,11 @@ export const useSendEmailMessageForm = () => {
       } else if (emailMessageParams.forwardingMessageId) {
         input.forwardingMessageId = emailMessageParams.forwardingMessageId
       }
-      const result = await sudoEmailClient.sendMaskedEmailMessage(input)
+      const result = await sudoEmailClient.sendEmailMessageViaAlias(input)
 
       return result.id
     } catch (error) {
-      setError(error as Error, 'Failed to send email mask message')
+      setError(error as Error, 'Failed to send email alias message')
       throw error
     }
   }
@@ -279,8 +279,8 @@ export const useSendEmailMessageForm = () => {
 
     try {
       const fields = await formValidateHandler()
-      if (formSubmitParams.senderEmailMask) {
-        await sendMaskedEmailMessageHandler({
+      if (formSubmitParams.senderEmailAlias) {
+        await sendEmailMessageViaAliasHandler({
           senderEmailAddress: activeEmailAddress,
           subject: fields.subject,
           messageBody: fields.messageBody,

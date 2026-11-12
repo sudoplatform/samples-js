@@ -17,10 +17,11 @@ export const useSupportedEmailDomains = () => {
   const { error, setError } = useErrorBoundary()
   const { loading, value } = useAsync(async () => {
     try {
-      const supportedEmailDomainsResult =
-        await sudoEmailClient.getSupportedEmailDomains()
+      const emailDomains = await sudoEmailClient.listEmailDomains()
 
-      return supportedEmailDomainsResult
+      return emailDomains
+        .filter((emailDomain) => !emailDomain.isAliasDomain)
+        .map((emailDomain) => emailDomain.domain)
     } catch (error) {
       setError(
         error as Error,
@@ -73,7 +74,7 @@ export const useProvisionEmailAddressForm = () => {
     return await sudoEmailClient.provisionEmailAddress({
       emailAddress: `${localPart}@${domain}`,
       ownershipProofToken,
-      alias: displayName,
+      displayName,
     })
   }
 

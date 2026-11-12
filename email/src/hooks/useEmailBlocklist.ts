@@ -97,9 +97,19 @@ export const useEmailBlocklist = () => {
     setLoading(true)
 
     try {
+      // `unblockEmailAddressesByHashedValue` operates on the hashed values of
+      // blocked addresses, so resolve the hashed value for each selected
+      // plaintext address from the current blocklist before unblocking.
+      const currentBlocklist = await sudoEmailClient.getEmailAddressBlocklist()
+      const hashedValues = currentBlocklist
+        .filter((unsealedAddress) =>
+          addresses.includes(unsealedAddress.address),
+        )
+        .map((unsealedAddress) => unsealedAddress.hashedBlockedValue)
+
       const unblockEmailAddressesResult =
-        await sudoEmailClient.unblockEmailAddresses({
-          addresses,
+        await sudoEmailClient.unblockEmailAddressesByHashedValue({
+          hashedValues,
         })
 
       if (

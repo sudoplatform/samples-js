@@ -6,35 +6,38 @@ import { Input, Form, FormItem, Select, Spinner } from '@sudoplatform/web-ui'
 import { Switch, Flex } from 'antd'
 import { Button } from '@components/Button'
 import {
-  useProvisionEmailMaskForm,
-  useSupportedEmailMaskDomains,
-} from './ProvisionEmailMask.hooks'
-import { StretchForm, SubmitButtonContainer } from './ProvisionEmailMask.styled'
+  useProvisionEmailAliasForm,
+  useSupportedEmailAliasDomains,
+} from './ProvisionEmailAlias.hooks'
+import {
+  StretchForm,
+  SubmitButtonContainer,
+} from './ProvisionEmailAlias.styled'
 import { ErrorBoundary } from '@components/ErrorBoundary'
-import { useGetMaskConfiguration } from '@hooks/useGetMaskConfiguration'
+import { useGetAliasConfiguration } from '@hooks/useGetAliasConfiguration'
 
-interface ProvisionEmailMaskProps {
+interface ProvisionEmailAliasProps {
   showExternal: boolean
   onShowExternalChange: (value: boolean) => void
 }
 
-export const ProvisionEmailMask = ({
+export const ProvisionEmailAlias = ({
   showExternal,
   onShowExternalChange,
-}: ProvisionEmailMaskProps): React.ReactElement => {
+}: ProvisionEmailAliasProps): React.ReactElement => {
   const {
-    masksConfigurationDataLoading,
-    masksConfigurationDataError,
-    internalEmailMaskEnabled,
-    externalEmailMaskEnabled,
-    masksConfigurationDataHandler,
-  } = useGetMaskConfiguration()
+    aliasesConfigurationDataLoading,
+    aliasesConfigurationDataError,
+    internalEmailAliasEnabled,
+    externalEmailAliasEnabled,
+    aliasesConfigurationDataHandler,
+  } = useGetAliasConfiguration()
 
   const {
-    supportedEmailMaskDomainsLoading,
-    supportedEmailMaskDomainsError,
-    supportedEmailMaskDomains,
-  } = useSupportedEmailMaskDomains()
+    supportedEmailAliasDomainsLoading,
+    supportedEmailAliasDomainsError,
+    supportedEmailAliasDomains,
+  } = useSupportedEmailAliasDomains()
 
   const { emailAddresses, emailAddressesLoading, emailAddressesError } =
     useContext(EmailContext)
@@ -42,16 +45,16 @@ export const ProvisionEmailMask = ({
   const {
     form,
     formSubmitHandler,
-    provisionEmailMaskLoading,
-    provisionEmailMaskError,
-  } = useProvisionEmailMaskForm()
+    provisionEmailAliasLoading,
+    provisionEmailAliasError,
+  } = useProvisionEmailAliasForm()
 
   // Use the prop-driven external state
   const isExternal = showExternal
 
   // Store form values to display 'in-progress' email address text.
-  const [maskLocalPart, setMaskLocalPart] = useState<string>('')
-  const [maskDomain, setMaskDomain] = useState<string>('')
+  const [aliasLocalPart, setAliasLocalPart] = useState<string>('')
+  const [aliasDomain, setAliasDomain] = useState<string>('')
   const [availabilityResult, setAvailabilityResult] = useState<
     boolean | undefined
   >()
@@ -59,30 +62,33 @@ export const ProvisionEmailMask = ({
   const [externalEmailAddress, setExternalEmailAddress] = useState<string>('')
 
   useEffect(() => {
-    // Set the 'maskDomain' input field with value of first maskDomain in retrieved list.
-    if (supportedEmailMaskDomains && supportedEmailMaskDomains?.length !== 0) {
-      const maskDomain = supportedEmailMaskDomains[0]
-      form.setFieldValue('maskDomain', maskDomain)
-      setMaskDomain(maskDomain)
+    // Set the 'aliasDomain' input field with value of first aliasDomain in retrieved list.
+    if (
+      supportedEmailAliasDomains &&
+      supportedEmailAliasDomains?.length !== 0
+    ) {
+      const aliasDomain = supportedEmailAliasDomains[0]
+      form.setFieldValue('aliasDomain', aliasDomain)
+      setAliasDomain(aliasDomain)
     }
 
-    void masksConfigurationDataHandler()
+    void aliasesConfigurationDataHandler()
   }, [
-    supportedEmailMaskDomains,
+    supportedEmailAliasDomains,
     form,
-    setMaskDomain,
-    masksConfigurationDataHandler,
+    setAliasDomain,
+    aliasesConfigurationDataHandler,
   ])
 
   const onSwitchChange = (checked: boolean): void => {
     onShowExternalChange(checked)
     // Reset shared state when toggling
-    setMaskLocalPart('')
+    setAliasLocalPart('')
     setExternalEmailAddress('')
     setAvailabilityResult(undefined)
     setSelectedEmail(undefined)
     form.resetFields([
-      'maskLocalPart',
+      'aliasLocalPart',
       'internalEmailAddress',
       'externalEmailAddress',
     ])
@@ -91,7 +97,7 @@ export const ProvisionEmailMask = ({
   const onSubmit = async (): Promise<void> => {
     try {
       await formSubmitHandler()
-      setMaskLocalPart('')
+      setAliasLocalPart('')
       setExternalEmailAddress('')
       setSelectedEmail(undefined)
       setAvailabilityResult(undefined)
@@ -100,36 +106,36 @@ export const ProvisionEmailMask = ({
     }
   }
 
-  // Determine if the form should be disabled (masks not enabled)
-  const isFormDisabled = internalEmailMaskEnabled === false
+  // Determine if the form should be disabled (aliases not enabled)
+  const isFormDisabled = internalEmailAliasEnabled === false
 
   return (
-    <Card title="Create Email Mask">
-      {masksConfigurationDataLoading ? (
+    <Card title="Create Email Alias">
+      {aliasesConfigurationDataLoading ? (
         <div>
           <Spinner />
-          Loading mask configuration...
+          Loading alias configuration...
         </div>
-      ) : masksConfigurationDataError ? (
-        <ErrorBoundary error={masksConfigurationDataError} />
+      ) : aliasesConfigurationDataError ? (
+        <ErrorBoundary error={aliasesConfigurationDataError} />
       ) : (
         <ErrorBoundary
           error={
-            supportedEmailMaskDomainsError ||
-            provisionEmailMaskError ||
+            supportedEmailAliasDomainsError ||
+            provisionEmailAliasError ||
             emailAddressesError
           }
         >
           {isFormDisabled && (
             <div style={{ marginBottom: 20 }}>
-              Email masks are not enabled for the current configuration.
+              Email aliases are not enabled for the current configuration.
             </div>
           )}
-          {externalEmailMaskEnabled && (
+          {externalEmailAliasEnabled && (
             <Flex justify="left" style={{ marginBottom: 20 }}>
               <Switch
-                unCheckedChildren="Internal Email Mask"
-                checkedChildren="External Email Mask"
+                unCheckedChildren="Internal Email Alias"
+                checkedChildren="External Email Alias"
                 checked={isExternal}
                 onChange={onSwitchChange}
                 disabled={isFormDisabled}
@@ -185,8 +191,8 @@ export const ProvisionEmailMask = ({
                 </FormItem>
               )}
               <FormItem
-                name="maskLocalPart"
-                label="Mask Local Part"
+                name="aliasLocalPart"
+                label="Alias Local Part"
                 rules={[
                   {
                     required: true,
@@ -196,32 +202,32 @@ export const ProvisionEmailMask = ({
               >
                 <Input
                   type="text"
-                  value={maskLocalPart}
+                  value={aliasLocalPart}
                   disabled={isFormDisabled}
                   onChange={(e) => {
                     e.preventDefault()
-                    setMaskLocalPart(e.target.value)
+                    setAliasLocalPart(e.target.value)
                   }}
                 />
               </FormItem>
               <FormItem
-                name="maskDomain"
-                label="Mask Domain"
-                initialValue={'Getting mask domains...'}
+                name="aliasDomain"
+                label="Alias Domain"
+                initialValue={'Getting alias domains...'}
                 rules={[
                   {
                     required: true,
-                    message: "'Mask Domain' required",
+                    message: "'Alias Domain' required",
                   },
                 ]}
               >
                 <Input disabled={true} />
               </FormItem>
             </StretchForm>
-            {maskLocalPart.length !== 0 && maskDomain.length !== 0 && (
+            {aliasLocalPart.length !== 0 && aliasDomain.length !== 0 && (
               <EmailAddressAvailability
-                localPart={maskLocalPart}
-                domain={maskDomain}
+                localPart={aliasLocalPart}
+                domain={aliasDomain}
                 onAvailabilityRetrieved={setAvailabilityResult}
               />
             )}
@@ -229,15 +235,15 @@ export const ProvisionEmailMask = ({
               <Button
                 className="provision-email-submit-button"
                 type="submit"
-                loading={provisionEmailMaskLoading}
+                loading={provisionEmailAliasLoading}
                 disabled={
                   isFormDisabled ||
                   (!isExternal && emailAddressesLoading) ||
                   (!isExternal && !emailAddresses?.length) ||
                   (isExternal && !externalEmailAddress.trim()) ||
-                  !maskLocalPart.trim() ||
-                  supportedEmailMaskDomainsLoading ||
-                  provisionEmailMaskLoading ||
+                  !aliasLocalPart.trim() ||
+                  supportedEmailAliasDomainsLoading ||
+                  provisionEmailAliasLoading ||
                   !availabilityResult
                 }
                 onClick={onSubmit}

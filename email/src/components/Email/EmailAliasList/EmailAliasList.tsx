@@ -1,129 +1,131 @@
 import React, { useContext, useState } from 'react'
 import {
-  EmailMask,
-  EmailMaskRealAddressType,
-  EmailMaskStatus,
+  EmailAlias,
+  EmailAliasRealAddressType,
+  EmailAliasStatus,
 } from '@sudoplatform/sudo-email'
 import { TableCard as Card } from '@components/Card'
 import { Table, DangerLink } from '@components/Table'
 import { ErrorBoundary } from '@components/ErrorBoundary'
-import { useUpdateEmailMask } from '@hooks/useUpdateEmailMask'
-import { useEmailMaskDeprovision } from '@hooks/useEmailMaskDeprovision'
-import { useEmailMaskDisable } from '@hooks/useEmailMaskDisable'
-import { useEmailMaskEnable } from '@hooks/useEmailMaskEnable'
+import { useUpdateEmailAlias } from '@hooks/useUpdateEmailAlias'
+import { useEmailAliasDeprovision } from '@hooks/useEmailAliasDeprovision'
+import { useEmailAliasDisable } from '@hooks/useEmailAliasDisable'
+import { useEmailAliasEnable } from '@hooks/useEmailAliasEnable'
 import { useVerifyExternalEmail } from '@hooks/useVerifyExternalEmail'
-import { StyledLinkButton, ButtonsWrapper } from './EmailMaskList.styled'
+import { StyledLinkButton, ButtonsWrapper } from './EmailAliasList.styled'
 import { message, Tag, Form, Input, DatePicker, Button, Modal } from 'antd'
-import { EmailMaskContext } from '@contexts/EmailMaskContext'
+import { EmailAliasContext } from '@contexts/EmailAliasContext'
 import type { Dayjs } from 'dayjs'
 import dayjs from 'dayjs'
 
-export interface EmailMaskInputs {
+export interface EmailAliasInputs {
   expiresAt?: Dayjs
   metadata?: string
 }
 
-interface EmailMaskListProps {
+interface EmailAliasListProps {
   showExternal: boolean
 }
 
 /**
- * Component that renders the list of email mask from `<EmailMaskContext>`.
+ * Component that renders the list of email alias from `<EmailAliasContext>`.
  */
-export const EmailMaskList = ({
+export const EmailAliasList = ({
   showExternal,
-}: EmailMaskListProps): React.ReactElement => {
+}: EmailAliasListProps): React.ReactElement => {
   const {
-    emailMasks,
-    emailMasksLoading,
-    emailMasksError,
-    listEmailMasksHandler,
-  } = useContext(EmailMaskContext)
+    emailAliases,
+    emailAliasesLoading,
+    emailAliasesError,
+    listEmailAliasesHandler,
+  } = useContext(EmailAliasContext)
 
   const {
-    deprovisionEmailMaskLoading,
-    deprovisionEmailMaskError,
-    deprovisionEmailMaskHandler,
-  } = useEmailMaskDeprovision()
+    deprovisionEmailAliasLoading,
+    deprovisionEmailAliasError,
+    deprovisionEmailAliasHandler,
+  } = useEmailAliasDeprovision()
 
   const {
-    enableEmailMaskLoading,
-    enableEmailMaskError,
-    enableEmailMaskHandler,
-  } = useEmailMaskEnable()
+    enableEmailAliasLoading,
+    enableEmailAliasError,
+    enableEmailAliasHandler,
+  } = useEmailAliasEnable()
 
   const {
-    disableEmailMaskLoading,
-    disableEmailMaskError,
-    disableEmailMaskHandler,
-  } = useEmailMaskDisable()
+    disableEmailAliasLoading,
+    disableEmailAliasError,
+    disableEmailAliasHandler,
+  } = useEmailAliasDisable()
 
   const {
-    updateEmailMaskError,
-    updateEmailMaskLoading,
-    updateEmailMaskHandler,
-  } = useUpdateEmailMask()
+    updateEmailAliasError,
+    updateEmailAliasLoading,
+    updateEmailAliasHandler,
+  } = useUpdateEmailAlias()
 
   const { verifyLoading, initiateVerification, completeVerification } =
     useVerifyExternalEmail()
 
-  const [verifyingMaskId, setVerifyingMaskId] = useState<string | null>(null)
-  const [verifyingMaskAddress, setVerifyingMaskAddress] = useState<string>('')
+  const [verifyingAliasId, setVerifyingAliasId] = useState<string | null>(null)
+  const [verifyingAliasAddress, setVerifyingAliasAddress] = useState<string>('')
   const [verifyModalOpen, setVerifyModalOpen] = useState(false)
   const [verificationCode, setVerificationCode] = useState('')
   const [verificationCodeError, setVerificationCodeError] = useState<
     string | null
   >(null)
   const [editingId, setEditingId] = useState<string | undefined>()
-  const [form] = Form.useForm<EmailMaskInputs>()
+  const [form] = Form.useForm<EmailAliasInputs>()
 
-  const isEditing = (record: EmailMask) => record.id === editingId
+  const isEditing = (record: EmailAlias) => record.id === editingId
 
   /**
    * Handler function to invoke the email deprovision API for a given
    * email address.
    */
-  const deprovisionEmailMask = async (emailMask: EmailMask): Promise<void> => {
+  const deprovisionEmailAlias = async (
+    emailAlias: EmailAlias,
+  ): Promise<void> => {
     try {
-      await deprovisionEmailMaskHandler(emailMask)
+      await deprovisionEmailAliasHandler(emailAlias)
 
       void message.success(
-        `Email mask '${emailMask.maskAddress}' deprovisioned for Email Address '${emailMask.realAddress}'`,
+        `Email alias '${emailAlias.aliasAddress}' deprovisioned for Email Address '${emailAlias.realAddress}'`,
       )
-      void listEmailMasksHandler()
+      void listEmailAliasesHandler()
     } catch (error) {
-      void message.error('Failed to deprovision email mask')
+      void message.error('Failed to deprovision email alias')
     }
   }
 
-  const disableEmailMask = async (emailMask: EmailMask): Promise<void> => {
+  const disableEmailAlias = async (emailAlias: EmailAlias): Promise<void> => {
     try {
-      await disableEmailMaskHandler(emailMask)
+      await disableEmailAliasHandler(emailAlias)
 
       void message.success(
-        `Email mask '${emailMask.maskAddress}' disabled for Email Address '${emailMask.realAddress}'`,
+        `Email alias '${emailAlias.aliasAddress}' disabled for Email Address '${emailAlias.realAddress}'`,
       )
-      void listEmailMasksHandler()
+      void listEmailAliasesHandler()
     } catch (error) {
-      void message.error('Failed to disable email mask')
+      void message.error('Failed to disable email alias')
     }
   }
 
-  const enableEmailMask = async (emailMask: EmailMask): Promise<void> => {
+  const enableEmailAlias = async (emailAlias: EmailAlias): Promise<void> => {
     try {
-      await enableEmailMaskHandler(emailMask)
+      await enableEmailAliasHandler(emailAlias)
 
       void message.success(
-        `Email mask '${emailMask.maskAddress}' enabled for Email Address '${emailMask.realAddress}'`,
+        `Email alias '${emailAlias.aliasAddress}' enabled for Email Address '${emailAlias.realAddress}'`,
       )
-      void listEmailMasksHandler()
+      void listEmailAliasesHandler()
     } catch (error) {
-      void message.error('Failed to enable email mask')
+      void message.error('Failed to enable email alias')
     }
   }
 
-  const updateEmailMask = async (emailMask: EmailMask): Promise<void> => {
-    let values: EmailMaskInputs
+  const updateEmailAlias = async (emailAlias: EmailAlias): Promise<void> => {
+    let values: EmailAliasInputs
     try {
       values = await form.validateFields()
     } catch {
@@ -131,18 +133,22 @@ export const EmailMaskList = ({
       return
     }
     try {
-      await updateEmailMaskHandler(emailMask, values.metadata, values.expiresAt)
-      void listEmailMasksHandler()
+      await updateEmailAliasHandler(
+        emailAlias,
+        values.metadata,
+        values.expiresAt,
+      )
+      void listEmailAliasesHandler()
     } catch (error) {
-      void message.error('Failed to update email mask')
+      void message.error('Failed to update email alias')
     }
   }
 
-  const handleVerifyClick = async (emailMask: EmailMask): Promise<void> => {
-    setVerifyingMaskId(emailMask.id)
-    setVerifyingMaskAddress(emailMask.realAddress)
+  const handleVerifyClick = async (emailAlias: EmailAlias): Promise<void> => {
+    setVerifyingAliasId(emailAlias.id)
+    setVerifyingAliasAddress(emailAlias.realAddress)
     try {
-      await initiateVerification(emailMask.id, emailMask.realAddress)
+      await initiateVerification(emailAlias.id, emailAlias.realAddress)
       setVerifyModalOpen(true)
       setVerificationCode('')
       setVerificationCodeError(null)
@@ -150,7 +156,7 @@ export const EmailMaskList = ({
       void message.error(
         (error as Error).message || 'Failed to initiate verification',
       )
-      setVerifyingMaskId(null)
+      setVerifyingAliasId(null)
     }
   }
 
@@ -159,22 +165,22 @@ export const EmailMaskList = ({
       setVerificationCodeError('Please enter a verification code')
       return
     }
-    if (!verifyingMaskId) {
+    if (!verifyingAliasId) {
       return
     }
     try {
       const result = await completeVerification(
-        verifyingMaskId,
-        verifyingMaskAddress,
+        verifyingAliasId,
+        verifyingAliasAddress,
         verificationCode,
       )
       if (result.isVerified) {
         void message.success('External email address verified successfully')
         setVerifyModalOpen(false)
-        setVerifyingMaskId(null)
+        setVerifyingAliasId(null)
         setVerificationCode('')
         setVerificationCodeError(null)
-        void listEmailMasksHandler()
+        void listEmailAliasesHandler()
       } else {
         if (result.reason) {
           void message.error(result.reason)
@@ -189,41 +195,43 @@ export const EmailMaskList = ({
 
   const handleVerifyCancel = (): void => {
     setVerifyModalOpen(false)
-    setVerifyingMaskId(null)
+    setVerifyingAliasId(null)
     setVerificationCode('')
     setVerificationCodeError(null)
   }
 
   return (
-    <Card title="Email Masks">
+    <Card title="Email Aliases">
       <ErrorBoundary
         error={
-          emailMasksError ??
-          deprovisionEmailMaskError ??
-          updateEmailMaskError ??
-          enableEmailMaskError ??
-          disableEmailMaskError
+          emailAliasesError ??
+          deprovisionEmailAliasError ??
+          updateEmailAliasError ??
+          enableEmailAliasError ??
+          disableEmailAliasError
         }
       >
         <Form form={form} component={false}>
           <Table
-            dataSource={emailMasks.filter((mask) =>
+            dataSource={emailAliases.filter((alias) =>
               showExternal
-                ? mask.realAddressType === EmailMaskRealAddressType.EXTERNAL
-                : mask.realAddressType === EmailMaskRealAddressType.INTERNAL,
+                ? alias.realAddressType === EmailAliasRealAddressType.EXTERNAL
+                : alias.realAddressType === EmailAliasRealAddressType.INTERNAL,
             )}
             rowKey="id"
             loading={
-              emailMasksLoading ||
-              updateEmailMaskLoading ||
-              deprovisionEmailMaskLoading ||
-              enableEmailMaskLoading ||
-              disableEmailMaskLoading
+              emailAliasesLoading ||
+              updateEmailAliasLoading ||
+              deprovisionEmailAliasLoading ||
+              enableEmailAliasLoading ||
+              disableEmailAliasLoading
             }
             columns={[
               {
-                title: showExternal ? 'External Mask Address' : 'Mask Address',
-                dataIndex: 'maskAddress',
+                title: showExternal
+                  ? 'External Alias Address'
+                  : 'Alias Address',
+                dataIndex: 'aliasAddress',
               },
               {
                 title: 'Real Email Address',
@@ -232,10 +240,10 @@ export const EmailMaskList = ({
               {
                 title: 'Status',
                 dataIndex: 'status',
-                render: (status: EmailMaskStatus) => (
+                render: (status: EmailAliasStatus) => (
                   <Tag
                     color={
-                      status === EmailMaskStatus.ENABLED ? 'blue' : 'orange'
+                      status === EmailAliasStatus.ENABLED ? 'blue' : 'orange'
                     }
                     style={{ margin: 0 }}
                   >
@@ -247,8 +255,8 @@ export const EmailMaskList = ({
                 title: 'Metadata',
                 dataIndex: 'metadata',
                 render: (colData, rowData) => {
-                  const emailMask = rowData as EmailMask
-                  const editing = isEditing(emailMask)
+                  const emailAlias = rowData as EmailAlias
+                  const editing = isEditing(emailAlias)
 
                   return editing ? (
                     <Form.Item name="metadata" style={{ margin: 0 }}>
@@ -263,8 +271,8 @@ export const EmailMaskList = ({
                 title: 'Expires at',
                 dataIndex: 'expiresAt',
                 render: (_, rowData) => {
-                  const emailMask = rowData as EmailMask
-                  const editing = isEditing(emailMask)
+                  const emailAlias = rowData as EmailAlias
+                  const editing = isEditing(emailAlias)
 
                   return editing ? (
                     <Form.Item name="expiresAt" style={{ margin: 0 }}>
@@ -272,8 +280,8 @@ export const EmailMaskList = ({
                     </Form.Item>
                   ) : (
                     <>
-                      {emailMask.expiresAt
-                        ? dayjs(emailMask.expiresAt).format('YYYY-MM-DD HH:mm')
+                      {emailAlias.expiresAt
+                        ? dayjs(emailAlias.expiresAt).format('YYYY-MM-DD HH:mm')
                         : '-'}
                     </>
                   )
@@ -281,12 +289,12 @@ export const EmailMaskList = ({
               },
               {
                 render: (_, rowData) => {
-                  const emailMask = rowData as EmailMask
-                  const editing = isEditing(emailMask)
+                  const emailAlias = rowData as EmailAlias
+                  const editing = isEditing(emailAlias)
 
-                  const { maskAddress: emailMaskValue } = emailMask
+                  const { aliasAddress: emailAliasValue } = emailAlias
                   const isVerifyingThis =
-                    verifyingMaskId === emailMask.id && verifyLoading
+                    verifyingAliasId === emailAlias.id && verifyLoading
 
                   return (
                     <ButtonsWrapper>
@@ -294,7 +302,7 @@ export const EmailMaskList = ({
                         <>
                           <StyledLinkButton
                             onClick={async () => {
-                              await updateEmailMask(emailMask)
+                              await updateEmailAlias(emailAlias)
                               setEditingId(undefined)
                             }}
                           >
@@ -311,51 +319,51 @@ export const EmailMaskList = ({
                           </StyledLinkButton>
                         </>
                       ) : showExternal &&
-                        emailMask.status === EmailMaskStatus.PENDING ? (
+                        emailAlias.status === EmailAliasStatus.PENDING ? (
                         <Button
                           type="primary"
                           loading={isVerifyingThis}
                           disabled={isVerifyingThis}
-                          onClick={() => handleVerifyClick(emailMask)}
+                          onClick={() => handleVerifyClick(emailAlias)}
                         >
                           Verify
                         </Button>
                       ) : (
                         <>
                           <StyledLinkButton
-                            id={`email-address-${emailMaskValue}-edit-button`}
+                            id={`email-address-${emailAliasValue}-edit-button`}
                             onClick={() => {
-                              setEditingId(emailMask.id)
+                              setEditingId(emailAlias.id)
                               form.setFieldsValue({
-                                metadata: emailMask.metadata
-                                  ? JSON.stringify(emailMask.metadata)
+                                metadata: emailAlias.metadata
+                                  ? JSON.stringify(emailAlias.metadata)
                                   : undefined,
-                                expiresAt: emailMask.expiresAt
-                                  ? dayjs(emailMask.expiresAt)
+                                expiresAt: emailAlias.expiresAt
+                                  ? dayjs(emailAlias.expiresAt)
                                   : undefined,
                               })
                             }}
                           >
                             Update
                           </StyledLinkButton>
-                          {emailMask.status === EmailMaskStatus.ENABLED ? (
+                          {emailAlias.status === EmailAliasStatus.ENABLED ? (
                             <StyledLinkButton
-                              id={`email-address-${emailMask.maskAddress}-disable-button`}
-                              onClick={() => disableEmailMask(emailMask)}
+                              id={`email-address-${emailAlias.aliasAddress}-disable-button`}
+                              onClick={() => disableEmailAlias(emailAlias)}
                             >
                               Disable
                             </StyledLinkButton>
                           ) : (
                             <StyledLinkButton
-                              id={`email-address-${emailMask.maskAddress}-enable-button`}
-                              onClick={() => enableEmailMask(emailMask)}
+                              id={`email-address-${emailAlias.aliasAddress}-enable-button`}
+                              onClick={() => enableEmailAlias(emailAlias)}
                             >
                               Enable
                             </StyledLinkButton>
                           )}
                           <DangerLink
-                            id={`email-address-${emailMaskValue}-delete-button`}
-                            onClick={() => deprovisionEmailMask(emailMask)}
+                            id={`email-address-${emailAliasValue}-delete-button`}
+                            onClick={() => deprovisionEmailAlias(emailAlias)}
                           >
                             Remove
                           </DangerLink>

@@ -3,10 +3,10 @@ import { Navigate, Route, Routes } from 'react-router'
 import { EmailManagementPage } from '@pages/Email/EmailManagementPage'
 import { MailboxPage } from '@pages/Email/MailboxPage'
 import { useEmailAddresses } from '@hooks/useEmailAddresses'
-import { useEmailMasks } from '@hooks/useEmailMasks'
-import { EmailContext, EmailMaskContext } from '@contexts/index'
+import { useEmailAliases } from '@hooks/useEmailAliases'
+import { EmailContext, EmailAliasContext } from '@contexts/index'
 import { ErrorBoundary } from '@components/ErrorBoundary'
-import { MaskPage } from '@pages/Email/MaskPage'
+import { AliasPage } from '@pages/Email/AliasPage'
 
 export const EmailContainer = (): React.ReactElement => {
   const {
@@ -19,11 +19,11 @@ export const EmailContainer = (): React.ReactElement => {
   } = useEmailAddresses()
 
   const {
-    emailMasks,
-    emailMasksLoading,
-    emailMasksError,
-    listEmailMasksHandler,
-  } = useEmailMasks()
+    emailAliases,
+    emailAliasesLoading,
+    emailAliasesError,
+    listEmailAliasesHandler,
+  } = useEmailAliases()
 
   return (
     <ErrorBoundary error={emailAddressesError}>
@@ -37,21 +37,21 @@ export const EmailContainer = (): React.ReactElement => {
           listEmailAddressesHandler,
         }}
       >
-        <EmailMaskContext.Provider
+        <EmailAliasContext.Provider
           value={{
-            emailMasks: emailMasks ?? [],
-            emailMasksLoading,
-            emailMasksError,
-            listEmailMasksHandler,
+            emailAliases: emailAliases ?? [],
+            emailAliasesLoading,
+            emailAliasesError,
+            listEmailAliasesHandler,
           }}
         >
           <Routes>
             <Route path="manage" element={<EmailManagementPage />} />
             <Route path="mailbox" element={<MailboxPage />} />
-            <Route path="masks" element={<MaskPage />} />
+            <Route path="aliases" element={<AliasPage />} />
             <Route path="/" element={<Navigate to="mailbox" />} />
           </Routes>
-        </EmailMaskContext.Provider>
+        </EmailAliasContext.Provider>
       </EmailContext.Provider>
     </ErrorBoundary>
   )

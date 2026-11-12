@@ -17,7 +17,7 @@ export const CheckAuth = ({ children }: Props): React.ReactElement => {
     // If user not logged in, redirect back to sign in page.
     // Otherwise, child components are rendered.
     if (!result) {
-      navigate('/sign-in')
+      void navigate('/sign-in')
     }
   })
 

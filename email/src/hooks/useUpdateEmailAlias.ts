@@ -1,21 +1,21 @@
 import { useContext, useState } from 'react'
-import { EmailMask } from '@sudoplatform/sudo-email'
+import { EmailAlias } from '@sudoplatform/sudo-email'
 import { ProjectContext } from '@contexts/index'
 import { useErrorBoundary } from '@components/ErrorBoundary'
 import type { Dayjs } from 'dayjs'
 
 /**
- * Hook for updating the metadata of an email mask by passing as an
- * argument to the `updateEmailMaskHandler` callback. Loading and
+ * Hook for updating the metadata of an email alias by passing as an
+ * argument to the `updateEmailAliasHandler` callback. Loading and
  * error states are also provided.
  */
-export const useUpdateEmailMask = () => {
+export const useUpdateEmailAlias = () => {
   const { sudoEmailClient } = useContext(ProjectContext)
   const { error, setError, clearError } = useErrorBoundary()
   const [loading, setLoading] = useState(false)
 
-  const updateEmailMaskHandler = async (
-    { id }: EmailMask,
+  const updateEmailAliasHandler = async (
+    { id }: EmailAlias,
     metadata?: string,
     expiresAt?: Dayjs,
   ): Promise<void> => {
@@ -23,16 +23,16 @@ export const useUpdateEmailMask = () => {
     setLoading(true)
 
     try {
-      await sudoEmailClient.updateEmailMask({
-        emailMaskId: id,
-        // Following API Mask doc - To ignore: undefined - To delete: null,
+      await sudoEmailClient.updateEmailAlias({
+        emailAliasId: id,
+        // Following API Alias doc - To ignore: undefined - To delete: null,
         metadata:
           metadata === undefined
             ? undefined
             : metadata === null || metadata.trim() === ''
             ? null
             : (JSON.parse(metadata) as Record<string, any>),
-        // Following API Mask doc - To ignore: undefined - To delete: null,
+        // Following API Alias doc - To ignore: undefined - To delete: null,
         expiresAt:
           expiresAt === undefined
             ? undefined
@@ -41,15 +41,15 @@ export const useUpdateEmailMask = () => {
             : expiresAt?.toDate(),
       })
     } catch (error) {
-      setError(error as Error, 'Failed to update email mask')
+      setError(error as Error, 'Failed to update email alias')
     } finally {
       setLoading(false)
     }
   }
 
   return {
-    updateEmailMaskLoading: loading,
-    updateEmailMaskError: error,
-    updateEmailMaskHandler,
+    updateEmailAliasLoading: loading,
+    updateEmailAliasError: error,
+    updateEmailAliasHandler,
   }
 }

@@ -23,7 +23,7 @@ export const useUpdateEmailAddress = () => {
     try {
       await sudoEmailClient.updateEmailAddressMetadata({
         id: emailAddress.id,
-        values: { alias: displayName },
+        values: { displayName },
       })
     } catch (error) {
       setError(error as Error, 'Failed to update email address metadata')

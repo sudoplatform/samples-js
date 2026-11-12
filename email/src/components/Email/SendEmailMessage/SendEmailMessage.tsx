@@ -18,12 +18,12 @@ import {
 import { EmailAddressesFormItem } from './EmailAddressesFormItem'
 import TextArea from 'antd/lib/input/TextArea'
 import { message, Space } from 'antd'
-import { EmailContext, EmailMaskContext } from '@contexts/index'
+import { EmailContext, EmailAliasContext } from '@contexts/index'
 import { parseMessage, ParsedMessage } from '@util/MessageParser'
 import {
   DraftEmailMessage,
   EmailMessage,
-  EmailMask,
+  EmailAlias,
 } from '@sudoplatform/sudo-email'
 import { DraftsDropdown } from './DraftsDropdown/DraftsDropdown'
 import { EncryptedIndicator } from './EncryptedIndicator'
@@ -70,9 +70,9 @@ export const SendEmailMessage = ({
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { error, setError, clearError } = useErrorBoundary()
   const { activeEmailAddress } = useContext(EmailContext)
-  const [filteredMasks, setFilteredMasks] = useState<EmailMask[]>([])
-  const [selectedEmailMask, setSelectedEmailMask] = useState<
-    EmailMask | undefined
+  const [filteredAliases, setFilteredAliases] = useState<EmailAlias[]>([])
+  const [selectedEmailAlias, setSelectedEmailAlias] = useState<
+    EmailAlias | undefined
   >()
   const {
     draftsLoading,
@@ -80,25 +80,25 @@ export const SendEmailMessage = ({
     listDraftEmailMessagesHandler,
   } = useContext(DraftEmailMessagesContext)
   const {
-    emailMasks,
-    emailMasksLoading,
-    emailMasksError,
-    listEmailMasksHandler,
-  } = useContext(EmailMaskContext)
+    emailAliases,
+    emailAliasesLoading,
+    emailAliasesError,
+    listEmailAliasesHandler,
+  } = useContext(EmailAliasContext)
 
-  // Filter masks when emailMasks or activeEmailAddress changes
+  // Filter aliases when emailAliases or activeEmailAddress changes
   useEffect(() => {
-    const masks =
-      emailMasks?.filter(
-        (emailMask) =>
-          emailMask.realAddress === activeEmailAddress?.emailAddress,
+    const aliases =
+      emailAliases?.filter(
+        (emailAlias) =>
+          emailAlias.realAddress === activeEmailAddress?.emailAddress,
       ) ?? []
-    setFilteredMasks(masks)
-  }, [emailMasks, activeEmailAddress])
+    setFilteredAliases(aliases)
+  }, [emailAliases, activeEmailAddress])
 
-  // Load masks and set up form for reply/forward
+  // Load aliases and set up form for reply/forward
   useEffect(() => {
-    void listEmailMasksHandler()
+    void listEmailAliasesHandler()
     void getDrafts()
     if (replyingToMessage) {
       // Appent data to subject and body to indicate message is replying to another
@@ -142,7 +142,7 @@ export const SendEmailMessage = ({
     try {
       const draftEmailFormItems = {
         senderEmailAddress: activeEmailAddress,
-        senderEmailMask: selectedEmailMask,
+        senderEmailAlias: selectedEmailAlias,
         subject: (form.getFieldValue('subject') as string) ?? '',
         messageBody: (form.getFieldValue('messageBody') as string) ?? '',
         toEmailAddresses,
@@ -163,7 +163,7 @@ export const SendEmailMessage = ({
   const clearForm = (): void => {
     // Reset form fields to default (except sender email address).
     form.resetFields([
-      'senderEmailMask',
+      'senderEmailAlias',
       'toEmailAddresses',
       'ccEmailAddresses',
       'bccEmailAddresses',
@@ -176,7 +176,7 @@ export const SendEmailMessage = ({
     setCcEmailAddresses([])
     setBccEmailAddresses([])
 
-    setSelectedEmailMask(undefined)
+    setSelectedEmailAlias(undefined)
     setSelectedDraft(undefined)
   }
 
@@ -188,7 +188,7 @@ export const SendEmailMessage = ({
     (decodedDraft: ParsedMessage) => {
       // Clear form fields
       form.resetFields([
-        'senderEmailMask',
+        'senderEmailAlias',
         'toEmailAddresses',
         'ccEmailAddresses',
         'bccEmailAddresses',
@@ -202,20 +202,20 @@ export const SendEmailMessage = ({
         messageBody: decodedDraft.text,
       })
 
-      // Restore selected email mask if the draft's From address matches a mask
+      // Restore selected email alias if the draft's From address matches a alias
       const draftFromAddress = decodedDraft.from?.address
       if (draftFromAddress) {
-        const matchingMask = filteredMasks.find(
-          (m) => m.maskAddress === draftFromAddress,
+        const matchingAlias = filteredAliases.find(
+          (m) => m.aliasAddress === draftFromAddress,
         )
-        if (matchingMask) {
-          setSelectedEmailMask(matchingMask)
-          form.setFieldValue('senderEmailMask', matchingMask.maskAddress)
+        if (matchingAlias) {
+          setSelectedEmailAlias(matchingAlias)
+          form.setFieldValue('senderEmailAlias', matchingAlias.aliasAddress)
         } else {
-          setSelectedEmailMask(undefined)
+          setSelectedEmailAlias(undefined)
         }
       } else {
-        setSelectedEmailMask(undefined)
+        setSelectedEmailAlias(undefined)
       }
 
       // Update state arrays
@@ -234,7 +234,7 @@ export const SendEmailMessage = ({
         void message.warning('Editing empty draft')
       }
     },
-    [form, filteredMasks],
+    [form, filteredAliases],
   )
 
   const onDraftSelect = async (selectedSavedDraftId: string) => {
@@ -269,7 +269,7 @@ export const SendEmailMessage = ({
         bccEmailAddresses,
         replyingMessageId: replyingToMessage?.id,
         forwardingMessageId: forwardingMessage?.id,
-        senderEmailMask: selectedEmailMask,
+        senderEmailAlias: selectedEmailAlias,
       })
 
       void message.success('Email message sent successfully!')
@@ -312,24 +312,24 @@ export const SendEmailMessage = ({
         scheduleSendMessagesHandler={scheduleSendMessagesHandler}
         setError={setError}
       />
-      <ErrorBoundary error={sendEmailMessageError || emailMasksError}>
+      <ErrorBoundary error={sendEmailMessageError || emailAliasesError}>
         <EncryptedIndicator emailAddresses={inputEmailAddresses} />
         <Form form={form} requiredMark={true} onChange={changesInForm}>
           <FormItem name="senderEmailAddress" label="Sender Email Address">
             <Input disabled={true} />
           </FormItem>
-          <FormItem name="senderEmailMask" label="Sender Email Mask">
+          <FormItem name="senderEmailAlias" label="Sender Email Alias">
             <Select
-              placeholder="Choose an email mask for privacy..."
-              options={filteredMasks.map((e) => ({
-                value: e.maskAddress,
-                label: e.maskAddress,
+              placeholder="Choose an email alias for privacy..."
+              options={filteredAliases.map((e) => ({
+                value: e.aliasAddress,
+                label: e.aliasAddress,
               }))}
-              onChange={(selectedMask) => {
-                const selected = filteredMasks.find(
-                  (m) => m.maskAddress === selectedMask,
+              onChange={(selectedAlias) => {
+                const selected = filteredAliases.find(
+                  (m) => m.aliasAddress === selectedAlias,
                 )
-                setSelectedEmailMask(selected)
+                setSelectedEmailAlias(selected)
               }}
             ></Select>
           </FormItem>
@@ -400,7 +400,7 @@ export const SendEmailMessage = ({
                   sendEmailMessageLoading ||
                   draftsLoading ||
                   scheduledMessagesLoading ||
-                  emailMasksLoading
+                  emailAliasesLoading
                 }
                 disabled={draftDisabled}
                 onClick={submitForm}
@@ -450,7 +450,9 @@ export const SendEmailMessage = ({
                 className="form-clear-button"
                 type="button"
                 loading={
-                  draftsLoading || scheduledMessagesLoading || emailMasksLoading
+                  draftsLoading ||
+                  scheduledMessagesLoading ||
+                  emailAliasesLoading
                 }
                 disabled={draftDisabled}
                 kind="primary"

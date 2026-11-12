@@ -26,7 +26,7 @@ export const SignInPage = (): React.ReactElement => {
     )
 
     setAuthenticationTokens(authTokens)
-    navigate('/')
+    void navigate('/')
   })
 
   return (

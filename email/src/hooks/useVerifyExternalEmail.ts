@@ -9,11 +9,11 @@ interface UseVerifyExternalEmailReturn {
   verifyLoading: boolean
   verifyError: Error | null
   initiateVerification: (
-    emailMaskId: string,
+    emailAliasId: string,
     emailAddress: string,
   ) => Promise<void>
   completeVerification: (
-    emailMaskId: string,
+    emailAliasId: string,
     emailAddress: string,
     code: string,
   ) => Promise<VerifyExternalEmailAddressResult>
@@ -33,14 +33,14 @@ export const useVerifyExternalEmail = (): UseVerifyExternalEmailReturn => {
   const [verifyError, setVerifyError] = useState<Error | null>(null)
 
   const initiateVerification = useCallback(
-    async (emailMaskId: string, emailAddress: string): Promise<void> => {
+    async (emailAliasId: string, emailAddress: string): Promise<void> => {
       setVerifyError(null)
       setVerifyLoading(true)
 
       try {
         const input: VerifyExternalEmailAddressInput = {
           emailAddress,
-          emailMaskId,
+          emailAliasId,
         }
         await sudoEmailClient.verifyExternalEmailAddress(input)
       } catch (error) {
@@ -55,7 +55,7 @@ export const useVerifyExternalEmail = (): UseVerifyExternalEmailReturn => {
 
   const completeVerification = useCallback(
     async (
-      emailMaskId: string,
+      emailAliasId: string,
       emailAddress: string,
       code: string,
     ): Promise<VerifyExternalEmailAddressResult> => {
@@ -65,7 +65,7 @@ export const useVerifyExternalEmail = (): UseVerifyExternalEmailReturn => {
       try {
         const input: VerifyExternalEmailAddressInput = {
           emailAddress,
-          emailMaskId,
+          emailAliasId,
           verificationCode: code,
         }
         const result = await sudoEmailClient.verifyExternalEmailAddress(input)

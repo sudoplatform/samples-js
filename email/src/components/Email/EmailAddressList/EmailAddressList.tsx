@@ -89,9 +89,9 @@ export const EmailAddressList = (): React.ReactElement => {
           columns={[
             {
               title: 'Display Name',
-              dataIndex: 'alias',
+              dataIndex: 'displayName',
               render: (colData, rowData) => {
-                const { alias: displayName, id } = rowData as EmailAddress
+                const { displayName, id } = rowData as EmailAddress
                 return updateId === id ? (
                   <DisplayNameInput
                     defaultValue={displayName ?? ''}

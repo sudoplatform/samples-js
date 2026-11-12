@@ -63,7 +63,7 @@ export const Project = ({ sudoUserClient }: Props): React.ReactElement => {
         await sudoUserClient.reset()
 
         void message.success('Successfully signed out')
-        navigate('/sign-in')
+        void navigate('/sign-in')
       }
     } catch (error) {
       void message.error('Failed to deregister')
@@ -117,8 +117,8 @@ export const Project = ({ sudoUserClient }: Props): React.ReactElement => {
                           path: '/mailbox',
                         },
                         {
-                          label: 'Masks',
-                          path: '/masks',
+                          label: 'Aliases',
+                          path: '/aliases',
                         },
                       ],
                     },
