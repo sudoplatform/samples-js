@@ -37,6 +37,7 @@ export const EmailAliasList = ({
     emailAliases,
     emailAliasesLoading,
     emailAliasesError,
+    emailAliasesEnabled,
     listEmailAliasesHandler,
   } = useContext(EmailAliasContext)
 
@@ -198,6 +199,16 @@ export const EmailAliasList = ({
     setVerifyingAliasId(null)
     setVerificationCode('')
     setVerificationCodeError(null)
+  }
+
+  if (emailAliasesEnabled === false) {
+    return (
+      <Card title="Email Aliases">
+        <div style={{ padding: 24 }}>
+          Email aliases are not enabled for the current configuration.
+        </div>
+      </Card>
+    )
   }
 
   return (

@@ -10,6 +10,7 @@ import { Form, message } from 'antd'
 import { useErrorBoundary } from '@components/ErrorBoundary'
 import { useActiveSudoUpdate } from '@hooks/useActiveSudoUpdate'
 import {
+  EmailAliasAlreadyExistsError,
   VerifyExternalEmailAddressInput,
   VerifyExternalEmailAddressResult,
 } from '@sudoplatform/sudo-email'
@@ -156,7 +157,12 @@ export const useProvisionEmailAliasForm = () => {
         listEmailAliasesHandler()
       } catch (error) {
         setLoading(false)
-        setError(error as Error, 'Failed to provision email alias')
+        setError(
+          error as Error,
+          error instanceof EmailAliasAlreadyExistsError
+            ? `Email alias '${formValues.aliasLocalPart}@${formValues.aliasDomain}' is already provisioned`
+            : 'Failed to provision email alias',
+        )
 
         throw error
       }

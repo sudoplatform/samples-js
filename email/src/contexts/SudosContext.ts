@@ -10,6 +10,8 @@ interface SudosState {
   setActiveSudo: (sudo?: Sudo) => void
   sudos: Sudo[]
   sudosLoading: boolean
+  /** Set when the Sudos couldn't be listed, for example because one can't be decrypted. */
+  sudosError?: Error
   listSudosHandler: () => void
 }
 

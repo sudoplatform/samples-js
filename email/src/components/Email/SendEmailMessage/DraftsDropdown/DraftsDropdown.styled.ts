@@ -34,7 +34,8 @@ export const DropDownContainer = styled.div`
   right: 0;
   top: 0;
   height: 57px;
-  padding-right: 24px;
+  /* Leaves room for the modal's close button. */
+  padding-right: 56px;
   display: flex;
   flex-direction: row;
   align-items: center;

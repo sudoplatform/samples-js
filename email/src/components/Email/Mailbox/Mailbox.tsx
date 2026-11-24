@@ -22,7 +22,7 @@ import { EmailAddressDropdown } from '../EmailAddressDropdown'
 import { Button } from '@components/Button'
 import { SendEmailMessage } from '../SendEmailMessage'
 import { EmailMessageView } from './EmailMessageView'
-import { Modal } from 'antd'
+import { Modal, Typography } from 'antd'
 import { useEmailBlocklist } from '../../../hooks/useEmailBlocklist'
 import { EmailBlocklistContext } from '../../../contexts/EmailBlocklistContext'
 import { useDraftEmailMessages } from '../../../hooks/useDraftEmailMessages'
@@ -92,6 +92,15 @@ export const Mailbox = (): React.ReactElement => {
         <DropdownContainer>
           <MailIcon />
           <EmailAddressDropdown />
+          {activeEmailAddress && (
+            <Typography.Text
+              id="copy-email-address-button"
+              copyable={{
+                text: activeEmailAddress.emailAddress,
+                tooltips: ['Copy email address', 'Copied'],
+              }}
+            />
+          )}
         </DropdownContainer>
         {activeEmailAddress && (
           <Button
@@ -134,6 +143,11 @@ export const Mailbox = (): React.ReactElement => {
                   title={'Send Email Message'}
                   footer={null}
                   width={750}
+                  onCancel={() => {
+                    setSendEmailMessageFormActive(false)
+                    setReplyingToMessage(undefined)
+                    setForwardingToMessage(undefined)
+                  }}
                 >
                   <SendEmailMessage
                     replyingToMessage={replyingToMessage}

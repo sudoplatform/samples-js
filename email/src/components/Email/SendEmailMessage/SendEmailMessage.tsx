@@ -83,6 +83,7 @@ export const SendEmailMessage = ({
     emailAliases,
     emailAliasesLoading,
     emailAliasesError,
+    emailAliasesEnabled,
     listEmailAliasesHandler,
   } = useContext(EmailAliasContext)
 
@@ -318,21 +319,23 @@ export const SendEmailMessage = ({
           <FormItem name="senderEmailAddress" label="Sender Email Address">
             <Input disabled={true} />
           </FormItem>
-          <FormItem name="senderEmailAlias" label="Sender Email Alias">
-            <Select
-              placeholder="Choose an email alias for privacy..."
-              options={filteredAliases.map((e) => ({
-                value: e.aliasAddress,
-                label: e.aliasAddress,
-              }))}
-              onChange={(selectedAlias) => {
-                const selected = filteredAliases.find(
-                  (m) => m.aliasAddress === selectedAlias,
-                )
-                setSelectedEmailAlias(selected)
-              }}
-            ></Select>
-          </FormItem>
+          {emailAliasesEnabled !== false && (
+            <FormItem name="senderEmailAlias" label="Sender Email Alias">
+              <Select
+                placeholder="Choose an email alias for privacy..."
+                options={filteredAliases.map((e) => ({
+                  value: e.aliasAddress,
+                  label: e.aliasAddress,
+                }))}
+                onChange={(selectedAlias) => {
+                  const selected = filteredAliases.find(
+                    (m) => m.aliasAddress === selectedAlias,
+                  )
+                  setSelectedEmailAlias(selected)
+                }}
+              ></Select>
+            </FormItem>
+          )}
           <EmailAddressesFormItem
             fieldName="toEmailAddresses"
             fieldLabel="To:"

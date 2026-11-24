@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router'
+import { UserOutlined } from '@ant-design/icons'
 import { ProjectContext, SudosContext } from '@contexts/index'
 import { SudoUserClient } from '@sudoplatform/sudo-user'
 import { ErrorBoundary } from '@components/ErrorBoundary'
@@ -20,6 +21,9 @@ import { useSudos } from '@hooks/useSudos'
 import { useSudoClients } from '@hooks/useSudoClients'
 import { EmailContainer } from '@containers/Email'
 import { SudosContainer } from '@containers/Sudos'
+import { AccountContainer } from '@containers/Account'
+import { getUsedFederatedSignIn } from '@services/session'
+import { signOut } from '@services/signOut'
 
 interface Props {
   sudoUserClient: SudoUserClient
@@ -41,7 +45,10 @@ export const Project = ({ sudoUserClient }: Props): React.ReactElement => {
     sudoEmailClient,
     sudoEntitlementsClient,
     sudoProfilesClient,
+    enforceSingletonPublicKey,
+    removeUserData,
   } = useSudoClients(sudoUserClient)
+  const [signingOut, setSigningOut] = useState(false)
 
   const {
     sudosLoading,
@@ -53,20 +60,25 @@ export const Project = ({ sudoUserClient }: Props): React.ReactElement => {
   } = useSudos(sudoProfilesClient)
 
   /**
-   * Handler function to de-register active sudo clients
-   * and then redirect back to login page.
+   * Signs out the way the user signed in, and returns to the sign in page. A plain sign out keeps the user's
+   * keys and registration, so they can read their email when they sign back in. Removing data and
+   * deregistering are on the User Details page.
    */
   const signOutHandler = async (): Promise<void> => {
+    if (signingOut) return
+    setSigningOut(true)
     try {
-      if (sudoProfilesClient) {
-        await sudoProfilesClient.reset()
-        await sudoUserClient.reset()
-
-        void message.success('Successfully signed out')
-        void navigate('/sign-in')
-      }
+      const federated = getUsedFederatedSignIn()
+      // A federated sign out sends the browser to the sign in provider to clear its cookies, then back to the
+      // app. The navigation below is for when it doesn't, for example without a federatedSignIn config.
+      await signOut(sudoUserClient)
+      if (!federated) void message.success('Successfully signed out')
+      void navigate('/sign-in', { replace: true })
     } catch (error) {
-      void message.error('Failed to deregister')
+      console.error(error)
+      void message.error('Failed to sign out')
+    } finally {
+      setSigningOut(false)
     }
   }
 
@@ -84,6 +96,8 @@ export const Project = ({ sudoUserClient }: Props): React.ReactElement => {
               sudoEntitlementsClient,
               sudoProfilesClient,
               sudoUserClient,
+              enforceSingletonPublicKey,
+              removeUserData,
             }}
           >
             <PageContainer>
@@ -122,6 +136,21 @@ export const Project = ({ sudoUserClient }: Props): React.ReactElement => {
                         },
                       ],
                     },
+                    {
+                      label: 'Account',
+                      path: '/account',
+                      icon: <UserOutlined />,
+                      children: [
+                        {
+                          label: 'User Details',
+                          path: '/user',
+                        },
+                        {
+                          label: 'Import/Export Keys',
+                          path: '/keys',
+                        },
+                      ],
+                    },
                   ]}
                 />
               </SidebarContainer>
@@ -129,6 +158,7 @@ export const Project = ({ sudoUserClient }: Props): React.ReactElement => {
                 <SudosContext.Provider
                   value={{
                     sudosLoading,
+                    sudosError: sudosError?.error,
                     sudos,
                     listSudosHandler,
                     activeSudo,
@@ -145,6 +175,10 @@ export const Project = ({ sudoUserClient }: Props): React.ReactElement => {
                       <Routes>
                         <Route path="email/*" element={<EmailContainer />} />
                         <Route path="sudos/*" element={<SudosContainer />} />
+                        <Route
+                          path="account/*"
+                          element={<AccountContainer />}
+                        />
                         <Route path="/" element={<Navigate to="sudos" />} />
                       </Routes>
                     </ContentContainer>

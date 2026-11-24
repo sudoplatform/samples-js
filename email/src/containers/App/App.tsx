@@ -114,6 +114,7 @@ export const App = (): React.ReactElement => {
               }
             />
             <Route path="/sign-in" element={<SignInPage />} />
+            {/* Federated sign in and sign out redirect here, as set in sudoplatformconfig.json. */}
             <Route path="/callback" element={<AuthCallbackPage />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { reportIfNotAuthorized } from '@services/sessionExpiry'
 import { BoundaryErrorObject } from './ErrorBoundary'
 
 /**
@@ -16,6 +17,8 @@ export const useErrorBoundary = () => {
   >()
 
   const setter = (error: Error, message: string, fatal?: boolean) => {
+    // Lets the app refresh or end the session when the service rejects the user's tokens.
+    reportIfNotAuthorized(error)
     setErrorObject({
       error,
       message,

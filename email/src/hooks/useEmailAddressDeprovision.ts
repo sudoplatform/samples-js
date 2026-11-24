@@ -1,5 +1,8 @@
 import { useCallback, useContext, useEffect, useState } from 'react'
-import { EmailAddress } from '@sudoplatform/sudo-email'
+import {
+  EmailAddress,
+  KeyPairRemovalFailedError,
+} from '@sudoplatform/sudo-email'
 import { EmailContext, ProjectContext, SudosContext } from '@contexts/index'
 import { useErrorBoundary } from '@components/ErrorBoundary'
 
@@ -21,9 +24,19 @@ export const useEmailAddressDeprovision = () => {
       setLoading(true)
 
       try {
-        const deprovisionResult = await sudoEmailClient.deprovisionEmailAddress(
-          id,
-        )
+        let deprovisionResult: EmailAddress
+        try {
+          deprovisionResult = await sudoEmailClient.deprovisionEmailAddress(id)
+        } catch (error) {
+          // The address was deprovisioned, but its key pair is still in this browser. It does no harm there
+          // and is removed with the other keys by Remove Data.
+          if (!(error instanceof KeyPairRemovalFailedError)) throw error
+          console.warn(
+            `Deprovisioned ${error.emailAddress.emailAddress} but couldn't remove key pair(s)`,
+            error.keyIds,
+          )
+          deprovisionResult = error.emailAddress
+        }
 
         if (deprovisionResult.id !== id) {
           throw new Error('Deprovisioned email address ID incorrect')

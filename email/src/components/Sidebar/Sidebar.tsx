@@ -5,7 +5,8 @@ import { StyledMenu } from './Sidebar.styled'
 
 interface MenuItemParent {
   label: string
-  icon: ImageName
+  /** An image from public/images, or an icon element. */
+  icon: ImageName | React.ReactElement
   path: string
   children?: Omit<MenuItemParent, 'icon' | 'children'>[]
 }
@@ -30,7 +31,7 @@ export const Sidebar = ({ urlPath, menuItems }: Props): React.ReactElement => {
     return menuItems.map(({ label, icon, children, path: rootPath }) => ({
       key: rootPath,
       label,
-      icon: <Image name={icon} />,
+      icon: typeof icon === 'string' ? <Image name={icon} /> : icon,
       children: children?.map(({ label, path: childPath }) => {
         const path = rootPath + childPath
         return {

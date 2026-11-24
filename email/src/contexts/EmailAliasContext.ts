@@ -6,6 +6,7 @@ interface EmailAliasState {
   emailAliases: EmailAlias[]
   emailAliasesLoading: boolean
   emailAliasesError?: BoundaryErrorObject
+  emailAliasesEnabled?: boolean
   listEmailAliasesHandler: () => void
 }
 

@@ -1,6 +1,7 @@
 import React from 'react'
 import { SudoCreate } from '@components/Sudo/SudoCreate'
 import { SudoList } from '@components/Sudo/SudoList'
+import { UnreadableSudos } from '@components/Sudo/UnreadableSudos'
 import { Page, PageHeading, ContentRow } from '@components/Layout'
 import { LearnMore } from '@components/LearnMore'
 
@@ -22,6 +23,7 @@ export const SudoManagementPage = (): React.ReactElement => {
           helpUrl="https://docs.sudoplatform.com/guides/sudos"
         />
       </ContentRow>
+      <UnreadableSudos />
       <ContentRow>
         <SudoCreate />
       </ContentRow>

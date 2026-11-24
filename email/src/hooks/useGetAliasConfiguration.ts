@@ -1,6 +1,7 @@
 import { useCallback, useContext, useState } from 'react'
 import { ProjectContext } from '@contexts/index'
 import { useErrorBoundary } from '@components/ErrorBoundary'
+import { getEmailConfigurationData } from '@util/getEmailConfigurationData'
 
 /**
  * Hook to provide email alias enabling functionality by
@@ -24,7 +25,7 @@ export const useGetAliasConfiguration = () => {
 
       try {
         const { emailAliasesEnabled, externalEmailAliasesEnabled } =
-          await sudoEmailClient.getConfigurationData()
+          await getEmailConfigurationData(sudoEmailClient)
 
         if (
           emailAliasesEnabled === undefined ||

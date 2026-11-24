@@ -22,6 +22,7 @@ export const EmailContainer = (): React.ReactElement => {
     emailAliases,
     emailAliasesLoading,
     emailAliasesError,
+    emailAliasesEnabled,
     listEmailAliasesHandler,
   } = useEmailAliases()
 
@@ -42,6 +43,7 @@ export const EmailContainer = (): React.ReactElement => {
             emailAliases: emailAliases ?? [],
             emailAliasesLoading,
             emailAliasesError,
+            emailAliasesEnabled,
             listEmailAliasesHandler,
           }}
         >
